@@ -537,6 +537,135 @@
 
     <!-- 0. RUNWAY & BURN STATISTICS VIEW -->
     <div id="runway-tab" class="tab-content active">
+        <!-- 1-Page Written Executive Project Status Report Header -->
+        <div class="print-btn-container" style="max-width: 800px; margin: 0 auto 12px auto; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <h2 style="font-size: 14px; font-weight: 600; color: var(--text-primary); font-family: var(--font-family); margin: 0;">📄 1-Page Written Executive Project Status Report (Steering Committee Briefing)</h2>
+            <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+        </div>
+
+        <div id="print-area-wrapper">
+            <div class="briefing-card">
+                <div class="briefing-header">
+                    <h2>OFFSHORE EPC PLATFORM DRILL TOWER CONSTRUCTION PROJECT</h2>
+                    <h3>MONTHLY EXECUTIVE STEERING COMMITTEE STATUS BRIEFING</h3>
+                </div>
+                
+                <div class="briefing-meta">
+                    <div class="briefing-meta-item">Status Date: <strong>August 31, 2026 (Month 8 / Week 36)</strong></div>
+                    <div class="briefing-meta-item" style="text-align: right;">Prepared By: <strong>Frank Ellingsen, Lead Project Controller</strong></div>
+                    <div class="briefing-meta-item" style="grid-column: span 2; margin-top: 4px; padding: 4px 8px; background: var(--rag-red-bg); border-left: 3px solid var(--rag-red); font-weight: 700; color: var(--rag-red); display: flex; justify-content: space-between; font-family: var(--font-family);">
+                        <span>Overall Project Health Status: 🚨 CRITICAL COST OVERRUN & SCHEDULE SLIPPAGE (RED)</span>
+                        <span>Budget Burn Out: Month 9 (Sep 2026)</span>
+                    </div>
+                </div>
+
+                <div class="briefing-section-title">1. Key EVM Performance Metrics</div>
+                <table class="briefing-table" style="font-size: 11px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Metric</th>
+                            <th style="text-align: right;">Value</th>
+                            <th style="text-align: left; padding-left: 20px;">Context / Threshold Info</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Baseline Contract Budget (<strong>BAC</strong>)</td>
+                            <td style="text-align: right; font-weight: 600;">$26,500,000</td>
+                            <td style="padding-left: 20px; color: var(--text-secondary);">Approved original baseline budget ceiling</td>
+                        </tr>
+                        <tr>
+                            <td>Earned Work Complete (<strong>EV / BAC</strong>)</td>
+                            <td style="text-align: right; font-weight: 600; color: var(--ev-color);">66.19% ($17.54M)</td>
+                            <td style="padding-left: 20px; color: var(--text-secondary);">66.19% of work scope accomplished to date</td>
+                        </tr>
+                        <tr>
+                            <td>Planned Work Baseline (<strong>PV / BAC</strong>)</td>
+                            <td style="text-align: right; font-weight: 600; color: var(--pv-color);">77.36% ($20.50M)</td>
+                            <td style="padding-left: 20px; color: var(--text-secondary);">77.36% of work baseline scheduled to date</td>
+                        </tr>
+                        <tr>
+                            <td>Cumulative Actual Costs (<strong>AC</strong>)</td>
+                            <td style="text-align: right; font-weight: 600; color: var(--rag-red);">$23,440,000</td>
+                            <td style="padding-left: 20px; color: var(--text-secondary);">Actual funds spent (exceeds EV by -$5.90M)</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Performance Index (<strong>CPI</strong>)</td>
+                            <td style="text-align: right; font-weight: 600; color: var(--rag-red);">0.7483</td>
+                            <td style="padding-left: 20px; color: var(--text-secondary);">$0.75 earned value generated for every $1.00 spent ($0.75 / $1.00)</td>
+                        </tr>
+                        <tr>
+                            <td>Earned Schedule Velocity (<strong>SPI<sub>t</sub></strong>)</td>
+                            <td style="text-align: right; font-weight: 600; color: var(--rag-amber);">0.9250</td>
+                            <td style="padding-left: 20px; color: var(--text-secondary);">-18.2 Days behind baseline schedule progress</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="briefing-section-title">2. Outturn Predictions & P90 Risk</div>
+                <table class="briefing-table" style="font-size: 11px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Scenario</th>
+                            <th style="text-align: right;">EAC Outturn</th>
+                            <th style="text-align: right;">Estimated Completion Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Deterministic Base</strong></td>
+                            <td style="text-align: right; font-weight: 600;">$35,413,604</td>
+                            <td style="padding-left: 20px;">Jan 31, 2027 (+31d)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Monte Carlo P50</strong></td>
+                            <td style="text-align: right; font-weight: 600;">$34,060,783</td>
+                            <td style="padding-left: 20px;">Feb 27, 2027 (+57d)</td>
+                        </tr>
+                        <tr style="background-color: #FFF5F5;">
+                            <td><strong>Monte Carlo P90</strong></td>
+                            <td style="text-align: right; font-weight: 600; color: var(--rag-red);">$35,815,202</td>
+                            <td style="padding-left: 20px; font-weight: 600; color: var(--rag-red);">Mar 14, 2027 (+72d)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="font-size: 10px; color: var(--text-secondary); margin-top: -6px; margin-bottom: 12px; font-family: var(--font-family);">
+                    * P90 Reserve Required: <strong>+$401,598</strong> above base EAC.
+                </div>
+
+                <div class="briefing-section-title">3. Primary Variance Drivers</div>
+                <ul style="font-size: 11px; padding-left: 16px; margin-bottom: 12px;">
+                    <li style="margin-bottom: 4px;">
+                        <strong>Egersund Yard Rework (WBS 1.3.2)</strong>: Pipe tolerance mismatch requiring 24/7 NDT welding (<span style="color: var(--rag-red); font-weight: 700;">+$2.40M / 26.9% of overrun</span>).
+                    </li>
+                    <li style="margin-bottom: 4px;">
+                        <strong>Time Delay Overhead Spread ($SPI_t$)</strong>: Extending execution past Dec 31, 2026 spreads PMO & site overhead (<span style="color: var(--rag-red); font-weight: 700;">+$3.81M / 42.8% of overrun</span>).
+                    </li>
+                    <li style="margin-bottom: 4px;">
+                        <strong>Heavy Lift Vessel Weather Standby (WBS 1.4.1)</strong>: Autumn sea-state vessel standby (<span style="color: var(--rag-amber); font-weight: 700;">+$1.30M / 14.6% of overrun</span>).
+                    </li>
+                </ul>
+
+                <div class="briefing-section-title">4. Required Steering Committee Actions</div>
+                <ol style="font-size: 11px; padding-left: 16px;">
+                    <li style="margin-bottom: 4px;">
+                        <strong>Authorize Overrun Credit Line</strong>: Secure <strong>+$8.91M</strong> financing before <strong>September 15, 2026</strong> (Month 9 budget exhaustion).
+                    </li>
+                    <li style="margin-bottom: 4px;">
+                        <strong>Cap Yard Rework Billing</strong>: Transition Egersund yard to a fixed-fee labor cap for remaining mast assembly.
+                    </li>
+                    <li style="margin-bottom: 4px;">
+                        <strong>Compress Offshore Hook-up</strong>: Recover 15 calendar days to preserve January 31, 2027 Commercial COD.
+                    </li>
+                </ol>
+                
+                <div style="margin-top: 20px; border-top: 1px solid #111827; padding-top: 8px; display: flex; justify-content: space-between; font-size: 9px; color: var(--text-secondary); font-family: var(--font-family);">
+                    <span>Document ID: <strong>EVM-STR-2026-M08-REV3</strong></span>
+                    <span>Distribution: <strong>Executive Board & Steering Committee</strong></span>
+                </div>
+            </div>
+        </div>
+
         <!-- Runway & Burn Statistics Cards -->
         <div class="runway-grid">
             <div class="runway-card">
@@ -781,137 +910,6 @@
             </div>
         </div>
 
-        <!-- 1-Page Written Executive Project Status Report -->
-        <div class="print-btn-container">
-            <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
-        </div>
-        
-        <div id="print-area-wrapper">
-            <div class="briefing-card">
-                <div class="briefing-header">
-                    <h2>OFFSHORE EPC PLATFORM DRILL TOWER CONSTRUCTION PROJECT</h2>
-                    <h3>MONTHLY EXECUTIVE STEERING COMMITTEE STATUS BRIEFING</h3>
-                </div>
-                
-                <div class="briefing-meta">
-                    <div class="briefing-meta-item">Status Date: <strong>August 31, 2026 (Month 8 / Week 36)</strong></div>
-                    <div class="briefing-meta-item" style="text-align: right;">Prepared By: <strong>Frank Ellingsen, Lead Project Controller</strong></div>
-                    <div class="briefing-meta-item" style="grid-column: span 2; margin-top: 4px; padding: 4px 8px; background: var(--rag-red-bg); border-left: 3px solid var(--rag-red); font-weight: 700; color: var(--rag-red); display: flex; justify-content: space-between; font-family: var(--font-family);">
-                        <span>Overall Project Health Status: CRITICAL COST OVERRUN & SCHEDULE SLIPPAGE (RED)</span>
-                        <span>Budget Burn Out: Month 9 (Sep 2026)</span>
-                    </div>
-                </div>
-
-                <div class="briefing-section-title">1. Key EVM Performance Metrics</div>
-                <table class="briefing-table" style="font-size: 11px;">
-                    <thead>
-                        <tr>
-                            <th style="text-align: left;">Metric</th>
-                            <th style="text-align: right;">Value</th>
-                            <th style="text-align: left; padding-left: 20px;">Context / Threshold Info</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Baseline Contract Budget (<strong>BAC</strong>)</td>
-                            <td style="text-align: right; font-weight: 600;">$26,500,000</td>
-                            <td style="padding-left: 20px; color: var(--text-secondary);">Approved original baseline budget ceiling</td>
-                        </tr>
-                        <tr>
-                            <td>Earned Work Complete (<strong>EV</strong>)</td>
-                            <td style="text-align: right; font-weight: 600; color: var(--ev-color);">$17,540,000</td>
-                            <td style="padding-left: 20px; color: var(--text-secondary);">66.19% of work scope accomplished to date</td>
-                        </tr>
-                        <tr>
-                            <td>Planned Work Baseline (<strong>PV</strong>)</td>
-                            <td style="text-align: right; font-weight: 600; color: var(--pv-color);">$20,500,000</td>
-                            <td style="padding-left: 20px; color: var(--text-secondary);">77.36% of work baseline scheduled to date</td>
-                        </tr>
-                        <tr>
-                            <td>Cumulative Actual Costs (<strong>AC</strong>)</td>
-                            <td style="text-align: right; font-weight: 600; color: var(--rag-red);">$23,440,000</td>
-                            <td style="padding-left: 20px; color: var(--text-secondary);">Actual funds spent (exceeds EV by -$5.90M)</td>
-                        </tr>
-                        <tr>
-                            <td>Cost Performance Index (<strong>CPI</strong>)</td>
-                            <td style="text-align: right; font-weight: 600; color: var(--rag-red);">0.7483</td>
-                            <td style="padding-left: 20px; color: var(--text-secondary);">$0.75 earned value generated for every $1.00 spent</td>
-                        </tr>
-                        <tr>
-                            <td>Earned Schedule Velocity (<strong>SPI<sub>t</sub></strong>)</td>
-                            <td style="text-align: right; font-weight: 600; color: var(--rag-amber);">0.9250</td>
-                            <td style="padding-left: 20px; color: var(--text-secondary);">-18.2 Days behind baseline schedule progress</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="briefing-section-title">2. Outturn Predictions & P90 Risk</div>
-                <table class="briefing-table" style="font-size: 11px;">
-                    <thead>
-                        <tr>
-                            <th style="text-align: left;">Scenario</th>
-                            <th style="text-align: right;">EAC Outturn</th>
-                            <th style="text-align: right;">Variance At Completion (VAC)</th>
-                            <th style="text-align: left; padding-left: 20px;">Estimated Completion Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Deterministic Base</strong></td>
-                            <td style="text-align: right; font-weight: 600;">$35,413,604</td>
-                            <td style="text-align: right; color: var(--rag-red); font-weight: 600;">-$8,913,604</td>
-                            <td style="padding-left: 20px;">Jan 31, 2027 (+31d delay)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Monte Carlo P50</strong></td>
-                            <td style="text-align: right; font-weight: 600;">$34,060,783</td>
-                            <td style="text-align: right; color: var(--rag-red); font-weight: 600;">-$7,560,783</td>
-                            <td style="padding-left: 20px;">Feb 27, 2027 (+57d delay)</td>
-                        </tr>
-                        <tr style="background-color: #FFF5F5;">
-                            <td><strong>Monte Carlo P90</strong></td>
-                            <td style="text-align: right; font-weight: 600; color: var(--rag-red);">$35,815,202</td>
-                            <td style="text-align: right; color: var(--rag-red); font-weight: 600;">-$9,315,202</td>
-                            <td style="padding-left: 20px; font-weight: 600; color: var(--rag-red);">Mar 14, 2027 (+72d delay)</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div style="font-size: 10px; color: var(--text-secondary); margin-top: -6px; margin-bottom: 12px; font-family: var(--font-family);">
-                    * P90 Reserve Required: <strong>+$401,598</strong> above deterministic base EAC.
-                </div>
-
-                <div class="briefing-section-title">3. Primary Variance Drivers</div>
-                <ul style="font-size: 11px; padding-left: 16px; margin-bottom: 12px;">
-                    <li style="margin-bottom: 4px;">
-                        <strong>Egersund Yard Rework (WBS 1.3.2)</strong>: Pipe tolerance mismatch requiring 24/7 NDT welding (<span style="color: var(--rag-red); font-weight: 700;">+$2.40M / 26.9% of overrun</span>).
-                    </li>
-                    <li style="margin-bottom: 4px;">
-                        <strong>Time Delay Overhead Spread (SPI<sub>t</sub>)</strong>: Extending execution past Dec 31, 2026 spreads PMO & site overhead (<span style="color: var(--rag-red); font-weight: 700;">+$3.81M / 42.8% of overrun</span>).
-                    </li>
-                    <li style="margin-bottom: 4px;">
-                        <strong>Heavy Lift Vessel Weather Standby (WBS 1.4.1)</strong>: Autumn sea-state vessel standby (<span style="color: var(--rag-amber); font-weight: 700;">+$1.30M / 14.6% of overrun</span>).
-                    </li>
-                </ul>
-
-                <div class="briefing-section-title">4. Required Steering Committee Actions</div>
-                <ol style="font-size: 11px; padding-left: 16px;">
-                    <li style="margin-bottom: 4px;">
-                        <strong>Authorize Overrun Credit Line</strong>: Secure <strong>+$8.91M</strong> financing before <strong>September 15, 2026</strong> (Month 9 budget exhaustion).
-                    </li>
-                    <li style="margin-bottom: 4px;">
-                        <strong>Cap Yard Rework Billing</strong>: Transition Egersund yard to a fixed-fee labor cap for remaining mast assembly.
-                    </li>
-                    <li style="margin-bottom: 4px;">
-                        <strong>Compress Offshore Hook-up</strong>: Recover 15 calendar days to preserve <strong>January 31, 2027 Commercial COD</strong>.
-                    </li>
-                </ol>
-                
-                <div style="margin-top: 20px; border-top: 1px solid #111827; padding-top: 8px; display: flex; justify-content: space-between; font-size: 9px; color: var(--text-secondary); font-family: var(--font-family);">
-                    <span>Document ID: <strong>EVM-STR-2026-M08-REV3</strong></span>
-                    <span>Distribution: <strong>Executive Board & Steering Committee</strong></span>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- 1. PROJECT MANAGER ROLE VIEW -->
