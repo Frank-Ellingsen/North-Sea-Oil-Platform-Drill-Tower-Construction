@@ -26,6 +26,7 @@ def verify_all():
         "03_power_bi/EVM_DAX_Measures.dax",
         "03_power_bi/PowerBI_DAX_DrillTower.dax",
         "index.html",
+        ".nojekyll",
         "04_dashboard/index.html",
         "04_dashboard/drill_tower_web_report.html",
         "05_scripts/create_excel_master.py",
