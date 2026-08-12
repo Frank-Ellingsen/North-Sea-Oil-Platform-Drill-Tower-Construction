@@ -1,0 +1,11 @@
+Task_ID,Task_Name,WBS_Code,CAM,Baseline_Start,Baseline_End,Actual_Start,Actual_End,Predecessor_Task_ID,Predecessor_Name,Dependency_Type,Lag_Days,Percent_Complete,Critical_Path_Flag,Resource_Group
+T101,Structural Steel Detail Engineering,1.1.1,H. Lindqvist,2026-01-05,2026-02-28,2026-01-05,2026-03-15,,,,0,1.0,Yes,Engineering Team
+T102,Piping & Drilling Package Design,1.1.2,H. Lindqvist,2026-02-01,2026-03-31,2026-02-01,2026-04-15,T101,Structural Steel Detail Engineering,FS,0,1.0,No,Engineering Team
+T103,High-Grade Tubular Steel Procurement,1.2.1,M. Berg,2026-03-01,2026-04-30,2026-03-15,2026-05-31,T101,Structural Steel Detail Engineering,FS,5,1.0,Yes,Procurement Team
+T104,Mud Pumps & Top Drive Equipment,1.2.2,M. Berg,2026-03-15,2026-06-30,2026-04-01,2026-07-31,T102,Piping & Drilling Package Design,FS,0,0.85,No,Procurement Team
+T105,Yard Sub-Structure Fabrication (Verdal),1.3.1,O. Eriksen,2026-05-01,2026-07-31,2026-06-01,2026-08-31,T103,High-Grade Tubular Steel Procurement,FS,0,0.9,Yes,Verdal Fabrication Yard
+T106,Derrick Tower Mast Assembly (Egersund),1.3.2,O. Eriksen,2026-06-01,2026-08-31,2026-07-01,2026-09-30,T105,Yard Sub-Structure Fabrication (Verdal),FS,0,0.65,Yes,Egersund Rigging Yard
+T107,Heavy Lift Vessel Mobilization (Heerema),1.4.1,K. Solberg,2026-08-15,2026-09-15,2026-09-15,2026-10-15,T106,Derrick Tower Mast Assembly (Egersund),FS,0,0.3,Yes,Offshore Marine Fleet
+T108,Offshore Topside Lifting & Mating,1.4.2,K. Solberg,2026-09-15,2026-10-15,2026-10-15,2026-11-15,T107,Heavy Lift Vessel Mobilization (Heerema),FS,0,0.0,Yes,Offshore Marine Fleet
+T109,Structural Hook-up & NDT Inspection,1.5.1,T. Nygård,2026-10-15,2026-11-15,2026-11-15,2026-12-15,T108,Offshore Topside Lifting & Mating,FS,0,0.0,Yes,Offshore Hook-Up Crew
+T110,System Pre-Commissioning & Handover,1.5.2,T. Nygård,2026-11-15,2026-12-31,2026-12-15,2027-01-31,T109,Structural Hook-up & NDT Inspection,FS,0,0.0,Yes,Commissioning Team

@@ -1,0 +1,11 @@
+Item_ID,WBS_Code,Task_Name,TBC,Month_1,Month_2,Month_3,Month_4,Month_5,Month_6,Month_7,Month_8,Month_9,Month_10,Month_11,Month_12
+T101,1.1.1,Structural Steel Detail Engineering,1200000,300000,500000,400000,0,0,0,0,0,0,0,0,0
+T102,1.1.2,Piping & Drilling Package Design,1800000,0,400000,800000,600000,0,0,0,0,0,0,0,0
+T103,1.2.1,High-Grade Tubular Steel Procurement,3500000,0,0,1000000,2000000,500000,0,0,0,0,0,0,0
+T104,1.2.2,Mud Pumps & Top Drive Equipment,4200000,0,0,500000,1200000,1500000,1000000,0,0,0,0,0,0
+T105,1.3.1,Yard Sub-Structure Fabrication (Verdal),4000000,0,0,0,0,1000000,2000000,1000000,0,0,0,0,0
+T106,1.3.2,Derrick Tower Mast Assembly (Egersund),4800000,0,0,0,0,0,1000000,2000000,1800000,0,0,0,0
+T107,1.4.1,Heavy Lift Vessel Mobilization (Heerema),2500000,0,0,0,0,0,0,0,1000000,1500000,0,0,0
+T108,1.4.2,Offshore Topside Lifting & Mating,2000000,0,0,0,0,0,0,0,0,1000000,1000000,0,0
+T109,1.5.1,Structural Hook-up & NDT Inspection,1000000,0,0,0,0,0,0,0,0,0,500000,500000,0
+T110,1.5.2,System Pre-Commissioning & Handover,1500000,0,0,0,0,0,0,0,0,0,0,500000,1000000

@@ -1,0 +1,11 @@
+Item_ID,WBS_Code,Task_Name,TBC,Month_1_%,Month_2_%,Month_3_%,Month_4_%,Month_5_%,Month_6_%,Month_7_%,Month_8_%,Month_9_%,Month_10_%,Month_11_%,Month_12_%
+T101,1.1.1,Structural Steel Detail Engineering,1200000,0.25,0.65,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+T102,1.1.2,Piping & Drilling Package Design,1800000,0.0,0.2,0.6,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+T103,1.2.1,High-Grade Tubular Steel Procurement,3500000,0.0,0.0,0.2,0.7,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+T104,1.2.2,Mud Pumps & Top Drive Equipment,4200000,0.0,0.0,0.1,0.35,0.6,0.75,0.85,0.85,0.85,0.85,0.85,0.85
+T105,1.3.1,Yard Sub-Structure Fabrication (Verdal),4000000,0.0,0.0,0.0,0.0,0.2,0.55,0.8,0.9,0.9,0.9,0.9,0.9
+T106,1.3.2,Derrick Tower Mast Assembly (Egersund),4800000,0.0,0.0,0.0,0.0,0.0,0.15,0.4,0.65,0.65,0.65,0.65,0.65
+T107,1.4.1,Heavy Lift Vessel Mobilization (Heerema),2500000,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.3,0.3,0.3,0.3,0.3
+T108,1.4.2,Offshore Topside Lifting & Mating,2000000,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+T109,1.5.1,Structural Hook-up & NDT Inspection,1000000,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+T110,1.5.2,System Pre-Commissioning & Handover,1500000,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0

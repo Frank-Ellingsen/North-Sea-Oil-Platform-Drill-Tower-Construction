@@ -1,0 +1,6 @@
+Percentile,Confidence Level,Outturn Cost (EAC),Cost Overrun vs BAC,Contingency Reserve Needed,Total Duration (Days),Predicted Completion Date,Schedule Delay vs Dec 31
+P10,10% (Optimistic),"$32,444,301.75","-$5,944,301.75",+$0.00,408.1 Days,2027-02-13,+43.1 Days
+P50,50% (Median),"$34,060,782.77","-$7,560,782.77",+$0.00,422.3 Days,2027-02-27,+57.3 Days
+P80,80% (Standard Budget),"$35,195,025.63","-$8,695,025.63",+$0.00,432.3 Days,2027-03-09,+67.3 Days
+P90,90% (P90 High Confidence),"$35,815,202.44","-$9,315,202.44","+$401,598.44",437.5 Days,2027-03-14,+72.5 Days
+P95,95% (Extreme Risk),"$36,272,986.09","-$9,772,986.09","+$859,382.09",441.6 Days,2027-03-18,+76.6 Days

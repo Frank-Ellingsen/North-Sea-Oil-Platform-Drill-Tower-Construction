@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>North Sea Oil Platform Drill Tower | Integrated EVM & Gantt Web Report</title>
+    <style>
+        :root {
+            --bg-canvas: #F8F9FA;
+            --bg-card: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --border-color: #E5E7EB;
+            
+            --pv-color: #2563EB;
+            --ev-color: #059669;
+            --ac-color: #DC2626;
+            
+            --rag-red: #DC2626;
+            --rag-red-bg: #FEE2E2;
+            --rag-amber: #D97706;
+            --rag-amber-bg: #FEF3C7;
+            --rag-green: #059669;
+            --rag-green-bg: #D1FAE5;
+            
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-canvas);
+            color: var(--text-primary);
+            line-height: 1.4;
+            padding: 16px 24px;
+            font-size: 13px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 16px;
+        }
+
+        .header-title-group h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.2px;
+        }
+
+        .header-title-group p {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .role-tabs {
+            display: flex;
+            gap: 8px;
+            background: #F3F4F6;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .tab-btn {
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.15s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 12px 14px;
+            border-radius: 2px;
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-size: 20px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 2px;
+        }
+
+        .kpi-subtext {
+            font-size: 11px;
+            font-variant-numeric: tabular-nums;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 2px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .badge-red { background: var(--rag-red-bg); color: var(--rag-red); }
+        .badge-amber { background: var(--rag-amber-bg); color: var(--rag-amber); }
+        .badge-green { background: var(--rag-green-bg); color: var(--rag-green); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 2px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 320px;
+            position: relative;
+        }
+
+        svg { width: 100%; height: 100%; overflow: visible; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        th {
+            text-align: left;
+            padding: 8px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-color);
+            background: #FAFAFA;
+        }
+
+        th.num, td.num { text-align: right; }
+        th.center, td.center { text-align: center; }
+
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        tbody tr:hover { background-color: #F9FAFB; }
+
+        .gantt-bar-baseline { height: 4px; background: #9CA3AF; border-radius: 2px; margin-bottom: 2px; }
+        .gantt-bar-track { position: relative; height: 12px; background: #E5E7EB; border-radius: 2px; overflow: hidden; border: 1px solid #D1D5DB; box-sizing: border-box; }
+        .gantt-bar-track.critical { border-color: #EF4444; background: #FEE2E2; }
+        .gantt-bar-fill { height: 100%; background: #059669; border-radius: 1px 0 0 1px; transition: width 0.3s ease; }
+        .gantt-bar-fill.critical { background: #DC2626; }
+        .gantt-bar-pct-label { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 8.5px; font-weight: 800; color: #111827; font-variant-numeric: tabular-nums; z-index: 2; line-height: 1; }
+
+        .var-btn {
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            background: #F3F4F6;
+            color: var(--text-secondary);
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .var-btn.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border-color: #9CA3AF;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title-group">
+            <h1>North Sea Oil Platform Drill Tower Construction</h1>
+            <p>Integrated EVM Performance & Schedule Controls | Status Date: <strong>2026-08-31</strong></p>
+        </div>
+        <div class="role-tabs">
+            <button class="tab-btn active" onclick="showTab('pm-tab', this)">👔 Project Manager</button>
+            <button class="tab-btn" onclick="showTab('cfo-tab', this)">💰 CFO Financials</button>
+            <button class="tab-btn" onclick="showTab('controller-tab', this)">📊 Project Controller</button>
+            <button class="tab-btn" onclick="showTab('planner-tab', this)">🏗️ Project Planner (Gantt)</button>
+        </div>
+    </header>
+
+    <!-- 1. PROJECT MANAGER ROLE VIEW -->
+    <div id="pm-tab" class="tab-content active">
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total Scope BAC</div>
+                <div class="kpi-value">$26,500,000</div>
+                <div class="kpi-subtext">Approved Baseline</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Physical Progress</div>
+                <div class="kpi-value" style="color: var(--ev-color);">66.2%</div>
+                <div class="kpi-subtext">Earned: $17,540,000</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Critical Path Slippage</div>
+                <div class="kpi-value" style="color: var(--rag-amber);">+31 Days</div>
+                <div class="kpi-subtext">Heavy Lift Impact</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Cost Index (CPI)</div>
+                <div class="kpi-value">0.75 <span class="badge badge-red">Severe Overrun</span></div>
+                <div class="kpi-subtext">Spent: $23,440,000</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Schedule Index (SPI)</div>
+                <div class="kpi-value">0.86 <span class="badge badge-amber">Delayed</span></div>
+                <div class="kpi-subtext">Planned: $20,500,000</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="card-title">Performance Measurement Baseline (S-Curves) & Variance Analysis</span>
+                <div class="variance-controls" style="display: flex; gap: 6px;">
+                    <button class="var-btn active" onclick="setVarianceMode('all', this)">All Variances</button>
+                    <button class="var-btn" onclick="setVarianceMode('cv', this)">Cost Variance (CV)</button>
+                    <button class="var-btn" onclick="setVarianceMode('sv', this)">Schedule Variance (SV)</button>
+                    <button class="var-btn" onclick="setVarianceMode('es', this)">Earned Schedule (ES)</button>
+                </div>
+            </div>
+
+            <!-- Variance Metrics Summary Bar (Tufte Style) -->
+            <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; background: #F9FAFB; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 3px; margin-bottom: 14px;">
+                <div>
+                    <div style="font-size: 10px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase;">Status Date</div>
+                    <div style="font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums;">Aug 31, 2026 (M8)</div>
+                </div>
+                <div>
+                    <div style="font-size: 10px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase;">Planned (PV)</div>
+                    <div style="font-size: 13px; font-weight: 600; color: #2563EB; font-variant-numeric: tabular-nums;">$20,500,000</div>
+                </div>
+                <div>
+                    <div style="font-size: 10px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase;">Earned (EV)</div>
+                    <div style="font-size: 13px; font-weight: 600; color: #059669; font-variant-numeric: tabular-nums;">$17,540,000</div>
+                </div>
+                <div>
+                    <div style="font-size: 10px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase;">Actual Spend (AC)</div>
+                    <div style="font-size: 13px; font-weight: 600; color: #DC2626; font-variant-numeric: tabular-nums;">$23,440,000</div>
+                </div>
+                <div>
+                    <div style="font-size: 10px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase;">Cost Var (CV = EV - AC)</div>
+                    <div style="font-size: 13px; font-weight: 700; color: #DC2626; font-variant-numeric: tabular-nums;">-$5,900,000 <span style="font-size:10px; font-weight:normal;">(-33.6%)</span></div>
+                </div>
+                <div>
+                    <div style="font-size: 10px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase;">Sched Var (SV = EV - PV)</div>
+                    <div style="font-size: 13px; font-weight: 700; color: #D97706; font-variant-numeric: tabular-nums;">-$2,960,000 <span style="font-size:10px; font-weight:normal;">(-14.4%)</span></div>
+                </div>
+            </div>
+
+            <div class="chart-container" style="height: 330px; position: relative;">
+                <svg viewBox="0 0 740 300" style="width:100%; height:100%; overflow:visible;">
+                    <!-- Grid horizontal lines -->
+                    <line x1="50" y1="250" x2="690" y2="250" stroke="#E5E7EB" stroke-width="1"/>
+                    <line x1="50" y1="190" x2="690" y2="190" stroke="#F3F4F6" stroke-width="1"/>
+                    <line x1="50" y1="130" x2="690" y2="130" stroke="#F3F4F6" stroke-width="1"/>
+                    <line x1="50" y1="70"  x2="690" y2="70"  stroke="#F3F4F6" stroke-width="1"/>
+
+                    <!-- Y-Axis Labels -->
+                    <text x="42" y="254" font-size="10" fill="#9CA3AF" text-anchor="end">$0</text>
+                    <text x="42" y="194" font-size="10" fill="#9CA3AF" text-anchor="end">$8M</text>
+                    <text x="42" y="134" font-size="10" fill="#9CA3AF" text-anchor="end">$16M</text>
+                    <text x="42" y="74"  font-size="10" fill="#9CA3AF" text-anchor="end">$26.5M</text>
+
+                    <!-- X-Axis Months -->
+                    <text x="100" y="270" font-size="10" fill="#6B7280" text-anchor="middle">M1</text>
+                    <text x="140" y="270" font-size="10" fill="#6B7280" text-anchor="middle">M2</text>
+                    <text x="180" y="270" font-size="10" fill="#6B7280" text-anchor="middle">M3</text>
+                    <text x="220" y="270" font-size="10" fill="#6B7280" text-anchor="middle">M4</text>
+                    <text x="260" y="270" font-size="10" fill="#6B7280" text-anchor="middle">M5</text>
+                    <text x="300" y="270" font-size="10" fill="#6B7280" text-anchor="middle">M6</text>
+                    <text x="340" y="270" font-size="10" fill="#6B7280" text-anchor="middle">M7</text>
+                    <text x="420" y="270" font-size="10" font-weight="bold" fill="#1F2937" text-anchor="middle">M8 (Status)</text>
+                    <text x="460" y="270" font-size="10" fill="#9CA3AF" text-anchor="middle">M9</text>
+                    <text x="500" y="270" font-size="10" fill="#9CA3AF" text-anchor="middle">M10</text>
+                    <text x="540" y="270" font-size="10" fill="#9CA3AF" text-anchor="middle">M11</text>
+                    <text x="580" y="270" font-size="10" fill="#9CA3AF" text-anchor="middle">M12</text>
+
+                    <!-- Status Date Vertical Reference Line -->
+                    <line x1="420" y1="40" x2="420" y2="250" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="3 3"/>
+                    <text x="420" y="32" font-size="10" font-weight="600" fill="#4B5563" text-anchor="middle">Status Date (Aug 31)</text>
+
+                    <!-- BAC Target Baseline Line -->
+                    <line x1="50" y1="70" x2="690" y2="70" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="2 2"/>
+                    <text x="685" y="64" font-size="10" font-weight="bold" fill="#6B7280" text-anchor="end">BAC: $26.50M</text>
+
+                    <!-- PV Curve (Dashed Blue line) -->
+                    <polyline fill="none" stroke="#2563EB" stroke-width="2.5" stroke-dasharray="5 3"
+                        points="100,248 140,242 180,223 220,197 260,177 300,150 340,130 420,111 460,94 500,84 540,77 580,70" />
+
+                    <!-- AC Curve (Solid Red line) -->
+                    <polyline fill="none" stroke="#DC2626" stroke-width="2.5"
+                        points="100,248 140,241 180,221 220,194 260,172 300,142 340,116 420,91" />
+
+                    <!-- EV Curve (Solid Green line) -->
+                    <polyline fill="none" stroke="#059669" stroke-width="2.5"
+                        points="100,248 140,242 180,227 220,203 260,183 300,165 340,147 420,131" />
+
+                    <!-- Dots at Status Date (M8: x=420) -->
+                    <circle cx="420" cy="91" r="4.5" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+                    <circle cx="420" cy="111" r="4.5" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+                    <circle cx="420" cy="131" r="4.5" fill="#059669" stroke="#FFFFFF" stroke-width="1.5"/>
+
+                    <!-- Direct Endpoint Labels (Tufte Principle) -->
+                    <text x="428" y="93" font-size="11" font-weight="700" fill="#DC2626">AC: $23.44M</text>
+                    <text x="428" y="113" font-size="11" font-weight="700" fill="#2563EB">PV: $20.50M</text>
+                    <text x="428" y="133" font-size="11" font-weight="700" fill="#059669">EV: $17.54M</text>
+
+                    <!-- ================= VARIANCE ANNOTATIONS & LABELS ================= -->
+
+                    <!-- 1. COST VARIANCE (CV) GROUP (EV - AC) -->
+                    <g id="var-group-cv" class="variance-layer">
+                        <!-- Horizontal extension guide lines -->
+                        <line x1="375" y1="91" x2="420" y2="91" stroke="#DC2626" stroke-width="1" stroke-dasharray="2 2"/>
+                        <line x1="375" y1="131" x2="420" y2="131" stroke="#DC2626" stroke-width="1" stroke-dasharray="2 2"/>
+
+                        <!-- Vertical Dimension Line (y=91 to y=131) -->
+                        <line x1="375" y1="91" x2="375" y2="131" stroke="#DC2626" stroke-width="2"/>
+                        <!-- Top Cap & Arrowhead -->
+                        <polygon points="375,91 371,98 379,98" fill="#DC2626"/>
+                        <!-- Bottom Cap & Arrowhead -->
+                        <polygon points="375,131 371,124 379,124" fill="#DC2626"/>
+
+                        <!-- CV Label Badge (Positioned left of the dimension line) -->
+                        <g transform="translate(230, 100)">
+                            <rect x="0" y="0" width="138" height="22" rx="3" fill="#FEE2E2" stroke="#DC2626" stroke-width="1.2"/>
+                            <text x="69" y="15" font-size="10" font-weight="800" fill="#DC2626" text-anchor="middle">CV = -$5.90M (-33.6%)</text>
+                        </g>
+                    </g>
+
+                    <!-- 2. SCHEDULE VARIANCE (SV) GROUP (EV - PV) -->
+                    <g id="var-group-sv" class="variance-layer">
+                        <!-- Horizontal extension guide lines -->
+                        <line x1="428" y1="111" x2="525" y2="111" stroke="#D97706" stroke-width="1" stroke-dasharray="2 2"/>
+                        <line x1="428" y1="131" x2="525" y2="131" stroke="#D97706" stroke-width="1" stroke-dasharray="2 2"/>
+
+                        <!-- Vertical Dimension Line (y=111 to y=131) -->
+                        <line x1="525" y1="111" x2="525" y2="131" stroke="#D97706" stroke-width="2"/>
+                        <!-- Top Arrowhead -->
+                        <polygon points="525,111 521,117 529,117" fill="#D97706"/>
+                        <!-- Bottom Arrowhead -->
+                        <polygon points="525,131 521,125 529,125" fill="#D97706"/>
+
+                        <!-- SV Label Badge -->
+                        <g transform="translate(532, 110)">
+                            <rect x="0" y="0" width="138" height="22" rx="3" fill="#FEF3C7" stroke="#D97706" stroke-width="1.2"/>
+                            <text x="69" y="15" font-size="10" font-weight="800" fill="#D97706" text-anchor="middle">SV = -$2.96M (-14.4%)</text>
+                        </g>
+                    </g>
+
+                    <!-- 3. EARNED SCHEDULE (ES) & TIME VARIANCE SV(t) GROUP -->
+                    <g id="var-group-es" class="variance-layer">
+                        <!-- PV curve reaches EV level ($17.54M / y=131) at x=338 (M6.95 / ES 7.4 Months) -->
+                        <line x1="338" y1="131" x2="420" y2="131" stroke="#2563EB" stroke-width="1.5" stroke-dasharray="3 3"/>
+                        <circle cx="338" cy="131" r="3.5" fill="#2563EB"/>
+
+                        <!-- Horizontal Dimension Line at y=152 -->
+                        <line x1="338" y1="152" x2="420" y2="152" stroke="#2563EB" stroke-width="1.8"/>
+                        <polygon points="338,152 344,148 344,156" fill="#2563EB"/>
+                        <polygon points="420,152 414,148 414,156" fill="#2563EB"/>
+
+                        <!-- Vertical drop lines to axis -->
+                        <line x1="338" y1="131" x2="338" y2="162" stroke="#2563EB" stroke-width="1" stroke-dasharray="2 2"/>
+
+                        <!-- ES Badge -->
+                        <g transform="translate(325, 160)">
+                            <rect x="0" y="0" width="130" height="20" rx="3" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.2"/>
+                            <text x="65" y="14" font-size="9.5" font-weight="800" fill="#1E40AF" text-anchor="middle">SV(t) = -18 Days (ES 7.4M)</text>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <!-- EXECUTIVE VARIANCE BREAKDOWN & RECOMMENDED CORRECTIVE ACTIONS -->
+        <div class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="card-title">🚨 Executive Variance Explanations & Recommended Corrective Actions (Red Indicators Audit)</span>
+                <span class="badge badge-red">Active Risk Response Required</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 140px;">Variance Indicator</th>
+                        <th style="width: 110px;" class="center">Status Metric</th>
+                        <th style="width: 110px;" class="center">Severity Threshold</th>
+                        <th>Root Cause Explanation</th>
+                        <th>Recommended Actionable Next Steps</th>
+                        <th style="width: 110px;" class="center">Accountable CAM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Cost Variance (CV)</strong></td>
+                        <td class="center"><span class="badge badge-red" style="cursor:pointer;" onclick="showActionModal('cv')" title="Click for interactive details">-$5,900,000</span></td>
+                        <td class="center"><span class="badge badge-red">CPI = 0.75</span> (&lt; 0.90)</td>
+                        <td>Structural steel fitting rework, unbudgeted welding labor hours, and premium overtime rates at Verdal and Egersund yards.</td>
+                        <td>Enforce Design Change Freeze on WBS 1.3 deliverables. Convert open T&amp;M subcontracts to fixed unit-rate capped milestones.</td>
+                        <td class="center">O. Eriksen</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Outturn Deficit (VAC)</strong></td>
+                        <td class="center"><span class="badge badge-red" style="cursor:pointer;" onclick="showActionModal('vac')" title="Click for interactive details">-$8,913,604</span></td>
+                        <td class="center"><span class="badge badge-red">EAC: $35.41M</span></td>
+                        <td>Linear extrapolation of poor historical cost performance ($CPI=0.75$) indicates $33.6\%$ overall budget overrun against $BAC$.</td>
+                        <td>Submit formal EAC re-baseline proposal to Executive Steering Committee. Request $3.5M drawdown from Management Reserve.</td>
+                        <td class="center">Frank Ellingsen</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TCPI Target Efficiency</strong></td>
+                        <td class="center"><span class="badge badge-red" style="cursor:pointer;" onclick="showActionModal('tcpi')" title="Click for interactive details">6.07 (BAC)</span></td>
+                        <td class="center"><span class="badge badge-red">Unviable</span> (&gt; 1.10)</td>
+                        <td>Original $BAC$ budget target requires impossible cost efficiency of $607\%$ for remaining work.</td>
+                        <td>Formally transition operational target to $TCPI_{EAC} = 1.00$. Enforce weekly EVM gate reviews for CAMs with $TCPI &gt; 1.05$.</td>
+                        <td class="center">Frank Ellingsen</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Schedule Slippage (SV)</strong></td>
+                        <td class="center"><span class="badge badge-amber" style="cursor:pointer;" onclick="showActionModal('sv')" title="Click for interactive details">-$2,960,000</span></td>
+                        <td class="center"><span class="badge badge-amber">+31 Days Delay</span></td>
+                        <td>Procurement delay on Tubular Steel (T103) cascaded to Verdal (T105) and Egersund (T106), threatening Heavy Lift window.</td>
+                        <td>Fast-track Egersund rigging with parallel work-fronts. Re-sequence pre-commissioning tasks. Negotiate 10-day vessel window extension.</td>
+                        <td class="center">M. Berg / K. Solberg</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WBS 1.3.2 Mast Assembly</strong></td>
+                        <td class="center"><span class="badge badge-red" style="cursor:pointer;" onclick="showActionModal('cv')" title="Click for interactive details">-$2,330,000</span></td>
+                        <td class="center"><span class="badge badge-red">CPI = 0.57</span></td>
+                        <td>Egersund rigging yard productivity bottleneck; high sub-tier contractor churn and excessive rework hours.</td>
+                        <td>Deploy resident Project Controller to Egersund full-time. Audit daily labor timecards and enforce weld quality gates.</td>
+                        <td class="center">O. Eriksen</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 2. CFO FINANCIAL ROLE VIEW -->
+    <div id="cfo-tab" class="tab-content">
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Baseline BAC</div>
+                <div class="kpi-value">$26,500,000</div>
+                <div class="kpi-subtext">Approved Budget</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Actual Cash Spent (AC)</div>
+                <div class="kpi-value" style="color: var(--ac-color);">$23,440,000</div>
+                <div class="kpi-subtext">Ledger Spend</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Outturn EAC Forecast</div>
+                <div class="kpi-value" style="color: var(--rag-red);">$35,413,604</div>
+                <div class="kpi-subtext">BAC / CPI</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Variance at Completion</div>
+                <div class="kpi-value" style="color: var(--rag-red);">-$8,913,604</div>
+                <div class="kpi-subtext">Projected Deficit</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Liquidity Needed</div>
+                <div class="kpi-value">$11,973,604</div>
+                <div class="kpi-subtext">Remaining ETC</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. PROJECT CONTROLLER ROLE VIEW -->
+    <div id="controller-tab" class="tab-content">
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Cost Variance (CV)</div>
+                <div class="kpi-value" style="color: var(--rag-red);">-$5,900,000</div>
+                <div class="kpi-subtext">EV - AC</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Schedule Variance (SV)</div>
+                <div class="kpi-value" style="color: var(--rag-amber);">-$2,960,000</div>
+                <div class="kpi-subtext">EV - PV</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Earned Schedule ($ES$)</div>
+                <div class="kpi-value" style="color: var(--rag-amber);">7.40 Months</div>
+                <div class="kpi-subtext">Actual: 8.0 Months</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Time-Based Index $SPI(t)$</div>
+                <div class="kpi-value">0.9250</div>
+                <div class="kpi-subtext">Time Var: -18 Days</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">TCPI (BAC Target)</div>
+                <div class="kpi-value" style="color: var(--rag-red);">6.07</div>
+                <div class="kpi-subtext">Unviable Target</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. PROJECT PLANNER ROLE VIEW (GANTT WITH DEPENDENCIES) -->
+    <div id="planner-tab" class="tab-content">
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total Schedule Tasks</div>
+                <div class="kpi-value">10 Tasks</div>
+                <div class="kpi-subtext">100% Predecessors Mapped</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Critical Path Tasks</div>
+                <div class="kpi-value" style="color: var(--rag-red);">8 Tasks</div>
+                <div class="kpi-subtext">Zero Total Float</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Cascading Delay Index</div>
+                <div class="kpi-value" style="color: var(--rag-amber);">3 Predecessor Delays</div>
+                <div class="kpi-subtext">Downstream Impact</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Avg Task Delay</div>
+                <div class="kpi-value">+26.5 Days</div>
+                <div class="kpi-subtext">Vs. Baseline End</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Heavy Lift Window</div>
+                <div class="kpi-value" style="color: var(--rag-amber);">Sep 15 - Oct 15</div>
+                <div class="kpi-subtext">Vessel Mobilization</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="card-title">Offshore EPC Gantt Schedule, Key Milestones (◆) & Predecessor Logic</span>
+                <div style="display: flex; gap: 12px; font-size: 11px; align-items: center;">
+                    <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 4px; background: #9CA3AF; display: inline-block; border-radius: 1px;"></span> Baseline Plan</span>
+                    <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 10px; background: #059669; display: inline-block; border-radius: 1px;"></span> Earned Physical Progress</span>
+                    <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 10px; background: #DC2626; display: inline-block; border-radius: 1px;"></span> Critical Path Progress</span>
+                    <span style="display: flex; align-items: center; gap: 4px;"><span style="color: #DC2626; font-size: 12px; font-weight: 900;">◆</span> Key Milestone Gate</span>
+                    <span style="display: flex; align-items: center; gap: 4px;"><span style="color: #DC2626; font-weight: 900; font-size: 12px;">➔</span> Critical Path Link</span>
+                    <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 10px; border-left: 2px dashed #DC2626; display: inline-block; margin-right: 2px;"></span> Current Week (W36)</span>
+                </div>
+            </div>
+
+            <!-- WEEK NUMBER TIMELINE SCALE HEADER -->
+            <div style="display: flex; justify-content: flex-end; background: #F9FAFB; padding: 6px 12px; border-bottom: 1px solid var(--border-color); font-size: 9px; font-weight: 700; color: var(--text-secondary);">
+                <div style="width: 310px; display: flex; position: relative;">
+                    <span style="width: 8.3%; text-align: center;">Jan<br/><span style="font-weight:normal; color:#9CA3AF;">W1</span></span>
+                    <span style="width: 8.3%; text-align: center;">Feb<br/><span style="font-weight:normal; color:#9CA3AF;">W5</span></span>
+                    <span style="width: 8.3%; text-align: center;">Mar<br/><span style="font-weight:normal; color:#9CA3AF;">W9</span></span>
+                    <span style="width: 8.3%; text-align: center;">Apr<br/><span style="font-weight:normal; color:#9CA3AF;">W14</span></span>
+                    <span style="width: 8.3%; text-align: center;">May<br/><span style="font-weight:normal; color:#9CA3AF;">W18</span></span>
+                    <span style="width: 8.3%; text-align: center;">Jun<br/><span style="font-weight:normal; color:#9CA3AF;">W23</span></span>
+                    <span style="width: 8.3%; text-align: center;">Jul<br/><span style="font-weight:normal; color:#9CA3AF;">W27</span></span>
+                    <span style="width: 8.3%; text-align: center; color: #DC2626; font-weight: 800; background: #FEE2E2; border-radius: 2px;">Aug<br/><span>W36</span></span>
+                    <span style="width: 8.3%; text-align: center;">Sep<br/><span style="font-weight:normal; color:#9CA3AF;">W40</span></span>
+                    <span style="width: 8.3%; text-align: center;">Oct<br/><span style="font-weight:normal; color:#9CA3AF;">W44</span></span>
+                    <span style="width: 8.3%; text-align: center;">Nov<br/><span style="font-weight:normal; color:#9CA3AF;">W48</span></span>
+                    <span style="width: 8.3%; text-align: center;">Dec<br/><span style="font-weight:normal; color:#9CA3AF;">W52</span></span>
+
+                    <!-- Status Week Line Marker Label -->
+                    <div style="position: absolute; top: -4px; left: 66.6%; transform: translateX(-50%); background: #DC2626; color: #FFFFFF; font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 2px; z-index: 10; white-space: nowrap;">
+                        Current: W36
+                    </div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th class="center" style="width: 50px;">Task ID</th>
+                        <th style="width: 40px;">WBS</th>
+                        <th>Task Deliverable / Milestone Name</th>
+                        <th class="center" style="width: 70px;">Predecessor</th>
+                        <th class="center" style="width: 35px;">Type</th>
+                        <th class="center" style="width: 80px;">Total Float</th>
+                        <th class="num" style="width: 70px;">% Complete</th>
+                        <th class="center" style="width: 95px;">Baseline Window</th>
+                        <th class="center" style="width: 95px;">Actual / Forecast</th>
+                        <th class="center" style="width: 45px;">Critical</th>
+                        <th style="width: 310px;">Gantt Timeline, Milestones (◆) & Arrows (W1 - W52)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="center"><strong>T101</strong></td>
+                        <td>1.1.1</td>
+                        <td>Structural Steel Detail Engineering</td>
+                        <td class="center">-</td>
+                        <td class="center">-</td>
+                        <td class="center"><span class="badge badge-red">0 Days</span></td>
+                        <td class="num"><span class="badge badge-green">100%</span></td>
+                        <td class="center">Jan 05 - Feb 28</td>
+                        <td class="center">Jan 05 - Mar 15</td>
+                        <td class="center"><span class="badge badge-red">Yes</span></td>
+                        <td style="position: relative;">
+                            <!-- Vertical Slashed Line for Current Status Week (W36 / 66.6%) -->
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            
+                            <div class="gantt-bar-baseline" style="width: 16.6%; margin-left: 0%;"></div>
+                            <div class="gantt-bar-track critical" style="width: 20%; margin-left: 0%;">
+                                <div class="gantt-bar-fill critical" style="width: 100%;"></div>
+                                <span class="gantt-bar-pct-label" style="color: #FFFFFF;">100%</span>
+                                <span style="position: absolute; right: -16px; top: 50%; transform: translateY(-50%); color: #DC2626; font-size: 11px; font-weight: 900;" title="Critical FS Link to T103">➔</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- MILESTONE M1 -->
+                    <tr style="background: #F9FAFB;">
+                        <td class="center"><strong style="color: #059669;">M1</strong></td>
+                        <td>1.1.0</td>
+                        <td><strong style="color: #059669;">◆ Milestone: Engineering AFC Gate Review</strong></td>
+                        <td class="center">T101</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-green">0 Days</span></td>
+                        <td class="num"><span class="badge badge-green">100%</span></td>
+                        <td class="center">Feb 28</td>
+                        <td class="center">Mar 15</td>
+                        <td class="center"><span class="badge badge-green">Achieved</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            <div style="position: absolute; left: 20%; top: 50%; transform: translateY(-50%); color: #059669; font-size: 12px; font-weight: 900;" title="Achieved Mar 15">◆ <span style="font-size: 8px; color: #111827;">M1 (Mar 15)</span></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>T102</strong></td>
+                        <td>1.1.2</td>
+                        <td>Piping & Drilling Package Design</td>
+                        <td class="center">T101</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-green">+14 Days</span></td>
+                        <td class="num"><span class="badge badge-green">100%</span></td>
+                        <td class="center">Feb 01 - Mar 31</td>
+                        <td class="center">Feb 01 - Apr 15</td>
+                        <td class="center"><span class="badge badge-green">No</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            
+                            <div class="gantt-bar-baseline" style="width: 16.6%; margin-left: 8.3%;"></div>
+                            <div class="gantt-bar-track" style="width: 20.8%; margin-left: 8.3%;">
+                                <div class="gantt-bar-fill" style="width: 100%;"></div>
+                                <span class="gantt-bar-pct-label" style="color: #FFFFFF;">100%</span>
+                                <span style="position: absolute; right: -16px; top: 50%; transform: translateY(-50%); color: #6B7280; font-size: 11px; font-weight: 900;" title="FS Link to T104">➔</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>T103</strong></td>
+                        <td>1.2.1</td>
+                        <td>High-Grade Tubular Steel Procurement</td>
+                        <td class="center">T101 (+5D)</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-red">0 Days</span></td>
+                        <td class="num"><span class="badge badge-green">100%</span></td>
+                        <td class="center">Mar 01 - Apr 30</td>
+                        <td class="center">Mar 15 - May 31</td>
+                        <td class="center"><span class="badge badge-red">Yes</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            
+                            <div class="gantt-bar-baseline" style="width: 16.6%; margin-left: 16.6%;"></div>
+                            <div class="gantt-bar-track critical" style="width: 20.8%; margin-left: 20.8%;">
+                                <div class="gantt-bar-fill critical" style="width: 100%;"></div>
+                                <span class="gantt-bar-pct-label" style="color: #FFFFFF;">100%</span>
+                                <span style="position: absolute; right: -16px; top: 50%; transform: translateY(-50%); color: #DC2626; font-size: 11px; font-weight: 900;" title="Critical FS Link to T105">➔</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>T104</strong></td>
+                        <td>1.2.2</td>
+                        <td>Mud Pumps & Top Drive Equipment</td>
+                        <td class="center">T102</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-green">+15 Days</span></td>
+                        <td class="num"><span class="badge badge-amber">85%</span></td>
+                        <td class="center">Mar 15 - Jun 30</td>
+                        <td class="center">Apr 01 - Jul 31</td>
+                        <td class="center"><span class="badge badge-green">No</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            
+                            <div class="gantt-bar-baseline" style="width: 29.1%; margin-left: 20.8%;"></div>
+                            <div class="gantt-bar-track" style="width: 33.3%; margin-left: 25.0%;">
+                                <div class="gantt-bar-fill" style="width: 85%;"></div>
+                                <span class="gantt-bar-pct-label">85%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>T105</strong></td>
+                        <td>1.3.1</td>
+                        <td>Yard Sub-Structure Fabrication (Verdal)</td>
+                        <td class="center">T103</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-red">0 Days</span></td>
+                        <td class="num"><span class="badge badge-amber">90%</span></td>
+                        <td class="center">May 01 - Jul 31</td>
+                        <td class="center">Jun 01 - Aug 31</td>
+                        <td class="center"><span class="badge badge-red">Yes</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            
+                            <div class="gantt-bar-baseline" style="width: 25.0%; margin-left: 33.3%;"></div>
+                            <div class="gantt-bar-track critical" style="width: 25.0%; margin-left: 41.6%;">
+                                <div class="gantt-bar-fill critical" style="width: 90%;"></div>
+                                <span class="gantt-bar-pct-label">90%</span>
+                                <span style="position: absolute; right: -16px; top: 50%; transform: translateY(-50%); color: #DC2626; font-size: 11px; font-weight: 900;" title="Critical FS Link to T106">➔</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- MILESTONE M3 -->
+                    <tr style="background: #F9FAFB;">
+                        <td class="center"><strong style="color: #059669;">M3</strong></td>
+                        <td>1.3.0</td>
+                        <td><strong style="color: #059669;">◆ Milestone: Verdal Yard Sub-Structure Handover</strong></td>
+                        <td class="center">T105</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-green">0 Days</span></td>
+                        <td class="num"><span class="badge badge-amber">90%</span></td>
+                        <td class="center">Jul 31</td>
+                        <td class="center">Aug 31</td>
+                        <td class="center"><span class="badge badge-amber">Active</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            <div style="position: absolute; left: 66.6%; top: 50%; transform: translateY(-50%); color: #059669; font-size: 12px; font-weight: 900;" title="Handover Aug 31">◆ <span style="font-size: 8px; color: #111827;">M3 (Aug 31)</span></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>T106</strong></td>
+                        <td>1.3.2</td>
+                        <td>Derrick Tower Mast Assembly (Egersund)</td>
+                        <td class="center">T105</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-red">0 Days (-30D)</span></td>
+                        <td class="num"><span class="badge badge-red">65%</span></td>
+                        <td class="center">Jun 01 - Aug 31</td>
+                        <td class="center">Jul 01 - Sep 30</td>
+                        <td class="center"><span class="badge badge-red">Yes</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            
+                            <div class="gantt-bar-baseline" style="width: 25.0%; margin-left: 41.6%;"></div>
+                            <div class="gantt-bar-track critical" style="width: 25.0%; margin-left: 50.0%;">
+                                <div class="gantt-bar-fill critical" style="width: 65%;"></div>
+                                <span class="gantt-bar-pct-label">65%</span>
+                                <span style="position: absolute; right: -16px; top: 50%; transform: translateY(-50%); color: #DC2626; font-size: 11px; font-weight: 900;" title="Critical FS Link to T107">➔</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- MILESTONE M4 -->
+                    <tr style="background: #F9FAFB;">
+                        <td class="center"><strong style="color: #DC2626;">M4</strong></td>
+                        <td>1.3.3</td>
+                        <td><strong style="color: #DC2626;">◆ Milestone: Derrick Mast Ready for Heavy Lift</strong></td>
+                        <td class="center">T106</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-red">0 Days</span></td>
+                        <td class="num"><span class="badge badge-red">65%</span></td>
+                        <td class="center">Aug 31</td>
+                        <td class="center">Sep 30</td>
+                        <td class="center"><span class="badge badge-red">Critical</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            <div style="position: absolute; left: 75.0%; top: 50%; transform: translateY(-50%); color: #DC2626; font-size: 12px; font-weight: 900;" title="Target Sep 30">◆ <span style="font-size: 8px; color: #DC2626;">M4 (Sep 30)</span></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>T107</strong></td>
+                        <td>1.4.1</td>
+                        <td>Heavy Lift Vessel Mobilization (Heerema)</td>
+                        <td class="center">T106</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-red">0 Days</span></td>
+                        <td class="num"><span class="badge badge-amber">30%</span></td>
+                        <td class="center">Aug 15 - Sep 15</td>
+                        <td class="center">Sep 15 - Oct 15</td>
+                        <td class="center"><span class="badge badge-red">Yes</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            
+                            <div class="gantt-bar-baseline" style="width: 8.3%; margin-left: 62.5%;"></div>
+                            <div class="gantt-bar-track critical" style="width: 8.3%; margin-left: 70.8%;">
+                                <div class="gantt-bar-fill critical" style="width: 30%;"></div>
+                                <span class="gantt-bar-pct-label">30%</span>
+                                <span style="position: absolute; right: -16px; top: 50%; transform: translateY(-50%); color: #DC2626; font-size: 11px; font-weight: 900;" title="Critical FS Link to T108">➔</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>T108</strong></td>
+                        <td>1.4.2</td>
+                        <td>Offshore Topside Lifting & Mating</td>
+                        <td class="center">T107</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-red">0 Days</span></td>
+                        <td class="num"><span class="badge" style="background: #F3F4F6; color: #6B7280;">0%</span></td>
+                        <td class="center">Sep 15 - Oct 15</td>
+                        <td class="center">Oct 15 - Nov 15</td>
+                        <td class="center"><span class="badge badge-red">Yes</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            
+                            <div class="gantt-bar-baseline" style="width: 8.3%; margin-left: 70.8%;"></div>
+                            <div class="gantt-bar-track critical" style="width: 8.3%; margin-left: 79.1%;">
+                                <div class="gantt-bar-fill critical" style="width: 0%;"></div>
+                                <span class="gantt-bar-pct-label" style="color: #9CA3AF;">0%</span>
+                                <span style="position: absolute; right: -16px; top: 50%; transform: translateY(-50%); color: #DC2626; font-size: 11px; font-weight: 900;" title="Critical FS Link to T109">➔</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- MILESTONE M5 -->
+                    <tr style="background: #F9FAFB;">
+                        <td class="center"><strong style="color: #DC2626;">M5</strong></td>
+                        <td>1.4.0</td>
+                        <td><strong style="color: #DC2626;">◆ Milestone: Offshore Topside Mating Complete</strong></td>
+                        <td class="center">T108</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-red">0 Days</span></td>
+                        <td class="num"><span class="badge" style="background: #F3F4F6; color: #6B7280;">0%</span></td>
+                        <td class="center">Oct 15</td>
+                        <td class="center">Nov 15</td>
+                        <td class="center"><span class="badge badge-red">Critical</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            <div style="position: absolute; left: 87.5%; top: 50%; transform: translateY(-50%); color: #DC2626; font-size: 12px; font-weight: 900;" title="Target Nov 15">◆ <span style="font-size: 8px; color: #DC2626;">M5 (Nov 15)</span></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>T109</strong></td>
+                        <td>1.5.1</td>
+                        <td>Structural Hook-up & NDT Inspection</td>
+                        <td class="center">T108</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-red">0 Days</span></td>
+                        <td class="num"><span class="badge" style="background: #F3F4F6; color: #6B7280;">0%</span></td>
+                        <td class="center">Oct 15 - Nov 15</td>
+                        <td class="center">Nov 15 - Dec 15</td>
+                        <td class="center"><span class="badge badge-red">Yes</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            
+                            <div class="gantt-bar-baseline" style="width: 8.3%; margin-left: 79.1%;"></div>
+                            <div class="gantt-bar-track critical" style="width: 8.3%; margin-left: 87.5%;">
+                                <div class="gantt-bar-fill critical" style="width: 0%;"></div>
+                                <span class="gantt-bar-pct-label" style="color: #9CA3AF;">0%</span>
+                                <span style="position: absolute; right: -16px; top: 50%; transform: translateY(-50%); color: #DC2626; font-size: 11px; font-weight: 900;" title="Critical FS Link to T110">➔</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="center"><strong>T110</strong></td>
+                        <td>1.5.2</td>
+                        <td>System Pre-Commissioning & Handover</td>
+                        <td class="center">T109</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-red">0 Days</span></td>
+                        <td class="num"><span class="badge" style="background: #F3F4F6; color: #6B7280;">0%</span></td>
+                        <td class="center">Nov 15 - Dec 31</td>
+                        <td class="center">Dec 15 - Jan 31</td>
+                        <td class="center"><span class="badge badge-red">Yes</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            
+                            <div class="gantt-bar-baseline" style="width: 12.5%; margin-left: 87.5%;"></div>
+                            <div class="gantt-bar-track critical" style="width: 12.5%; margin-left: 95.8%;">
+                                <div class="gantt-bar-fill critical" style="width: 0%;"></div>
+                                <span class="gantt-bar-pct-label" style="color: #9CA3AF;">0%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- MILESTONE M6 -->
+                    <tr style="background: #F9FAFB;">
+                        <td class="center"><strong style="color: #111827;">M6</strong></td>
+                        <td>1.5.0</td>
+                        <td><strong style="color: #111827;">◆ Milestone: Final Commercial COD & Handover</strong></td>
+                        <td class="center">T110</td>
+                        <td class="center">FS</td>
+                        <td class="center"><span class="badge badge-red">0 Days</span></td>
+                        <td class="num"><span class="badge" style="background: #F3F4F6; color: #6B7280;">0%</span></td>
+                        <td class="center">Dec 31</td>
+                        <td class="center">Jan 31</td>
+                        <td class="center"><span class="badge badge-red">Target</span></td>
+                        <td style="position: relative;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 66.6%; width: 0; border-left: 2px dashed #DC2626; z-index: 5; pointer-events: none;"></div>
+                            <div style="position: absolute; left: 99.0%; top: 50%; transform: translateY(-50%); color: #111827; font-size: 12px; font-weight: 900;" title="Final COD Jan 31">◆ <span style="font-size: 8px; color: #111827;">M6 (Jan 31)</span></div>
+                        </td>
+                    </tr>
+                </tbody>
+    <!-- 5. EXECUTIVE RISK MATRIX & HEATMAP CARD -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="card-title">🚨 EPC Executive Risk Matrix & Quantitative Heatmap (5x5 Grid)</span>
+            <div style="display: flex; gap: 10px; font-size: 11px;">
+                <span class="badge badge-red">Critical (Score 15-25)</span>
+                <span class="badge badge-amber">High/Medium (Score 8-14)</span>
+                <span class="badge badge-green">Low (Score 1-7)</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 280px 1fr; gap: 20px; padding: 15px;">
+            <!-- 5x5 HEATMAP GRID -->
+            <div>
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px; text-align: center;">Risk Probability vs Impact Matrix</div>
+                <div style="display: grid; grid-template-columns: 25px repeat(5, 1fr); grid-template-rows: repeat(5, 36px) 25px; gap: 2px; font-size: 10px; font-weight: 700; text-align: center;">
+                    <!-- Row 5 (Prob 5) -->
+                    <div style="display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">P5</div>
+                    <div style="background: #FEF3C7; display: flex; align-items: center; justify-content: center;">5</div>
+                    <div style="background: #FDE68A; display: flex; align-items: center; justify-content: center;">10</div>
+                    <div style="background: #FCA5A5; display: flex; align-items: center; justify-content: center;">15</div>
+                    <div style="background: #F87171; display: flex; align-items: center; justify-content: center;">20</div>
+                    <div style="background: #DC2626; color: #FFF; display: flex; align-items: center; justify-content: center;">25</div>
+
+                    <!-- Row 4 (Prob 4) -->
+                    <div style="display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">P4</div>
+                    <div style="background: #D1FAE5; display: flex; align-items: center; justify-content: center;">4</div>
+                    <div style="background: #FEF3C7; display: flex; align-items: center; justify-content: center;">8</div>
+                    <div style="background: #FDE68A; display: flex; align-items: center; justify-content: center;">12</div>
+                    <div style="background: #FCA5A5; border: 2px solid #DC2626; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #991B1B;" title="R02 Heavy Lift Weather Standby">R02</div>
+                    <div style="background: #DC2626; border: 2px solid #991B1B; color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: 900;" title="R01 Egersund Mast Yard Rework">R01</div>
+
+                    <!-- Row 3 (Prob 3) -->
+                    <div style="display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">P3</div>
+                    <div style="background: #D1FAE5; display: flex; align-items: center; justify-content: center;">3</div>
+                    <div style="background: #D1FAE5; display: flex; align-items: center; justify-content: center;">6</div>
+                    <div style="background: #FEF3C7; border: 1px solid #D97706; display: flex; align-items: center; justify-content: center; font-weight: 800;" title="R04 Offshore Hook-up Interference">R04</div>
+                    <div style="background: #FDE68A; border: 1px solid #D97706; display: flex; align-items: center; justify-content: center; font-weight: 800;" title="R03 Subsea Steel Mill Delivery Lags">R03</div>
+                    <div style="background: #FCA5A5; display: flex; align-items: center; justify-content: center;">15</div>
+
+                    <!-- Row 2 (Prob 2) -->
+                    <div style="display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">P2</div>
+                    <div style="background: #D1FAE5; display: flex; align-items: center; justify-content: center;">2</div>
+                    <div style="background: #D1FAE5; display: flex; align-items: center; justify-content: center;">4</div>
+                    <div style="background: #D1FAE5; border: 1px solid #059669; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #065F46;" title="R05 Structural Detail Design Errors">R05</div>
+                    <div style="background: #FEF3C7; display: flex; align-items: center; justify-content: center;">8</div>
+                    <div style="background: #FDE68A; display: flex; align-items: center; justify-content: center;">10</div>
+
+                    <!-- Row 1 (Prob 1) -->
+                    <div style="display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">P1</div>
+                    <div style="background: #D1FAE5; display: flex; align-items: center; justify-content: center;">1</div>
+                    <div style="background: #D1FAE5; display: flex; align-items: center; justify-content: center;">2</div>
+                    <div style="background: #D1FAE5; display: flex; align-items: center; justify-content: center;">3</div>
+                    <div style="background: #D1FAE5; display: flex; align-items: center; justify-content: center;">4</div>
+                    <div style="background: #FEF3C7; display: flex; align-items: center; justify-content: center;">5</div>
+
+                    <!-- Impact Labels -->
+                    <div></div>
+                    <div style="color: var(--text-secondary);">I1</div>
+                    <div style="color: var(--text-secondary);">I2</div>
+                    <div style="color: var(--text-secondary);">I3</div>
+                    <div style="color: var(--text-secondary);">I4</div>
+                    <div style="color: var(--text-secondary);">I5</div>
+                </div>
+            </div>
+
+            <!-- RISK REGISTER TABLE -->
+            <div>
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">Active Risk Register & Mitigation Controls</div>
+                <table style="font-size: 11px;">
+                    <thead>
+                        <tr>
+                            <th class="center" style="width: 45px;">ID</th>
+                            <th>Risk Event Description</th>
+                            <th class="center" style="width: 45px;">WBS</th>
+                            <th class="center" style="width: 70px;">Owner</th>
+                            <th class="center" style="width: 55px;">Score</th>
+                            <th class="num" style="width: 85px;">Exposure</th>
+                            <th>Mitigation Strategy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="center"><strong style="color: #DC2626;">R01</strong></td>
+                            <td>Egersund Mast Assembly Dimensional Out-of-Tolerance</td>
+                            <td class="center">1.3.2</td>
+                            <td class="center">O. Eriksen</td>
+                            <td class="center"><span class="badge badge-red">20</span></td>
+                            <td class="num" style="color: var(--rag-red); font-weight: 700;">$2,400,000</td>
+                            <td>24/7 NDT welding specialists; fixed-fee labor cap.</td>
+                        </tr>
+                        <tr>
+                            <td class="center"><strong style="color: #DC2626;">R02</strong></td>
+                            <td>Heavy Lift Crane Vessel Weather Standby Rates</td>
+                            <td class="center">1.4.1</td>
+                            <td class="center">K. Solberg</td>
+                            <td class="center"><span class="badge badge-red">16</span></td>
+                            <td class="num" style="color: var(--rag-red); font-weight: 700;">$1,800,000</td>
+                            <td>Flexible weather window with Heerema; monitor 7-day wave height (Hs &lt; 2.5m).</td>
+                        </tr>
+                        <tr>
+                            <td class="center"><strong style="color: #D97706;">R03</strong></td>
+                            <td>Subsea Tubular Steel Mill Delivery Lags</td>
+                            <td class="center">1.2.1</td>
+                            <td class="center">M. Berg</td>
+                            <td class="center"><span class="badge badge-amber">12</span></td>
+                            <td class="num" style="color: var(--rag-amber); font-weight: 700;">$1,200,000</td>
+                            <td>Dual-source steel from European backup mills; hot-shot freight.</td>
+                        </tr>
+                        <tr>
+                            <td class="center"><strong style="color: #D97706;">R04</strong></td>
+                            <td>Topside Lifting & Mating Mechanical Interference</td>
+                            <td class="center">1.4.2</td>
+                            <td class="center">T. Nygård</td>
+                            <td class="center"><span class="badge badge-amber">9</span></td>
+                            <td class="num">$600,000</td>
+                            <td>Perform 3D laser scan trial fit prior to offshore mobilization.</td>
+                        </tr>
+                        <tr>
+                            <td class="center"><strong style="color: #059669;">R05</strong></td>
+                            <td>Structural Engineering AFC Interface Errors</td>
+                            <td class="center">1.1.1</td>
+                            <td class="center">H. Lindqvist</td>
+                            <td class="center"><span class="badge badge-green">6</span></td>
+                            <td class="num">$300,000</td>
+                            <td>Enforce 100% 3D CAD clash detection and third-party DNV class verification.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+    <!-- 6. VERTICAL SWIMLANE WBS BREAKDOWN BY CATEGORY CARD -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="card-title">📐 Vertical Swimlane WBS Breakdown by Category & Discipline</span>
+            <div style="display: flex; gap: 12px; font-size: 11px;">
+                <span>Total WBS Budget: <strong>$26.50M BAC</strong></span> | 
+                <span>Outturn Forecast: <strong style="color: var(--rag-red);">$35.41M EAC</strong></span>
+            </div>
+        </div>
+
+        <div style="padding: 15px; overflow-x: auto;">
+            <div style="display: grid; grid-template-columns: repeat(5, minmax(210px, 1fr)); gap: 14px;">
+                
+                <!-- SWIMLANE 1: ENGINEERING -->
+                <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 4px; padding: 10px;">
+                    <div style="background: #2563EB; color: #FFF; padding: 6px 10px; font-size: 12px; font-weight: 700; border-radius: 3px; margin-bottom: 10px; display: flex; justify-content: space-between;">
+                        <span>1.1 Engineering</span>
+                        <span>$3.20M</span>
+                    </div>
+                    
+                    <!-- WBS Card 1.1.1 -->
+                    <div style="background: #FFF; border: 1px solid var(--border-color); border-left: 4px solid #2563EB; border-radius: 3px; padding: 8px; margin-bottom: 8px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                            <span>1.1.1 Detail Engineering</span>
+                            <span class="badge badge-green">100%</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 10px; margin: 4px 0;">CAM: H. Lindqvist</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                            <span>BAC: $1.80M</span>
+                            <span style="color: var(--rag-red); font-weight: 700;">EAC: $2.10M</span>
+                        </div>
+                    </div>
+
+                    <!-- WBS Card 1.1.2 -->
+                    <div style="background: #FFF; border: 1px solid var(--border-color); border-left: 4px solid #2563EB; border-radius: 3px; padding: 8px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                            <span>1.1.2 Piping & Package</span>
+                            <span class="badge badge-green">100%</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 10px; margin: 4px 0;">CAM: A. Holm</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                            <span>BAC: $1.40M</span>
+                            <span style="color: var(--rag-green); font-weight: 700;">EAC: $1.40M</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SWIMLANE 2: PROCUREMENT -->
+                <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 4px; padding: 10px;">
+                    <div style="background: #D97706; color: #FFF; padding: 6px 10px; font-size: 12px; font-weight: 700; border-radius: 3px; margin-bottom: 10px; display: flex; justify-content: space-between;">
+                        <span>1.2 Procurement</span>
+                        <span>$8.50M</span>
+                    </div>
+                    
+                    <!-- WBS Card 1.2.1 -->
+                    <div style="background: #FFF; border: 1px solid var(--border-color); border-left: 4px solid #D97706; border-radius: 3px; padding: 8px; margin-bottom: 8px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                            <span>1.2.1 Tubular Steel</span>
+                            <span class="badge badge-green">100%</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 10px; margin: 4px 0;">CAM: M. Berg</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                            <span>BAC: $5.00M</span>
+                            <span style="color: var(--rag-red); font-weight: 700;">EAC: $5.50M</span>
+                        </div>
+                    </div>
+
+                    <!-- WBS Card 1.2.2 -->
+                    <div style="background: #FFF; border: 1px solid var(--border-color); border-left: 4px solid #D97706; border-radius: 3px; padding: 8px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                            <span>1.2.2 Drilling Pumps</span>
+                            <span class="badge badge-amber">85%</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 10px; margin: 4px 0;">CAM: J. Lie</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                            <span>BAC: $3.50M</span>
+                            <span style="color: var(--rag-amber); font-weight: 700;">EAC: $3.60M</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SWIMLANE 3: YARD FABRICATION -->
+                <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 4px; padding: 10px;">
+                    <div style="background: #DC2626; color: #FFF; padding: 6px 10px; font-size: 12px; font-weight: 700; border-radius: 3px; margin-bottom: 10px; display: flex; justify-content: space-between;">
+                        <span>1.3 Yard Fabrication</span>
+                        <span>$9.80M</span>
+                    </div>
+                    
+                    <!-- WBS Card 1.3.1 -->
+                    <div style="background: #FFF; border: 1px solid var(--border-color); border-left: 4px solid #DC2626; border-radius: 3px; padding: 8px; margin-bottom: 8px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                            <span>1.3.1 Verdal Sub-Struct</span>
+                            <span class="badge badge-amber">90%</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 10px; margin: 4px 0;">CAM: S. Olsen</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                            <span>BAC: $5.00M</span>
+                            <span style="color: var(--rag-amber); font-weight: 700;">EAC: $5.20M</span>
+                        </div>
+                    </div>
+
+                    <!-- WBS Card 1.3.2 -->
+                    <div style="background: #FFF; border: 1px solid var(--border-color); border-left: 4px solid #DC2626; border-radius: 3px; padding: 8px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                            <span>1.3.2 Egersund Mast Rework</span>
+                            <span class="badge badge-red">65%</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 10px; margin: 4px 0;">CAM: O. Eriksen</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                            <span>BAC: $4.80M</span>
+                            <span style="color: var(--rag-red); font-weight: 700;">EAC: $7.20M</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SWIMLANE 4: OFFSHORE INSTALLATION -->
+                <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 4px; padding: 10px;">
+                    <div style="background: #7C3AED; color: #FFF; padding: 6px 10px; font-size: 12px; font-weight: 700; border-radius: 3px; margin-bottom: 10px; display: flex; justify-content: space-between;">
+                        <span>1.4 Offshore Installation</span>
+                        <span>$5.00M</span>
+                    </div>
+                    
+                    <!-- WBS Card 1.4.1 -->
+                    <div style="background: #FFF; border: 1px solid var(--border-color); border-left: 4px solid #7C3AED; border-radius: 3px; padding: 8px; margin-bottom: 8px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                            <span>1.4.1 Heavy Lift Vessel</span>
+                            <span class="badge badge-amber">30%</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 10px; margin: 4px 0;">CAM: K. Solberg</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                            <span>BAC: $3.20M</span>
+                            <span style="color: var(--rag-red); font-weight: 700;">EAC: $4.50M</span>
+                        </div>
+                    </div>
+
+                    <!-- WBS Card 1.4.2 -->
+                    <div style="background: #FFF; border: 1px solid var(--border-color); border-left: 4px solid #7C3AED; border-radius: 3px; padding: 8px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                            <span>1.4.2 Topside Mating</span>
+                            <span class="badge" style="background:#F3F4F6; color:#6B7280;">0%</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 10px; margin: 4px 0;">CAM: R. Hansen</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                            <span>BAC: $1.80M</span>
+                            <span>EAC: $1.90M</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SWIMLANE 5: COMMISSIONING -->
+                <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 4px; padding: 10px;">
+                    <div style="background: #059669; color: #FFF; padding: 6px 10px; font-size: 12px; font-weight: 700; border-radius: 3px; margin-bottom: 10px; display: flex; justify-content: space-between;">
+                        <span>1.5 Commissioning</span>
+                        <span>$1.80M</span>
+                    </div>
+                    
+                    <!-- WBS Card 1.5.1 -->
+                    <div style="background: #FFF; border: 1px solid var(--border-color); border-left: 4px solid #059669; border-radius: 3px; padding: 8px; margin-bottom: 8px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                            <span>1.5.1 Hook-up & NDT</span>
+                            <span class="badge" style="background:#F3F4F6; color:#6B7280;">0%</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 10px; margin: 4px 0;">CAM: T. Nygård</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                            <span>BAC: $1.00M</span>
+                            <span>EAC: $1.10M</span>
+                        </div>
+                    </div>
+
+                    <!-- WBS Card 1.5.2 -->
+                    <div style="background: #FFF; border: 1px solid var(--border-color); border-left: 4px solid #059669; border-radius: 3px; padding: 8px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                            <span>1.5.2 Pre-Commissioning</span>
+                            <span class="badge" style="background:#F3F4F6; color:#6B7280;">0%</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 10px; margin: 4px 0;">CAM: P. Strand</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                            <span>BAC: $0.80M</span>
+                            <span>EAC: $0.90M</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        <!-- 7. MONTHLY BURN RATE & BUDGET DEPLETION (BURN OUT) CARD -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="card-title">💥 Monthly Cash Burn Rate & Budget Depletion ("Burn Out") Forecast</span>
+            <div style="display: flex; gap: 12px; font-size: 11px;">
+                <span>Avg Monthly Burn: <strong>$2.93M/Mo</strong></span> | 
+                <span style="color: var(--rag-red); font-weight: 700;">Budget Burn Out: Month 9 (Sep 2026)</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 340px; gap: 20px; padding: 15px;">
+            <!-- MONTHLY BURN RATE BAR & RUNWAY VISUALIZATION -->
+            <div>
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px; display: flex; justify-content: space-between;">
+                    <span>Monthly Burn Speed ($PV, $EV, $AC) & Budget Exhaustion Point</span>
+                    <span style="color: #DC2626; font-size: 10px;">💥 BAC $26.50M Depleted in Month 9</span>
+                </div>
+
+                <!-- MONTHLY BAR CHART -->
+                <div style="display: flex; align-items: flex-end; gap: 6px; height: 180px; border-bottom: 2px solid var(--border-color); padding-bottom: 6px; position: relative;">
+                    <!-- BAC Budget Ceiling Reference Line ($26.50M Cum / ~ $4.5M Monthly Scale) -->
+                    <div style="position: absolute; top: 10%; left: 0; width: 100%; border-top: 2px dashed #DC2626; z-index: 5; pointer-events: none;">
+                        <span style="position: absolute; right: 0; top: -14px; background: #DC2626; color: #FFF; font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 2px;">$26.50M BAC Ceiling</span>
+                    </div>
+
+                    <!-- M1 -->
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                        <div style="display: flex; gap: 1px; width: 100%; justify-content: center; align-items: flex-end; height: 140px;">
+                            <div style="width: 25%; height: 7%; background: #9CA3AF;" title="PV: $0.30M"></div>
+                            <div style="width: 25%; height: 7%; background: #059669;" title="EV: $0.30M"></div>
+                            <div style="width: 25%; height: 7.5%; background: #DC2626;" title="AC: $0.32M"></div>
+                        </div>
+                        <span style="font-size: 9px; font-weight: 700; color: var(--text-secondary);">M1</span>
+                    </div>
+
+                    <!-- M2 -->
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                        <div style="display: flex; gap: 1px; width: 100%; justify-content: center; align-items: flex-end; height: 140px;">
+                            <div style="width: 25%; height: 20%; background: #9CA3AF;" title="PV: $0.90M"></div>
+                            <div style="width: 25%; height: 18.6%; background: #059669;" title="EV: $0.84M"></div>
+                            <div style="width: 25%; height: 21.1%; background: #DC2626;" title="AC: $0.95M"></div>
+                        </div>
+                        <span style="font-size: 9px; font-weight: 700; color: var(--text-secondary);">M2</span>
+                    </div>
+
+                    <!-- M3 -->
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                        <div style="display: flex; gap: 1px; width: 100%; justify-content: center; align-items: flex-end; height: 140px;">
+                            <div style="width: 25%; height: 60%; background: #9CA3AF;" title="PV: $2.70M"></div>
+                            <div style="width: 25%; height: 50.2%; background: #059669;" title="EV: $2.26M"></div>
+                            <div style="width: 25%; height: 64.4%; background: #DC2626;" title="AC: $2.90M"></div>
+                        </div>
+                        <span style="font-size: 9px; font-weight: 700; color: var(--text-secondary);">M3</span>
+                    </div>
+
+                    <!-- M4 -->
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                        <div style="display: flex; gap: 1px; width: 100%; justify-content: center; align-items: flex-end; height: 140px;">
+                            <div style="width: 25%; height: 84.4%; background: #9CA3AF;" title="PV: $3.80M"></div>
+                            <div style="width: 25%; height: 78.2%; background: #059669;" title="EV: $3.52M"></div>
+                            <div style="width: 25%; height: 90.0%; background: #DC2626;" title="AC: $4.05M"></div>
+                        </div>
+                        <span style="font-size: 9px; font-weight: 700; color: var(--text-secondary);">M4</span>
+                    </div>
+
+                    <!-- M5 -->
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                        <div style="display: flex; gap: 1px; width: 100%; justify-content: center; align-items: flex-end; height: 140px;">
+                            <div style="width: 25%; height: 66.6%; background: #9CA3AF;" title="PV: $3.00M"></div>
+                            <div style="width: 25%; height: 64.4%; background: #059669;" title="EV: $2.90M"></div>
+                            <div style="width: 25%; height: 71.5%; background: #DC2626;" title="AC: $3.22M"></div>
+                        </div>
+                        <span style="font-size: 9px; font-weight: 700; color: var(--text-secondary);">M5</span>
+                    </div>
+
+                    <!-- M6 -->
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                        <div style="display: flex; gap: 1px; width: 100%; justify-content: center; align-items: flex-end; height: 140px;">
+                            <div style="width: 25%; height: 88.8%; background: #9CA3AF;" title="PV: $4.00M"></div>
+                            <div style="width: 25%; height: 61.1%; background: #059669;" title="EV: $2.75M"></div>
+                            <div style="width: 25%; height: 98.8%; background: #DC2626;" title="AC: $4.45M"></div>
+                        </div>
+                        <span style="font-size: 9px; font-weight: 700; color: var(--text-secondary);">M6</span>
+                    </div>
+
+                    <!-- M7 -->
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                        <div style="display: flex; gap: 1px; width: 100%; justify-content: center; align-items: flex-end; height: 140px;">
+                            <div style="width: 25%; height: 66.6%; background: #9CA3AF;" title="PV: $3.00M"></div>
+                            <div style="width: 25%; height: 58.2%; background: #059669;" title="EV: $2.62M"></div>
+                            <div style="width: 25%; height: 85.5%; background: #DC2626;" title="AC: $3.85M"></div>
+                        </div>
+                        <span style="font-size: 9px; font-weight: 700; color: var(--text-secondary);">M7</span>
+                    </div>
+
+                    <!-- M8 (Current Status) -->
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; background: #FEE2E2; border-radius: 3px; padding: 2px;">
+                        <div style="display: flex; gap: 1px; width: 100%; justify-content: center; align-items: flex-end; height: 140px;">
+                            <div style="width: 25%; height: 62.2%; background: #9CA3AF;" title="PV: $2.80M"></div>
+                            <div style="width: 25%; height: 52.2%; background: #059669;" title="EV: $2.35M"></div>
+                            <div style="width: 25%; height: 82.2%; background: #DC2626;" title="AC: $3.70M"></div>
+                        </div>
+                        <span style="font-size: 9px; font-weight: 800; color: #DC2626;">M8</span>
+                    </div>
+
+                    <!-- M9 (Burn Out Month) -->
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; border: 1px dashed #DC2626; border-radius: 3px; padding: 2px;">
+                        <div style="display: flex; gap: 1px; width: 100%; justify-content: center; align-items: flex-end; height: 140px;">
+                            <div style="width: 25%; height: 55.5%; background: #E5E7EB;" title="FC PV: $2.50M"></div>
+                            <div style="width: 25%; height: 46.6%; background: #A7F3D0;" title="FC EV: $2.10M"></div>
+                            <div style="width: 25%; height: 71.1%; background: #7F1D1D;" title="FC AC: $3.20M (Burn Out)"></div>
+                        </div>
+                        <span style="font-size: 9px; font-weight: 800; color: #7F1D1D;">💥M9</span>
+                    </div>
+
+                    <!-- M10-M13 Forecast -->
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; opacity: 0.7;">
+                        <div style="display: flex; gap: 1px; width: 100%; justify-content: center; align-items: flex-end; height: 140px;">
+                            <div style="width: 25%; height: 33.3%; background: #E5E7EB;"></div>
+                            <div style="width: 25%; height: 48.8%; background: #A7F3D0;"></div>
+                            <div style="width: 25%; height: 73.3%; background: #B91C1C;"></div>
+                        </div>
+                        <span style="font-size: 9px; font-weight: 700; color: var(--text-secondary);">M10</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; font-size: 10px; margin-top: 8px; color: var(--text-secondary);">
+                    <span><span style="display: inline-block; width: 10px; height: 10px; background: #9CA3AF; margin-right: 4px;"></span> Monthly Planned ($PV)</span>
+                    <span><span style="display: inline-block; width: 10px; height: 10px; background: #059669; margin-right: 4px;"></span> Monthly Earned ($EV)</span>
+                    <span><span style="display: inline-block; width: 10px; height: 10px; background: #DC2626; margin-right: 4px;"></span> Monthly Actual ($AC)</span>
+                    <span><span style="display: inline-block; width: 10px; height: 10px; background: #7F1D1D; margin-right: 4px;"></span> Overrun Burn Phase</span>
+                </div>
+            </div>
+
+            <!-- BURN METRICS & RUNWAY CARD -->
+            <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 4px; padding: 12px; font-size: 11px;">
+                <div style="font-weight: 700; color: var(--text-primary); text-transform: uppercase; font-size: 10px; margin-bottom: 8px;">Runway & Burn Statistics</div>
+                
+                <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB;">
+                    <div style="color: var(--text-secondary); font-size: 10px;">Avg Monthly Cash Burn (M1-M8)</div>
+                    <div style="font-size: 16px; font-weight: 800; color: var(--rag-red); margin-top: 2px;">$2.93M / Month</div>
+                    <div style="font-size: 9px; color: #6B7280;">Baseline Plan: $2.56M/Month (+14.5% faster)</div>
+                </div>
+
+                <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB;">
+                    <div style="color: var(--text-secondary); font-size: 10px;">Remaining Baseline Capital ($BAC - AC)</div>
+                    <div style="font-size: 16px; font-weight: 800; color: #D97706; margin-top: 2px;">$3.06M Remaining</div>
+                    <div style="font-size: 9px; color: #6B7280;">$23.44M spent of $26.50M budget</div>
+                </div>
+
+                <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB;">
+                    <div style="color: var(--text-secondary); font-size: 10px;">Exact Budget Burn Out Month</div>
+                    <div style="font-size: 15px; font-weight: 900; color: #7F1D1D; margin-top: 2px;">Month 9 (September 2026)</div>
+                    <div style="font-size: 9px; color: #DC2626; font-weight: 700;">100% of $BAC budget ceiling exhausted</div>
+                </div>
+
+                <div>
+                    <div style="color: var(--text-secondary); font-size: 10px;">Required Overrun Financing ($EAC - BAC)</div>
+                    <div style="font-size: 15px; font-weight: 800; color: #DC2626; margin-top: 2px;">+$8,913,604</div>
+                    <div style="font-size: 9px; color: #6B7280;">Needs approval before Sep 15, 2026</div>
+                </div>
+            </div>
+        </div>
+    <!-- 8. COST VARIANCE WATERFALL BRIDGE CHART CARD -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="card-title">🪜 Cost Variance Waterfall Bridge ($BAC \rightarrow EAC$ Outturn Breakdown)</span>
+            <div style="display: flex; gap: 12px; font-size: 11px;">
+                <span>Original Budget: <strong>$26.50M BAC</strong></span> | 
+                <span style="color: var(--rag-red); font-weight: 700;">Total Overrun: +$8.91M VAC</span> | 
+                <span style="color: #111827; font-weight: 800;">Outturn EAC: $35.41M</span>
+            </div>
+        </div>
+
+        <div style="padding: 15px; overflow-x: auto;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 12px;">Step-by-Step Cost Variance Bridge per WBS Control Account</div>
+            
+            <!-- WATERFALL VISUAL CONTAINER -->
+            <div style="display: flex; align-items: flex-end; gap: 8px; height: 210px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; position: relative;">
+                <!-- Grid Lines -->
+                <div style="position: absolute; top: 0%; left: 0; width: 100%; border-top: 1px dashed #E5E7EB;"></div>
+                <div style="position: absolute; top: 25%; left: 0; width: 100%; border-top: 1px dashed #E5E7EB;"></div>
+                <div style="position: absolute; top: 50%; left: 0; width: 100%; border-top: 1px dashed #E5E7EB;"></div>
+                <div style="position: absolute; top: 75%; left: 0; width: 100%; border-top: 1px dashed #E5E7EB;"></div>
+
+                <!-- COL 1: BASELINE BAC ($26.50M) -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
+                    <span style="font-size: 9px; font-weight: 800; color: #2563EB;">$26.50M</span>
+                    <div style="width: 100%; height: 149px; background: #2563EB; border-radius: 3px 3px 0 0;" title="Baseline Budget (BAC): $26.50M"></div>
+                    <span style="font-size: 9px; font-weight: 700; color: var(--text-primary); text-align: center;">BAC Baseline</span>
+                </div>
+
+                <!-- COL 2: STEP 1 ENGINEERING (+$0.30M) -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
+                    <span style="font-size: 8px; font-weight: 800; color: #DC2626;">+$0.30M</span>
+                    <div style="width: 100%; height: 1.7px; margin-bottom: 149px; background: #DC2626; border-radius: 2px;" title="Engineering Variance: +$0.30M"></div>
+                    <span style="font-size: 8px; font-weight: 700; color: var(--text-secondary); text-align: center;">WBS 1.1 Eng</span>
+                </div>
+
+                <!-- COL 3: STEP 2 PROCUREMENT (+$0.60M) -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
+                    <span style="font-size: 8px; font-weight: 800; color: #DC2626;">+$0.60M</span>
+                    <div style="width: 100%; height: 3.4px; margin-bottom: 150.7px; background: #DC2626; border-radius: 2px;" title="Procurement Variance: +$0.60M"></div>
+                    <span style="font-size: 8px; font-weight: 700; color: var(--text-secondary); text-align: center;">WBS 1.2 Proc</span>
+                </div>
+
+                <!-- COL 4: STEP 3 VERDAL YARD (+$0.20M) -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
+                    <span style="font-size: 8px; font-weight: 800; color: #DC2626;">+$0.20M</span>
+                    <div style="width: 100%; height: 1.1px; margin-bottom: 154.1px; background: #DC2626; border-radius: 2px;" title="Verdal Fab Variance: +$0.20M"></div>
+                    <span style="font-size: 8px; font-weight: 700; color: var(--text-secondary); text-align: center;">WBS 1.3.1 Verdal</span>
+                </div>
+
+                <!-- COL 5: STEP 4 EGERSUND MAST (+$2.40M - MAJOR DRIVER) -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
+                    <span style="font-size: 8px; font-weight: 800; color: #7F1D1D;">+$2.40M</span>
+                    <div style="width: 100%; height: 13.5px; margin-bottom: 155.2px; background: #7F1D1D; border-radius: 2px; border: 1px solid #991B1B;" title="Egersund Yard Rework: +$2.40M"></div>
+                    <span style="font-size: 8px; font-weight: 800; color: #7F1D1D; text-align: center;">WBS 1.3.2 Mast</span>
+                </div>
+
+                <!-- COL 6: STEP 5 HEEREMA VESSEL (+$1.30M) -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
+                    <span style="font-size: 8px; font-weight: 800; color: #DC2626;">+$1.30M</span>
+                    <div style="width: 100%; height: 7.3px; margin-bottom: 168.7px; background: #DC2626; border-radius: 2px;" title="Heavy Lift Vessel Standby: +$1.30M"></div>
+                    <span style="font-size: 8px; font-weight: 700; color: var(--text-secondary); text-align: center;">WBS 1.4.1 Marine</span>
+                </div>
+
+                <!-- COL 7: STEP 6 TOPSIDE MATING (+$0.10M) -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
+                    <span style="font-size: 8px; font-weight: 800; color: #DC2626;">+$0.10M</span>
+                    <div style="width: 100%; height: 0.6px; margin-bottom: 176.0px; background: #DC2626; border-radius: 2px;" title="Topside Mating: +$0.10M"></div>
+                    <span style="font-size: 8px; font-weight: 700; color: var(--text-secondary); text-align: center;">WBS 1.4.2 Mating</span>
+                </div>
+
+                <!-- COL 8: STEP 7 COMMISSIONING (+$0.20M) -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
+                    <span style="font-size: 8px; font-weight: 800; color: #DC2626;">+$0.20M</span>
+                    <div style="width: 100%; height: 1.1px; margin-bottom: 176.6px; background: #DC2626; border-radius: 2px;" title="Hook-up Commissioning: +$0.20M"></div>
+                    <span style="font-size: 8px; font-weight: 700; color: var(--text-secondary); text-align: center;">WBS 1.5 Comm</span>
+                </div>
+
+                <!-- COL 9: STEP 8 TIME DELAY OVERHEAD IMPACT (+$3.81M - SCHEDULE IMPACT) -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
+                    <span style="font-size: 8px; font-weight: 800; color: #991B1B;">+$3.81M</span>
+                    <div style="width: 100%; height: 21.4px; margin-bottom: 177.7px; background: #B91C1C; border-radius: 2px;" title="Time Delay Overhead & CPI/SPI Impact: +$3.81M"></div>
+                    <span style="font-size: 8px; font-weight: 800; color: #B91C1C; text-align: center;">Delay Spread</span>
+                </div>
+
+                <!-- COL 10: FINAL FORECAST EAC ($35.41M) -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2;">
+                    <span style="font-size: 9px; font-weight: 800; color: #111827;">$35.41M</span>
+                    <div style="width: 100%; height: 199.1px; background: #111827; border-radius: 3px 3px 0 0;" title="Outturn Forecast (EAC): $35.41M"></div>
+                    <span style="font-size: 9px; font-weight: 800; color: #111827; text-align: center;">Outturn EAC</span>
+                </div>
+            </div>
+
+            <!-- WATERFALL LEGEND & SUMMARY TABLE -->
+            <div style="display: flex; justify-content: space-between; font-size: 10px; margin-top: 10px; color: var(--text-secondary);">
+                <span><span style="display: inline-block; width: 10px; height: 10px; background: #2563EB; margin-right: 4px;"></span> Original Baseline Budget ($BAC)</span>
+                <span><span style="display: inline-block; width: 10px; height: 10px; background: #DC2626; margin-right: 4px;"></span> Scope & Cost Overrun Steps</span>
+                <span><span style="display: inline-block; width: 10px; height: 10px; background: #7F1D1D; margin-right: 4px;"></span> Primary Rework Driver (Egersund)</span>
+                <span><span style="display: inline-block; width: 10px; height: 10px; background: #B91C1C; margin-right: 4px;"></span> Time Delay Overhead Spread</span>
+                <span><span style="display: inline-block; width: 10px; height: 10px; background: #111827; margin-right: 4px;"></span> Final Outturn Forecast ($EAC)</span>
+            </div>
+        </div>
+    <!-- 9. EXECUTIVE DONUT CHARTS CARD -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="card-title">🍩 Executive Donut Charts — Progress, Cost Overrun & Budget Allocation</span>
+            <div style="display: flex; gap: 12px; font-size: 11px;">
+                <span>Earned Progress: <strong>66.2% EV</strong></span> | 
+                <span style="color: var(--rag-red); font-weight: 700;">Overrun Driver: Time Delay (42.8%)</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 15px;">
+            
+            <!-- DONUT 1: PHYSICAL PROGRESS -->
+            <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 4px; padding: 12px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">Physical Progress ($EV / BAC$)</div>
+                <div style="position: relative; width: 140px; height: 140px; margin: 0 auto;">
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                        <!-- Background Circle -->
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#E5E7EB" stroke-width="14"></circle>
+                        <!-- Earned Progress Circle (66.2% = 145.6 dasharray) -->
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#059669" stroke-width="14" stroke-dasharray="145.6 219.91" stroke-linecap="round"></circle>
+                    </svg>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                        <div style="font-size: 18px; font-weight: 900; color: #059669;">66.2%</div>
+                        <div style="font-size: 8px; color: var(--text-secondary); font-weight: 700;">Complete</div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-around; font-size: 10px; margin-top: 10px; color: var(--text-secondary);">
+                    <span><span style="display: inline-block; width: 8px; height: 8px; background: #059669; border-radius: 50%; margin-right: 3px;"></span> Earned: $17.54M</span>
+                    <span><span style="display: inline-block; width: 8px; height: 8px; background: #E5E7EB; border-radius: 50%; margin-right: 3px;"></span> Remaining: $8.96M</span>
+                </div>
+            </div>
+
+            <!-- DONUT 2: OVERRUN BREAKDOWN -->
+            <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 4px; padding: 12px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">Cost Overrun Breakdown ($+$8.91M)</div>
+                <div style="position: relative; width: 140px; height: 140px; margin: 0 auto;">
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#E5E7EB" stroke-width="14"></circle>
+                        <!-- Segments: Delay (42.8% = 94.1), Mast (26.9% = 59.2), Marine (14.6% = 32.1), Proc (6.7% = 14.7), Eng (9.0% = 19.8) -->
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#B91C1C" stroke-width="14" stroke-dasharray="94.1 219.91" stroke-dashoffset="0"></circle>
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#7F1D1D" stroke-width="14" stroke-dasharray="59.2 219.91" stroke-dashoffset="-94.1"></circle>
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#DC2626" stroke-width="14" stroke-dasharray="32.1 219.91" stroke-dashoffset="-153.3"></circle>
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#D97706" stroke-width="14" stroke-dasharray="14.7 219.91" stroke-dashoffset="-185.4"></circle>
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#2563EB" stroke-width="14" stroke-dasharray="19.8 219.91" stroke-dashoffset="-200.1"></circle>
+                    </svg>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                        <div style="font-size: 15px; font-weight: 900; color: #DC2626;">+$8.91M</div>
+                        <div style="font-size: 8px; color: var(--text-secondary); font-weight: 700;">Overrun</div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; font-size: 9px; margin-top: 8px; color: var(--text-secondary);">
+                    <span><span style="display: inline-block; width: 6px; height: 6px; background: #B91C1C; margin-right: 2px;"></span> Delay Overhead (42.8%)</span>
+                    <span><span style="display: inline-block; width: 6px; height: 6px; background: #7F1D1D; margin-right: 2px;"></span> Egersund Mast (26.9%)</span>
+                    <span><span style="display: inline-block; width: 6px; height: 6px; background: #DC2626; margin-right: 2px;"></span> Marine Standby (14.6%)</span>
+                </div>
+            </div>
+
+            <!-- DONUT 3: BUDGET ALLOCATION -->
+            <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 4px; padding: 12px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px;">Baseline Budget Allocation ($BAC $26.50M)</div>
+                <div style="position: relative; width: 140px; height: 140px; margin: 0 auto;">
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#E5E7EB" stroke-width="14"></circle>
+                        <!-- Segments: Fab (37.0% = 81.4), Proc (32.1% = 70.6), Inst (18.9% = 41.5), Eng (12.1% = 26.6), Comm (6.8% = 14.9) -->
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#DC2626" stroke-width="14" stroke-dasharray="81.4 219.91" stroke-dashoffset="0"></circle>
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#D97706" stroke-width="14" stroke-dasharray="70.6 219.91" stroke-dashoffset="-81.4"></circle>
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#7C3AED" stroke-width="14" stroke-dasharray="41.5 219.91" stroke-dashoffset="-152.0"></circle>
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#2563EB" stroke-width="14" stroke-dasharray="26.6 219.91" stroke-dashoffset="-193.5"></circle>
+                    </svg>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                        <div style="font-size: 15px; font-weight: 900; color: #2563EB;">$26.50M</div>
+                        <div style="font-size: 8px; color: var(--text-secondary); font-weight: 700;">BAC Budget</div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; font-size: 9px; margin-top: 8px; color: var(--text-secondary);">
+                    <span><span style="display: inline-block; width: 6px; height: 6px; background: #DC2626; margin-right: 2px;"></span> Fab (37%)</span>
+                    <span><span style="display: inline-block; width: 6px; height: 6px; background: #D97706; margin-right: 2px;"></span> Proc (32.1%)</span>
+                    <span><span style="display: inline-block; width: 6px; height: 6px; background: #7C3AED; margin-right: 2px;"></span> Marine (18.9%)</span>
+                    <span><span style="display: inline-block; width: 6px; height: 6px; background: #2563EB; margin-right: 2px;"></span> Eng (12.1%)</span>
+                </div>
+            </div>
+
+        </div>
+    <!-- 10. 1-PAGE WRITTEN EXECUTIVE PROJECT STATUS REPORT CARD -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="card-title">📄 1-Page Written Executive Project Status Report (Steering Committee Briefing)</span>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="window.print()" style="padding: 4px 10px; font-size: 11px; font-weight: 600; background: #1F2937; color: #FFFFFF; border: none; border-radius: 3px; cursor: pointer;">🖨️ Print / Save PDF</button>
+            </div>
+        </div>
+
+        <div style="padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--text-primary);">
+            
+            <!-- REPORT HEADER BLOCK -->
+            <div style="border-bottom: 2px solid #111827; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h2 style="font-size: 16px; font-weight: 900; color: #111827; margin: 0 0 4px 0;">OFFSHORE EPC PLATFORM DRILL TOWER CONSTRUCTION PROJECT</h2>
+                    <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700;">MONTHLY EXECUTIVE STEERING COMMITTEE STATUS BRIEFING</div>
+                </div>
+                <div style="text-align: right; font-size: 11px; color: var(--text-secondary);">
+                    <div>Status Date: <strong>August 31, 2026 (Month 8 / Week 36)</strong></div>
+                    <div>Prepared By: <strong>Frank Ellingsen, Lead Project Controller</strong></div>
+                </div>
+            </div>
+
+            <!-- RAG HEALTH CALLOUT BANNER -->
+            <div style="background: #FEF2F2; border-left: 4px solid #DC2626; border-radius: 0 4px 4px 0; padding: 10px 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="font-size: 12px; font-weight: 900; color: #991B1B; text-transform: uppercase;">Overall Project Health Status: </span>
+                    <span style="font-size: 13px; font-weight: 900; color: #DC2626;">🚨 CRITICAL COST OVERRUN & SCHEDULE SLIPPAGE (RED)</span>
+                </div>
+                <div style="font-size: 11px; font-weight: 700; color: #7F1D1D;">Budget Burn Out: Month 9 (Sep 2026)</div>
+            </div>
+
+            <!-- 2-COLUMN REPORT BODY -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                
+                <!-- LEFT COLUMN: PERFORMANCE & FORECASTS -->
+                <div>
+                    <h3 style="font-size: 12px; font-weight: 800; color: #111827; text-transform: uppercase; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; margin-bottom: 8px;">1. Key EVM Performance Metrics</h3>
+                    <table style="width: 100%; font-size: 11px; border-collapse: collapse; margin-bottom: 14px;">
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #F3F4F6;">
+                                <td style="padding: 4px 0; color: var(--text-secondary);">Baseline Contract Budget ($BAC$)</td>
+                                <td style="padding: 4px 0; text-align: right; font-weight: 700;">$26,500,000</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #F3F4F6;">
+                                <td style="padding: 4px 0; color: var(--text-secondary);">Earned Work Complete ($EV / BAC$)</td>
+                                <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #059669;">66.19% ($17.54M)</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #F3F4F6;">
+                                <td style="padding: 4px 0; color: var(--text-secondary);">Planned Work Baseline ($PV / BAC$)</td>
+                                <td style="padding: 4px 0; text-align: right; font-weight: 700;">77.36% ($20.50M)</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #F3F4F6;">
+                                <td style="padding: 4px 0; color: var(--text-secondary);">Cumulative Actual Costs ($AC$)</td>
+                                <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #DC2626;">$23,440,000</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #F3F4F6;">
+                                <td style="padding: 4px 0; color: var(--text-secondary);">Cost Performance Index ($CPI$)</td>
+                                <td style="padding: 4px 0; text-align: right; font-weight: 800; color: #DC2626;">0.7483 ($0.75 / $1.00)</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px 0; color: var(--text-secondary);">Earned Schedule Velocity ($SPI_t$)</td>
+                                <td style="padding: 4px 0; text-align: right; font-weight: 800; color: #D97706;">0.9250 (-18.2 Days)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 style="font-size: 12px; font-weight: 800; color: #111827; text-transform: uppercase; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; margin-bottom: 8px;">2. Outturn Predictions & P90 Risk</h3>
+                    <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #F9FAFB; text-align: left; color: var(--text-secondary);">
+                                <th style="padding: 4px;">Scenario</th>
+                                <th style="padding: 4px; text-align: right;">EAC Outturn</th>
+                                <th style="padding: 4px; text-align: right;">Completion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #F3F4F6;">
+                                <td style="padding: 4px; font-weight: 700;">Deterministic Base</td>
+                                <td style="padding: 4px; text-align: right; font-weight: 700; color: #DC2626;">$35,413,604</td>
+                                <td style="padding: 4px; text-align: right;">Jan 31, 2027 (+31d)</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #F3F4F6;">
+                                <td style="padding: 4px; font-weight: 700;">Monte Carlo P50</td>
+                                <td style="padding: 4px; text-align: right; font-weight: 700;">$34,060,783</td>
+                                <td style="padding: 4px; text-align: right;">Feb 27, 2027 (+57d)</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px; font-weight: 800; color: #7F1D1D;">Monte Carlo P90</td>
+                                <td style="padding: 4px; text-align: right; font-weight: 800; color: #7F1D1D;">$35,815,202</td>
+                                <td style="padding: 4px; text-align: right; font-weight: 700;">Mar 14, 2027 (+72d)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="font-size: 9px; color: var(--text-secondary); margin-top: 4px;">* P90 Reserve Required: <strong>+$401,598</strong> above base EAC.</div>
+                </div>
+
+                <!-- RIGHT COLUMN: VARIANCE DRIVERS & ACTION PLAN -->
+                <div>
+                    <h3 style="font-size: 12px; font-weight: 800; color: #111827; text-transform: uppercase; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; margin-bottom: 8px;">3. Primary Variance Drivers</h3>
+                    <ul style="font-size: 11px; padding-left: 16px; margin: 0 0 14px 0; line-height: 1.4; color: var(--text-primary);">
+                        <li style="margin-bottom: 6px;">
+                            <strong>Egersund Yard Rework (WBS 1.3.2)</strong>: Pipe tolerance mismatch requiring 24/7 NDT welding (<span style="color: #DC2626; font-weight: 700;">+$2.40M / 26.9% of overrun</span>).
+                        </li>
+                        <li style="margin-bottom: 6px;">
+                            <strong>Time Delay Overhead Spread ($SPI_t$)</strong>: Extending execution past Dec 31, 2026 spreads PMO & site overhead (<span style="color: #B91C1C; font-weight: 700;">+$3.81M / 42.8% of overrun</span>).
+                        </li>
+                        <li>
+                            <strong>Heavy Lift Vessel Weather Standby (WBS 1.4.1)</strong>: Autumn sea-state vessel standby (<span style="color: #DC2626; font-weight: 700;">+$1.30M / 14.6% of overrun</span>).
+                        </li>
+                    </ul>
+
+                    <h3 style="font-size: 12px; font-weight: 800; color: #111827; text-transform: uppercase; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; margin-bottom: 8px;">4. Required Steering Committee Actions</h3>
+                    <ol style="font-size: 11px; padding-left: 16px; margin: 0; line-height: 1.4; color: var(--text-primary);">
+                        <li style="margin-bottom: 4px;">
+                            <strong>Authorize Overrun Credit Line</strong>: Secure <strong>+$8.91M</strong> financing before <strong>September 15, 2026</strong> (Month 9 budget exhaustion).
+                        </li>
+                        <li style="margin-bottom: 4px;">
+                            <strong>Cap Yard Rework Billing</strong>: Transition Egersund yard to a fixed-fee labor cap for remaining mast assembly.
+                        </li>
+                        <li>
+                            <strong>Compress Offshore Hook-up</strong>: Recover 15 calendar days to preserve <strong>January 31, 2027 Commercial COD</strong>.
+                        </li>
+                    </ol>
+                </div>
+
+            </div>
+
+            <!-- FOOTER SIGN-OFF BLOCK -->
+            <div style="border-top: 1px solid #E5E7EB; padding-top: 10px; display: flex; justify-content: space-between; font-size: 10px; color: var(--text-secondary);">
+                <span>Document ID: <strong>EVM-STR-2026-M08-REV3</strong></span>
+                <span>Distribution: <strong>Executive Board & Steering Committee</strong></span>
+                <span>Status: <strong>Approved for Steering Action</strong></span>
+            </div>
+
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- INTERACTIVE VARIANCE EXPLANATION & ACTION MODAL -->
+    <div id="action-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: #FFFFFF; border-radius: 4px; border: 1px solid var(--border-color); width: 560px; max-width: 90%; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative;">
+            <button onclick="closeModal()" style="position: absolute; top: 12px; right: 14px; border: none; background: transparent; font-size: 18px; font-weight: bold; color: var(--text-secondary); cursor: pointer;">&times;</button>
+            <h3 id="modal-title" style="font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);"></h3>
+            <div style="margin-bottom: 14px;">
+                <div style="font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Root Cause Explanation</div>
+                <p id="modal-explanation" style="font-size: 12px; line-height: 1.5; color: var(--text-primary); background: #F9FAFB; padding: 10px; border-radius: 3px; border-left: 3px solid #DC2626;"></p>
+            </div>
+            <div style="margin-bottom: 14px;">
+                <div style="font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 6px;">Recommended Actionable Next Steps</div>
+                <ul id="modal-actions" style="font-size: 12px; line-height: 1.5; color: var(--text-primary); padding-left: 18px;"></ul>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 14px;">
+                <span style="font-size: 11px; color: var(--text-secondary);">Accountable Owner: <strong id="modal-owner" style="color: var(--text-primary);"></strong></span>
+                <button onclick="closeModal()" style="padding: 6px 14px; font-size: 12px; font-weight: 600; background: #1F2937; color: #FFFFFF; border: none; border-radius: 3px; cursor: pointer;">Close Audit Window</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function setVarianceMode(mode, btn) {
+            if (btn) {
+                document.querySelectorAll('.var-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            
+            const cvGroup = document.getElementById('var-group-cv');
+            const svGroup = document.getElementById('var-group-sv');
+            const esGroup = document.getElementById('var-group-es');
+            
+            if (!cvGroup || !svGroup || !esGroup) return;
+            
+            if (mode === 'all') {
+                cvGroup.style.display = 'inline';
+                svGroup.style.display = 'inline';
+                esGroup.style.display = 'inline';
+            } else if (mode === 'cv') {
+                cvGroup.style.display = 'inline';
+                svGroup.style.display = 'none';
+                esGroup.style.display = 'none';
+            } else if (mode === 'sv') {
+                cvGroup.style.display = 'none';
+                svGroup.style.display = 'inline';
+                esGroup.style.display = 'none';
+            } else if (mode === 'es') {
+                cvGroup.style.display = 'none';
+                svGroup.style.display = 'none';
+                esGroup.style.display = 'inline';
+            }
+        }
+
+        function showActionModal(indicator) {
+            const modal = document.getElementById('action-modal');
+            const title = document.getElementById('modal-title');
+            const explanation = document.getElementById('modal-explanation');
+            const actions = document.getElementById('modal-actions');
+            const owner = document.getElementById('modal-owner');
+
+            const data = {
+                'cv': {
+                    title: '🔴 Cost Variance (CV: -$5,900,000 / CPI: 0.75)',
+                    explanation: 'Actual expenditure ($23.44M) exceeds Earned Value ($17.54M) by $5.90M. Key cost drivers: structural steel fitting rework at Verdal yard (T105) and unbudgeted double-shift welding labor hours at Egersund Derrick Mast Assembly (T106).',
+                    actions: [
+                        'Enforce a formal Design Change Freeze on remaining fabrication deliverables.',
+                        'Convert open Time & Materials (T&M) subcontracts to fixed unit-rate capped milestone agreements.',
+                        'Deploy a resident Project Controller to Egersund yard for 100% daily labor timecard and weld quality audits.'
+                    ],
+                    owner: 'O. Eriksen (Fabrication CAM) / Frank Ellingsen (Project Controller)'
+                },
+                'vac': {
+                    title: '🔴 Outturn Deficit (VAC: -$8,913,604 / EAC: $35.41M)',
+                    explanation: 'Linear extrapolation of historical cost performance (CPI = 0.75) projects total outturn costs of $35.41M against the approved $26.50M BAC budget, resulting in an $8.91M deficit at completion.',
+                    actions: [
+                        'Submit formal EAC re-baseline proposal to Executive Steering Committee.',
+                        'Request $3.50M drawdown from corporate Management Reserve (MR).',
+                        'Establish weekly ETC spending caps for WBS 1.4 Offshore Heavy Lift and WBS 1.5 Integration.'
+                    ],
+                    owner: 'Frank Ellingsen (Project Controller)'
+                },
+                'tcpi': {
+                    title: '🔴 Target Efficiency (TCPI_BAC: 6.07 - Unviable)',
+                    explanation: 'Achieving the original $26.50M BAC budget target requires an unviable efficiency of CPI = 6.07 ($607 value for every $100 spent) for remaining work.',
+                    actions: [
+                        'Abandon TCPI_BAC as an operational target.',
+                        'Transition performance tracking to TCPI_EAC = 1.00 based on the approved $35.41M EAC.',
+                        'Mandate weekly EVM gate reviews for any CAM with TCPI_EAC > 1.05.'
+                    ],
+                    owner: 'Frank Ellingsen (Project Controller)'
+                },
+                'sv': {
+                    title: '🟡/🔴 Critical Path Delay (+31 Days / SV: -$2,960,000)',
+                    explanation: 'Tubular steel procurement delays (T103, +31D) pushed back Verdal fabrication (T105) and Egersund assembly (T106), threatening the North Sea heavy lift vessel window.',
+                    actions: [
+                        'Fast-track Egersund assembly by executing parallel rigging work-fronts.',
+                        'Re-sequence pre-commissioning tasks (T110) to absorb 14 days of critical path delay.',
+                        'Negotiate a 10-day weather-window contingency option with Heerema Marine Contractors.'
+                    ],
+                    owner: 'M. Berg (Procurement CAM) / K. Solberg (Offshore CAM)'
+                }
+            };
+
+            const item = data[indicator] || data['cv'];
+            title.innerText = item.title;
+            explanation.innerText = item.explanation;
+            actions.innerHTML = item.actions.map(a => `<li style="margin-bottom:6px;">${a}</li>`).join('');
+            owner.innerText = item.owner;
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('action-modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

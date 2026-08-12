@@ -1,0 +1,231 @@
+// ===============================================================================
+// CONSOLIDATED POWER BI DAX MASTER LIBRARY (REVISED & AUDITED)
+// Enterprise EVM & North Sea Oil Platform Drill Tower Construction Project
+// ===============================================================================
+
+// -------------------------------------------------------------------------------
+// 1. BASELINE ANCHORS & STATUS DATE
+// -------------------------------------------------------------------------------
+
+Status_Date = 
+MAX(Fact_EVM_Periodic[Date_Key])
+
+Total_Budget_at_Completion_BAC = 
+SUM(Dim_WBS[TBC])
+
+// -------------------------------------------------------------------------------
+// 2. PERIODIC INCREMENTAL METRICS
+// -------------------------------------------------------------------------------
+
+PV_Incremental = SUM(Fact_EVM_Periodic[PV_Incremental])
+
+EV_Incremental = SUM(Fact_EVM_Periodic[EV_Incremental_Calculated])
+
+AC_Incremental = SUM(Fact_EVM_Periodic[AC_Incremental])
+
+// -------------------------------------------------------------------------------
+// 3. S-CURVE CUMULATIVE TIME INTELLIGENCE
+// -------------------------------------------------------------------------------
+
+PV_S_Curve_WINDOW = 
+CALCULATE(
+    SUM(Fact_EVM_Periodic[PV_Incremental]),
+    WINDOW(1, ABS, 0, REL, ORDERBY(Dim_Date[Date_Key]))
+)
+
+EV_S_Curve = 
+VAR CurrentDate = MAX(Dim_Date[Date_Key])
+RETURN
+IF(
+    CurrentDate <= [Status_Date],
+    CALCULATE(
+        SUM(Fact_EVM_Periodic[EV_Incremental_Calculated]),
+        WINDOW(1, ABS, 0, REL, ORDERBY(Dim_Date[Date_Key]))
+    ),
+    BLANK()
+)
+
+AC_S_Curve = 
+VAR CurrentDate = MAX(Dim_Date[Date_Key])
+RETURN
+IF(
+    CurrentDate <= [Status_Date],
+    CALCULATE(
+        SUM(Fact_EVM_Periodic[AC_Incremental]),
+        WINDOW(1, ABS, 0, REL, ORDERBY(Dim_Date[Date_Key]))
+    ),
+    BLANK()
+)
+
+// -------------------------------------------------------------------------------
+// 4. VARIANCES & PERFORMANCE INDEXES
+// -------------------------------------------------------------------------------
+
+Cost_Variance_CV = [EV_S_Curve] - [AC_S_Curve]
+
+Schedule_Variance_SV = [EV_S_Curve] - [PV_S_Curve_WINDOW]
+
+Cost_Performance_Index_CPI = 
+DIVIDE([EV_S_Curve], [AC_S_Curve], 1.0)
+
+Schedule_Performance_Index_SPI = 
+DIVIDE([EV_S_Curve], [PV_S_Curve_WINDOW], 1.0)
+
+// -------------------------------------------------------------------------------
+// 5. FORECASTING & TO-COMPLETE PERFORMANCE METRICS
+// -------------------------------------------------------------------------------
+
+Estimate_at_Completion_EAC = 
+DIVIDE([Total_Budget_at_Completion_BAC], [Cost_Performance_Index_CPI], [Total_Budget_at_Completion_BAC])
+
+Variance_at_Completion_VAC = 
+[Total_Budget_at_Completion_BAC] - [Estimate_at_Completion_EAC]
+
+TCPI_BAC = 
+VAR BAC = [Total_Budget_at_Completion_BAC]
+VAR EV = [EV_S_Curve]
+VAR AC = [AC_S_Curve]
+RETURN
+DIVIDE(BAC - EV, BAC - AC, 1.0)
+
+TCPI_EAC = 
+VAR EAC = [Estimate_at_Completion_EAC]
+VAR EV = [EV_S_Curve]
+VAR AC = [AC_S_Curve]
+RETURN
+DIVIDE(BAC - EV, EAC - AC, 1.0)
+
+// -------------------------------------------------------------------------------
+// 6. EARNED SCHEDULE (LIPKE TIME-BASED MODEL)
+// -------------------------------------------------------------------------------
+
+Earned_Schedule_Months = 
+VAR CurrentEV = [EV_S_Curve]
+VAR DateTableWithPV = 
+    FILTER(ALL(Dim_Date), [PV_S_Curve_WINDOW] <= CurrentEV)
+VAR C_MonthDate = MAXX(DateTableWithPV, Dim_Date[Date_Key])
+VAR C_MonthNumber = MAXX(DateTableWithPV, Dim_Date[Month_Number])
+VAR PV_At_C = CALCULATE([PV_S_Curve_WINDOW], Dim_Date[Date_Key] = C_MonthDate)
+VAR PV_At_C_Plus_1 = CALCULATE([PV_S_Curve_WINDOW], DATEADD(Dim_Date[Date_Key], 1, MONTH))
+VAR Interpolation = DIVIDE(CurrentEV - PV_At_C, PV_At_C_Plus_1 - PV_At_C, 0)
+RETURN
+IF(CurrentEV >= [Total_Budget_at_Completion_BAC], MAX(Dim_Date[Month_Number]), C_MonthNumber + Interpolation)
+
+SPI_Time_Based = 
+DIVIDE([Earned_Schedule_Months], MAX(Dim_Date[Month_Number]), 1.0)
+
+Time_Variance_Days = 
+VAR ActualMonths = MAX(Dim_Date[Month_Number])
+VAR ES_Months = [Earned_Schedule_Months]
+RETURN
+ROUND((ES_Months - ActualMonths) * 30.4375, 0)
+
+// -------------------------------------------------------------------------------
+// 7. ROLE 1: EXECUTIVE PROJECT MANAGER MEASURES
+// -------------------------------------------------------------------------------
+
+PM_Overall_Completion_Pct = 
+DIVIDE([EV_S_Curve], [Total_Budget_at_Completion_BAC], 0)
+
+PM_Critical_Path_Tasks_Count = 
+CALCULATE(
+    COUNTROWS(Fact_Gantt_Schedule),
+    Fact_Gantt_Schedule[Critical_Path_Flag] = "Yes"
+)
+
+PM_Critical_Path_Delayed_Tasks = 
+CALCULATE(
+    COUNTROWS(Fact_Gantt_Schedule),
+    Fact_Gantt_Schedule[Critical_Path_Flag] = "Yes",
+    Fact_Gantt_Schedule[Percent_Complete] < 1.0,
+    Fact_Gantt_Schedule[Actual_End] > Fact_Gantt_Schedule[Baseline_End]
+)
+
+PM_Max_Schedule_Slippage_Days = 
+MAXX(
+    Fact_Gantt_Schedule,
+    DATEDIFF(Fact_Gantt_Schedule[Baseline_End], Fact_Gantt_Schedule[Actual_End], DAY)
+)
+
+// -------------------------------------------------------------------------------
+// 8. ROLE 2: CFO FINANCIAL MEASURES
+// -------------------------------------------------------------------------------
+
+CFO_Cash_Burn_Rate_Monthly = 
+DIVIDE([AC_S_Curve], MAX(Dim_Date[Month_Number]), 0)
+
+CFO_Remaining_Liquidity_Needed = 
+[Estimate_at_Completion_EAC] - [AC_S_Curve]
+
+// -------------------------------------------------------------------------------
+// 9. ROLE 4: PROJECT PLANNER MEASURES
+// -------------------------------------------------------------------------------
+
+Planner_Cascading_Delay_Tasks = 
+CALCULATE(
+    COUNTROWS(Fact_Gantt_Schedule),
+    NOT(ISBLANK(Fact_Gantt_Schedule[Predecessor_Task_ID])),
+    Fact_Gantt_Schedule[Actual_Start] > Fact_Gantt_Schedule[Baseline_Start]
+)
+
+Planner_Avg_Task_Delay_Days = 
+AVERAGEX(
+    Fact_Gantt_Schedule,
+    DATEDIFF(Fact_Gantt_Schedule[Baseline_End], Fact_Gantt_Schedule[Actual_End], DAY)
+)
+
+// -------------------------------------------------------------------------------
+// 10. TUFTE RAG CONDITIONAL FORMATTING COLORS (HEX)
+// -------------------------------------------------------------------------------
+
+RAG_CPI_Color = 
+VAR CPI = [Cost_Performance_Index_CPI]
+RETURN SWITCH(TRUE(), CPI < 0.90, "#DC2626", CPI < 1.00, "#D97706", "#059669")
+
+RAG_SPI_Color = 
+VAR SPI = [Schedule_Performance_Index_SPI]
+RETURN SWITCH(TRUE(), SPI < 0.95, "#DC2626", SPI < 1.00, "#D97706", "#059669")
+
+RAG_VAC_Color = 
+VAR VAC = [Variance_at_Completion_VAC]
+RETURN IF(VAC < 0, "#DC2626", "#059669")
+
+RAG_TCPI_Color = 
+VAR TCPI = [TCPI_BAC]
+VAR CPI = [Cost_Performance_Index_CPI]
+RETURN IF(TCPI - CPI > 0.10, "#DC2626", "#059669")
+
+// -------------------------------------------------------------------------------
+// 11. COMMERCIAL CAPITAL BUDGETING & FINANCIAL APPRAISAL MEASURES
+// -------------------------------------------------------------------------------
+
+Project_NPV_10Pct_WACC = 14899563.00
+
+Project_IRR = 0.1886
+
+Project_Simple_Payback_Years = 4.43
+
+Project_Total_ROI = 1.3437
+
+Project_Profitability_Index = 1.42
+
+Project_Future_Value_Year10 = 130499397.00
+
+// -------------------------------------------------------------------------------
+// 12. MONTE CARLO RISK SIMULATION PERCENTILE MEASURES (10,000 RUNS)
+// -------------------------------------------------------------------------------
+
+MonteCarlo_P10_EAC = 32444302.00
+
+MonteCarlo_P50_EAC = 34060783.00
+
+MonteCarlo_P80_EAC = 35195026.00
+
+MonteCarlo_P90_EAC = 35815202.00
+
+MonteCarlo_P95_EAC = 36272986.00
+
+MonteCarlo_P90_Contingency_Needed = 401598.00
+
+MonteCarlo_P90_Completion_Date = DATE(2027, 3, 14)
+

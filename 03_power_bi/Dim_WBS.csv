@@ -1,0 +1,11 @@
+Task_ID,WBS_Code,WBS_Level_1,WBS_Level_2,Task_Name,CAM,TBC
+T101,1.1.1,1.0 Engineering,1.1 Design,Structural Steel Detail Engineering,H. Lindqvist,1200000
+T102,1.1.2,1.0 Engineering,1.1 Design,Piping & Drilling Package Design,H. Lindqvist,1800000
+T103,1.2.1,2.0 Procurement,2.1 Materials,High-Grade Tubular Steel Procurement,M. Berg,3500000
+T104,1.2.2,2.0 Procurement,2.2 Machinery,Mud Pumps & Top Drive Equipment,M. Berg,4200000
+T105,1.3.1,3.0 Fabrication,3.1 Sub-Structure,Yard Sub-Structure Fabrication (Verdal),O. Eriksen,4000000
+T106,1.3.2,3.0 Fabrication,3.2 Derrick Mast,Derrick Tower Mast Assembly (Egersund),O. Eriksen,4800000
+T107,1.4.1,4.0 Offshore Lift,4.1 Heavy Lift,Heavy Lift Vessel Mobilization (Heerema),K. Solberg,2500000
+T108,1.4.2,4.0 Offshore Lift,4.2 Installation,Offshore Topside Lifting & Mating,K. Solberg,2000000
+T109,1.5.1,5.0 Integration,5.1 Hook-Up,Structural Hook-up & NDT Inspection,T. Nygård,1000000
+T110,1.5.2,5.0 Integration,5.2 Commissioning,System Pre-Commissioning & Handover,T. Nygård,1500000

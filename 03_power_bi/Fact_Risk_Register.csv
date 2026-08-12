@@ -1,0 +1,6 @@
+Risk_ID,Risk_Title,Category,Probability,Impact,Risk_Score,RAG_Level,Financial_Exposure,Expected_Monetary_Value,Mitigation_Strategy,CAM_Owner
+R01,Egersund Derrick Mast Welding Tolerance Rework,Fabrication,5,5,25,Critical,2400000,2400000,Capped yard labor hours under fixed-fee contract & 24/7 NDT supervision,Lars Hansen
+R02,North Sea Weather Standby Delay during Mating,Marine,4,4,16,High,1800000,720000,Secured 14-day flexible mobilization window with Heerema Sleipnir,Erik Solberg
+R03,Subsea Tubular Steel Market Price Surcharges,Procurement,3,3,9,Medium,600000,180000,Locked bulk steel purchasing under long-term supplier framework,Ingrid Berg
+R04,DNV Class Structural Redesign Review,Engineering,2,3,6,Medium,300000,60000,Embedded DNV structural lead directly inside project engineering team,Geir Nilsen
+R05,Offshore Hook-up Commissioning Crew Bottleneck,Commissioning,2,2,4,Low,200000,40000,Pre-commissioned skid packages onshore in Verdal yard,Bjørn Lie

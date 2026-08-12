@@ -1,0 +1,6 @@
+Percentile,Confidence_Level,Outturn_Cost_EAC,Cost_Overrun_VAC,Contingency_Reserve,Duration_Days,Completion_Date,Schedule_Delay_Days
+P10,10% Optimistic,32444302,-5944302,0,408.1,2027-02-13,43.1
+P50,50% Median,34060783,-7560783,0,422.3,2027-02-27,57.3
+P80,80% Standard,35195026,-8695026,0,432.3,2027-03-09,67.3
+P90,90% High Confidence,35815202,-9315202,401598,437.5,2027-03-14,72.5
+P95,95% Extreme Risk,36272986,-9772986,859382,441.6,2027-03-18,76.6

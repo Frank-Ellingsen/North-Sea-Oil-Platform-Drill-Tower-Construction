@@ -1,0 +1,9 @@
+Metric,Value,Numeric_Value,Unit,Evaluation
+Net Present Value (NPV @ 10% WACC),"+$14,899,563",14899563.0,USD,Strong Positive Net Present Value
+Internal Rate of Return (IRR),18.86%,0.1886,%,Outperforms 10.0% Hurdle Rate by +886 bps
+Simple Payback Period,4.43 Years,4.43,Years,53.1 Months (May 2031)
+Profitability Index (PI),1.42,1.42,Ratio,Generates $1.42 PV per $1.00 spent
+Total Simple ROI,134.37%,1.3437,%,High 10-year cumulative commercial return
+Annualized ROI (CAGR),8.89%,0.0889,%/Year,Compounded annual growth rate
+Gross Future Value Year 10 (FV),"$130,499,397",130499397.0,USD,Nominal cash generated across 10 years
+Net Future Value (NFV),"+$38,645,628",38645628.0,USD,Net future value after CAPEX outturn
