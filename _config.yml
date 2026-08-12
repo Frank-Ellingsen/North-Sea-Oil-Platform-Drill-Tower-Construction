@@ -1,0 +1,11 @@
+title: "North Sea Oil Platform Drill Tower Construction"
+description: "Earned Value Management (EVM), Power BI Star Schema, DuckDB analytics, Monte Carlo P90 risk simulations, and project controlling documentation."
+theme: jekyll-theme-primer
+
+# Exclude heavy data, database files, and python scripts from Jekyll build scan
+exclude:
+  - "01_raw_data/"
+  - "02_databases/"
+  - "03_power_bi/"
+  - "05_scripts/"
+  - "reorganize_workspace.py"
