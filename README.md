@@ -6,6 +6,7 @@
 ![EAC Forecast](https://img.shields.io/badge/EAC_Forecast-%2435.41M-DC2626.svg)
 ![CPI Performance](https://img.shields.io/badge/CPI_Index-0.7483-red.svg)
 ![SPI_t Velocity](https://img.shields.io/badge/SPI__t_Velocity-0.9250-amber.svg)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Active-059669.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 An enterprise-grade **Project Controlling & Earned Value Management (EVM) Analytics Architecture** designed for heavy engineering, maritime, and EPC offshore energy projects. Built around a realistic North Sea EPC Platform Drill Tower Construction Project ($BAC = \$26.50\text{M}$), this repository integrates relational data warehousing (DuckDB & SQLite), Power BI star schema DAX libraries, automated Monte Carlo risk simulations (10,000 runs), commercial capital budgeting appraisals (NPV, IRR, Payback, PI), interactive HTML5 executive dashboards, and publication-ready PDF handbooks and PowerPoint slide decks.
@@ -57,6 +58,9 @@ OUTTURN PREDICTIONS & MONTE CARLO RISK ANALYSIS:
 
 ```
 EVM/
+├── .github/
+│   └── workflows/
+│       └── deploy-pages.yml      # CI/CD deployment workflow for GitHub Pages
 ├── 01_raw_data/                  # Master data files, CSV baselines, and Excel workbooks
 │   ├── 01_PV_Baseline.csv        # Monthly Planned Value baseline schedule ($26.50M)
 │   ├── 02_EV_Progress.csv        # Physical completion progress by WBS element
@@ -110,6 +114,8 @@ EVM/
 │   ├── Project_Burn_Rate_and_Runway_Analysis.md # Cash burn runway report
 │   ├── Project_Cost_Waterfall_Bridge.md # Waterfall cost bridge report
 │   └── Project_Donut_Charts_Analysis.md # Donut charts analysis report
+├── _config.yml                   # Jekyll site configuration & directory build exclusions
+├── index.html                    # Root Executive Dashboard landing page for GitHub Pages
 ├── .gitignore                    # Git exclusion rules
 ├── LICENSE                       # MIT Open Source License
 └── README.md                     # Repository documentation landing page
@@ -147,7 +153,7 @@ python 05_scripts/verify_model.py
 ```
 
 ### 3. Launch Web Dashboard Applications
-Open [`04_dashboard/index.html`](file:///C:/Users/frank/Desktop/EVM/04_dashboard/index.html) or [`04_dashboard/drill_tower_web_report.html`](file:///C:/Users/frank/Desktop/EVM/04_dashboard/drill_tower_web_report.html) directly in any web browser.
+Open [`index.html`](file:///C:/Users/frank/Desktop/EVM/index.html) at the root directly in any web browser, or view via GitHub Pages deployment.
 
 ---
 
@@ -156,6 +162,13 @@ Open [`04_dashboard/index.html`](file:///C:/Users/frank/Desktop/EVM/04_dashboard
 - 📄 **Project Manager's Handbook (PDF)**: [`06_docs/Project_Managers_EVM_and_Controlling_Handbook.pdf`](file:///C:/Users/frank/Desktop/EVM/06_docs/Project_Managers_EVM_and_Controlling_Handbook.pdf)
 - 📊 **Steering Committee PowerPoint Presentation (PPTX)**: [`06_docs/Drill_Tower_Project_Steering_Presentation.pptx`](file:///C:/Users/frank/Desktop/EVM/06_docs/Drill_Tower_Project_Steering_Presentation.pptx)
 - 📄 **Executive PDF Status Report (PDF)**: [`06_docs/Drill_Tower_Project_Executive_Report.pdf`](file:///C:/Users/frank/Desktop/EVM/06_docs/Drill_Tower_Project_Executive_Report.pdf)
+
+---
+
+## 🌐 Live GitHub Pages Dashboard
+
+The executive dashboard is published directly on GitHub Pages:
+- 🌐 **Live Web Application**: [https://frank-ellingsen.github.io/North-Sea-Oil-Platform-Drill-Tower-Construction/](https://frank-ellingsen.github.io/North-Sea-Oil-Platform-Drill-Tower-Construction/)
 
 ---
 
