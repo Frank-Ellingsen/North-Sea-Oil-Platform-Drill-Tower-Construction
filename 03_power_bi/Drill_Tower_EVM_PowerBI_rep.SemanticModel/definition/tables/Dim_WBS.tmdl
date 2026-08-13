@@ -1,0 +1,82 @@
+table Dim_WBS
+	lineageTag: 5a73ae99-9b53-46be-bd0e-1eb3674503f3
+
+	measure Total_Budget_at_Completion_BAC = SUM(Dim_WBS[TBC])
+		formatString: $#,##0
+		lineageTag: 306fcfa4-3671-4477-9e2b-2a27a45cd7dc
+
+	column WBS_Category = SWITCH(TRUE(), LEFT(Dim_WBS[WBS_Code], 3) = "1.1", "Engineering", LEFT(Dim_WBS[WBS_Code], 3) = "1.2", "Procurement", LEFT(Dim_WBS[WBS_Code], 3) = "1.3", "Yard Fabrication", LEFT(Dim_WBS[WBS_Code], 3) = "1.4", "Offshore Installation", LEFT(Dim_WBS[WBS_Code], 3) = "1.5", "Commissioning", "General PMO")
+		dataType: string
+		lineageTag: ae7e91d7-6b58-4a26-99da-991b9ec65e71
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Task_ID
+		dataType: string
+		lineageTag: 9bc83b74-2455-4ba0-aea0-14de99ddfc14
+		summarizeBy: none
+		sourceColumn: Task_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column WBS_Code
+		dataType: string
+		lineageTag: 56beb8d7-abeb-42eb-a3d5-25e7d692e186
+		summarizeBy: none
+		sourceColumn: WBS_Code
+
+		annotation SummarizationSetBy = Automatic
+
+	column WBS_Level_1
+		dataType: string
+		lineageTag: eeb1fed6-4804-496b-837e-077c2fcd1982
+		summarizeBy: none
+		sourceColumn: WBS_Level_1
+
+		annotation SummarizationSetBy = Automatic
+
+	column WBS_Level_2
+		dataType: string
+		lineageTag: abd9d6ac-b76e-4ec7-83a7-e47ba96f4695
+		summarizeBy: none
+		sourceColumn: WBS_Level_2
+
+		annotation SummarizationSetBy = Automatic
+
+	column Task_Name
+		dataType: string
+		lineageTag: f7799a53-9a2c-4477-8394-14fe0b067a9a
+		summarizeBy: none
+		sourceColumn: Task_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column CAM
+		dataType: string
+		lineageTag: a024dfab-65d8-4001-8e24-5bba0d8aaa5b
+		summarizeBy: none
+		sourceColumn: CAM
+
+		annotation SummarizationSetBy = Automatic
+
+	column TBC
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 50a12601-c24f-4152-b6fd-a204d8f86001
+		summarizeBy: none
+		sourceColumn: TBC
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	partition Partition = m
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\\Users\\frank\\Desktop\\EVM\\03_power_bi\\Dim_WBS.csv"),[Delimiter=",", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Task_ID", type text}, {"WBS_Code", type text}, {"WBS_Level_1", type text}, {"WBS_Level_2", type text}, {"Task_Name", type text}, {"CAM", type text}, {"TBC", Currency.Type}})
+				in
+				    #"Changed Type"
+

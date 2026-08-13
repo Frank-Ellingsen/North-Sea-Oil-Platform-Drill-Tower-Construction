@@ -1,0 +1,14 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "card_burnout",
+  "position": {
+    "x": 480,
+    "y": 20,
+    "z": 2000,
+    "height": 100,
+    "width": 220
+  },
+  "visual": {
+    "visualType": "card"
+  }
+}

@@ -199,5 +199,10 @@ ws_ev.conditional_formatting.add("E2:J6", CellIsRule(operator='between', formula
 ws_ev.conditional_formatting.add("E2:J6", CellIsRule(operator='lessThan', formula=['0.8'], fill=red_fill, font=red_font))
 
 out_file = "C:/Users/frank/Desktop/EVM/01_raw_data/EVM_Master_Data.xlsx"
-wb.save(out_file)
-print("Successfully generated EVM_Master_Data.xlsx with RAG formatting at:", out_file)
+try:
+    wb.save(out_file)
+    print("Successfully generated EVM_Master_Data.xlsx with RAG formatting at:", out_file)
+except PermissionError:
+    alt_out = out_file.replace(".xlsx", "_updated.xlsx")
+    wb.save(alt_out)
+    print("[NOTE] Original file was locked; saved updated report to:", alt_out)

@@ -1,0 +1,49 @@
+table Dim_Date
+	lineageTag: 64ec10a4-b604-4eb6-92e8-22259a463876
+
+	column Date_Key
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 68d72f87-9fd6-46ee-b7c7-7e1bf9a5d241
+		summarizeBy: none
+		sourceColumn: Date_Key
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: c84b7efb-404d-419e-9ff0-214b54086332
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month_Number
+		dataType: int64
+		formatString: 0
+		lineageTag: 0fb0b15f-835e-428b-89f1-a0b4ab77731d
+		summarizeBy: none
+		sourceColumn: Month_Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month_Name
+		dataType: string
+		lineageTag: a6bb625b-2d4a-4b23-bdfb-658a83bf169c
+		summarizeBy: none
+		sourceColumn: Month_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Partition = m
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\\Users\\frank\\Desktop\\EVM\\03_power_bi\\Dim_Date.csv"),[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Date_Key", type date}, {"Month_Name", type text}, {"Month_Number", Int64.Type}, {"Year", Int64.Type}})
+				in
+				    #"Changed Type"
+

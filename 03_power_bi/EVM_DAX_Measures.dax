@@ -86,6 +86,9 @@ DIVIDE([EV_S_Curve], [AC_S_Curve], 1.0)
 Schedule_Performance_Index_SPI = 
 DIVIDE([EV_S_Curve], [PV_S_Curve], 1.0)
 
+Critical_Ratio_CR = 
+[Cost_Performance_Index_CPI] * [Schedule_Performance_Index_SPI]
+
 PM_Overall_Completion_Pct = 
 DIVIDE([EV_S_Curve], [Total_Budget_at_Completion_BAC], 0)
 
@@ -232,6 +235,17 @@ VAR TCPI = [TCPI_BAC]
 VAR CPI = [Cost_Performance_Index_CPI]
 RETURN
 IF(TCPI - CPI > 0.10, "#DC2626", "#059669")
+
+CR_RAG_Color = 
+VAR CR = [Critical_Ratio_CR]
+RETURN
+SWITCH(
+    TRUE(),
+    ISBLANK(CR), "#737373", // Muted Grey for blank/no data
+    CR < 0.90, "#DC2626",   // Highlight Red (Critical Combined Deficit)
+    CR < 1.00, "#D97706",   // Amber (Warning)
+    "#059669"              // Muted Green (On Target)
+)
 
 // -------------------------------------------------------------------------------
 // 11. COMMERCIAL CAPITAL BUDGETING & FINANCIAL APPRAISAL MEASURES

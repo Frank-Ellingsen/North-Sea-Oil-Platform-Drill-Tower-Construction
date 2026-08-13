@@ -6,6 +6,7 @@
 ![EAC Forecast](https://img.shields.io/badge/EAC_Forecast-%2435.41M-DC2626.svg)
 ![CPI Performance](https://img.shields.io/badge/CPI_Index-0.7483-red.svg)
 ![SPI_t Velocity](https://img.shields.io/badge/SPI__t_Velocity-0.9250-amber.svg)
+![Critical Ratio](https://img.shields.io/badge/CR_Ratio-0.6402-red.svg)
 ![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Active-059669.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
@@ -27,6 +28,7 @@ Cost Variance (CV = EV - AC)  : -$5,900,000.00 (-33.6% Cost Overrun to Date)
 Schedule Variance (SV_t)     : -18.2 Calendar Days (-0.60 Months Schedule Slippage)
 Cost Efficiency (CPI)        : 0.7483 ($0.75 Earned Value per $1.00 Spent)
 Schedule Velocity (SPI_t)    : 0.9250 (Lipke Earned Schedule Index)
+Critical Ratio (CR=CPI*SPI)  : 0.6402 (Severe Combined Performance Deficit < 0.90)
 
 OUTTURN PREDICTIONS & MONTE CARLO RISK ANALYSIS:
 ----------------------------------------------------------------------------------------------------

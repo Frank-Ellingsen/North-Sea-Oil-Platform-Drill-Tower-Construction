@@ -91,7 +91,7 @@ def build_presentation():
     add_header(s2, "Project Health & Core EVM Dashboard", "Month 8 (Aug 2026) Earned Value Performance Metrics")
     
     # Left Box: EVM Table
-    table_shape = s2.shapes.add_table(7, 4, Inches(0.5), Inches(1.4), Inches(8.0), Inches(5.5))
+    table_shape = s2.shapes.add_table(8, 4, Inches(0.5), Inches(1.4), Inches(7.0), Inches(5.5))
     table = table_shape.table
     
     headers = ["Metric", "Description", "Value", "Status"]
@@ -111,7 +111,8 @@ def build_presentation():
         ["EV", "Earned Value Complete", "$17,540,000", "66.2% Complete"],
         ["AC", "Cumulative Actual Cost", "$23,440,000", "CRITICAL OVERRUN"],
         ["CPI", "Cost Efficiency Index", "0.7483", "Red ($0.75 / $1.00)"],
-        ["SPI_t", "Earned Schedule Velocity", "0.9250", "Amber (-18.2 Days)"]
+        ["SPI_t", "Earned Schedule Velocity", "0.9250", "Amber (-18.2 Days)"],
+        ["CR", "Critical Ratio (CPI * SPI)", "0.6402", "Red (< 0.90 Deficit)"]
     ]
     for row_idx, r_data in enumerate(evm_rows, 1):
         for col_idx, val in enumerate(r_data):
@@ -357,8 +358,13 @@ def build_presentation():
         else:
             pa.font.color.rgb = DARK_BLUE
             
-    prs.save(PPTX_PATH)
-    print(f" [PASS] PowerPoint presentation generated successfully at: {PPTX_PATH}")
+    try:
+        prs.save(PPTX_PATH)
+        print(f" [PASS] PowerPoint presentation generated successfully at: {PPTX_PATH}")
+    except PermissionError:
+        alt_pptx = PPTX_PATH.replace(".pptx", "_updated.pptx")
+        prs.save(alt_pptx)
+        print(f" [NOTE] Original presentation was locked; saved updated deck to: {alt_pptx}")
 
 if __name__ == "__main__":
     build_presentation()

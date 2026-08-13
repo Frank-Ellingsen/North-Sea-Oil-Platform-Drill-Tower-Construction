@@ -1,0 +1,216 @@
+table Fact_Gantt_Schedule
+	lineageTag: 1e2e6dfb-27e5-452f-ab96-0b17c9681e46
+
+	measure PM_Critical_Path_Task_Count = CALCULATE(COUNTROWS(Fact_Gantt_Schedule), Fact_Gantt_Schedule[Critical_Path_Flag] = "Yes")
+		formatString: #,##0
+		lineageTag: 625e100d-d571-4375-a121-0115ca710939
+
+	measure PM_Critical_Path_Delayed_Tasks = CALCULATE(COUNTROWS(Fact_Gantt_Schedule), Fact_Gantt_Schedule[Critical_Path_Flag] = "Yes", Fact_Gantt_Schedule[Percent_Complete] < 1.0, Fact_Gantt_Schedule[Actual_End] > Fact_Gantt_Schedule[Baseline_End])
+		formatString: #,##0
+		lineageTag: 89ca005b-54ba-4df1-a0b8-ded58c29e2af
+
+	measure PM_Schedule_Slippage_Days_Max = MAXX(Fact_Gantt_Schedule, DATEDIFF(Fact_Gantt_Schedule[Baseline_End], Fact_Gantt_Schedule[Actual_End], DAY))
+		formatString: +#,##0 Days
+		lineageTag: 36fc7245-9246-4747-99ac-7e16fd63c223
+
+	measure Planner_Cascading_Delay_Tasks = CALCULATE(COUNTROWS(Fact_Gantt_Schedule), NOT(ISBLANK(Fact_Gantt_Schedule[Predecessor_Task_ID])), Fact_Gantt_Schedule[Actual_Start] > Fact_Gantt_Schedule[Baseline_Start])
+		formatString: #,##0
+		lineageTag: dab6332c-f6de-4cec-9211-da9bbbeb758e
+
+	measure Planner_Avg_Task_Delay_Days = AVERAGEX(Fact_Gantt_Schedule, DATEDIFF(Fact_Gantt_Schedule[Baseline_End], Fact_Gantt_Schedule[Actual_End], DAY))
+		formatString: +0.0 Days
+		lineageTag: c50cc626-c238-4ce1-9b6c-fa3f246abf44
+
+	column Baseline_Duration_Days = DATEDIFF(Fact_Gantt_Schedule[Baseline_Start], Fact_Gantt_Schedule[Baseline_End], DAY)
+		dataType: int64
+		lineageTag: 1eb594fe-81c7-4d1d-a127-fa3b0da00eb5
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column Actual_Duration_Days = DATEDIFF(Fact_Gantt_Schedule[Actual_Start], Fact_Gantt_Schedule[Actual_End], DAY)
+		dataType: int64
+		lineageTag: 04b758f4-837d-46ae-9f50-bdbfa2528306
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column Schedule_Variance_Days = DATEDIFF(Fact_Gantt_Schedule[Baseline_End], Fact_Gantt_Schedule[Actual_End], DAY)
+		dataType: int64
+		lineageTag: a748188c-55c8-4e08-b5e2-1f6694ef1045
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column Start_Slippage_Days = DATEDIFF(Fact_Gantt_Schedule[Baseline_Start], Fact_Gantt_Schedule[Actual_Start], DAY)
+		dataType: int64
+		lineageTag: 8ede6444-e2ec-4478-aef4-7a9eabd7f314
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_Critical_Path = IF(Fact_Gantt_Schedule[Critical_Path_Flag] = "Yes", TRUE(), FALSE())
+		dataType: boolean
+		lineageTag: b6f09a2f-23b3-4804-927a-843fec7d1d79
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_Milestone = IF(LEFT(Fact_Gantt_Schedule[Task_ID], 1) = "M", TRUE(), FALSE())
+		dataType: boolean
+		lineageTag: 94932a1b-5169-40ae-b51d-3b73d0f2a74a
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Milestone_Symbol = IF(LEFT(Fact_Gantt_Schedule[Task_ID], 1) = "M", "◆", "")
+		dataType: string
+		lineageTag: 4e576690-a661-4090-8e2e-8b9789c8e789
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Task_ID
+		dataType: string
+		lineageTag: 4111c78f-5431-45cb-a3c0-2de1113a6eb5
+		summarizeBy: none
+		sourceColumn: Task_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Task_Name
+		dataType: string
+		lineageTag: 69c0436f-0df9-449a-b55f-e9d1b69c28b4
+		summarizeBy: none
+		sourceColumn: Task_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column WBS_Code
+		dataType: string
+		lineageTag: 9d9dabc6-16a2-47d8-b2d3-5f31c4b97f2b
+		summarizeBy: none
+		sourceColumn: WBS_Code
+
+		annotation SummarizationSetBy = Automatic
+
+	column CAM
+		dataType: string
+		lineageTag: 8de4e2dc-7905-4ebf-beee-c3a16c134b1d
+		summarizeBy: none
+		sourceColumn: CAM
+
+		annotation SummarizationSetBy = Automatic
+
+	column Baseline_Start
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7964266d-9fa5-447d-b16d-b1d3110a7418
+		summarizeBy: none
+		sourceColumn: Baseline_Start
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Baseline_End
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a6f87fcf-fe75-4bd5-afa2-280e0c4e27f8
+		summarizeBy: none
+		sourceColumn: Baseline_End
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Actual_Start
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: dbd0e6ca-063f-42dc-879d-6948aa2db13b
+		summarizeBy: none
+		sourceColumn: Actual_Start
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Actual_End
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 3982e29d-61e2-46b4-b730-e78f9b4a00a8
+		summarizeBy: none
+		sourceColumn: Actual_End
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Predecessor_Task_ID
+		dataType: string
+		lineageTag: 9765d25c-d8cd-4c28-91d1-4e92660ba102
+		summarizeBy: none
+		sourceColumn: Predecessor_Task_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Predecessor_Name
+		dataType: string
+		lineageTag: 89552bd1-7e4f-402e-bf82-e6364e1a13ca
+		summarizeBy: none
+		sourceColumn: Predecessor_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dependency_Type
+		dataType: string
+		lineageTag: 3540e5b5-4ef5-4ae4-844c-9fa073549d2e
+		summarizeBy: none
+		sourceColumn: Dependency_Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column Lag_Days
+		dataType: int64
+		formatString: 0
+		lineageTag: 85bd0ece-bac3-44e4-b67c-3191afbc18f2
+		summarizeBy: sum
+		sourceColumn: Lag_Days
+
+		annotation SummarizationSetBy = Automatic
+
+	column Percent_Complete
+		dataType: double
+		lineageTag: e6b7f97c-0170-4f50-82b7-76e4533f268a
+		summarizeBy: sum
+		sourceColumn: Percent_Complete
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Critical_Path_Flag
+		dataType: string
+		lineageTag: 392a12ca-dc50-4c5d-9dab-86c5a7b40411
+		summarizeBy: none
+		sourceColumn: Critical_Path_Flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column Resource_Group
+		dataType: string
+		lineageTag: e1db3883-020a-4095-bcff-a90a44846a46
+		summarizeBy: none
+		sourceColumn: Resource_Group
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Partition = m
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\\Users\\frank\\Desktop\\EVM\\03_power_bi\\Fact_Gantt_Schedule.csv"),[Delimiter=",", Columns=15, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Task_ID", type text}, {"Task_Name", type text}, {"WBS_Code", type text}, {"CAM", type text}, {"Baseline_Start", type date}, {"Baseline_End", type date}, {"Actual_Start", type date}, {"Actual_End", type date}, {"Predecessor_Task_ID", type text}, {"Predecessor_Name", type text}, {"Dependency_Type", type text}, {"Lag_Days", Int64.Type}, {"Percent_Complete", type number}, {"Critical_Path_Flag", type text}, {"Resource_Group", type text}})
+				in
+				    #"Changed Type"
+

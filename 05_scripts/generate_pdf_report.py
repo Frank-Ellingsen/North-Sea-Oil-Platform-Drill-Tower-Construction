@@ -109,6 +109,7 @@ def build_pdf():
         ["SV", "Schedule Variance (EV - PV)", "-$2,960,000", "-14.4% Schedule Lag"],
         ["CPI", "Cost Performance Index (EV / AC)", "0.7483", "Red ($0.75 / $1.00)"],
         ["SPI_t", "Earned Schedule Velocity (ES / Actual)", "0.9250", "Amber (-18.2 Days)"],
+        ["CR", "Critical Ratio (CPI * SPI)", "0.6402", "Red (< 0.90 Critical Deficit)"],
         ["EAC_1", "Most Likely Cost Outturn (BAC / CPI)", "$35,413,604", "+$8.91M Overrun"],
         ["EAC_t", "Predicted Completion Date (PD / SPI_t)", "Jan 31, 2027", "+31 Days Delay"]
     ]

@@ -65,6 +65,7 @@ def create_drill_tower_excel_report():
         ("Schedule Variance (SV = EV - PV)", -2960000, "$#,##0", "Schedule Slippage"),
         ("Cost Performance Index (CPI)", 0.7483, "0.00", "Critical Cost Efficiency Deficit"),
         ("Schedule Performance Index (SPI)", 0.8556, "0.00", "Schedule Execution Delay"),
+        ("Critical Ratio (CR = CPI * SPI)", 0.6402, "0.00", "Critical Combined Deficit"),
         ("Outturn Forecast (EAC = BAC / CPI)", 35413604, "$#,##0", "Projected Final Outturn"),
         ("Variance at Completion (VAC = BAC - EAC)", -8913604, "$#,##0", "Projected Final Deficit"),
         ("Earned Schedule (ES)", 7.40, "0.00 Mos", "Lipke Time-Based Progress"),
@@ -181,8 +182,13 @@ def create_drill_tower_excel_report():
             col_letter = get_column_letter(col[0].column)
             sheet.column_dimensions[col_letter].width = max(max_len + 4, 12)
 
-    wb.save(out_file)
-    print(f"Successfully generated Drill_Tower_EVM_Report.xlsx at: {out_file}")
+    try:
+        wb.save(out_file)
+        print(f"Successfully generated Drill_Tower_EVM_Report.xlsx at: {out_file}")
+    except PermissionError:
+        alt_out = out_file.replace(".xlsx", "_updated.xlsx")
+        wb.save(alt_out)
+        print(f"[NOTE] Original file was locked; saved updated report to: {alt_out}")
 
 if __name__ == "__main__":
     create_drill_tower_excel_report()

@@ -1,0 +1,191 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "scurve_line_chart",
+  "position": {
+    "x": 20,
+    "y": 140,
+    "z": 4000,
+    "height": 320,
+    "width": 1220
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Date"
+                    }
+                  },
+                  "Property": "Date_Key"
+                }
+              },
+              "queryRef": "Dim_Date.Date_Key",
+              "nativeQueryRef": "Date_Key",
+              "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_EVM_Periodic"
+                    }
+                  },
+                  "Property": "Cost_Variance_CV"
+                }
+              },
+              "queryRef": "Fact_EVM_Periodic.Cost_Variance_CV",
+              "nativeQueryRef": "Cost_Variance_CV"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_EVM_Periodic"
+                    }
+                  },
+                  "Property": "Schedule_Variance_SV"
+                }
+              },
+              "queryRef": "Fact_EVM_Periodic.Schedule_Variance_SV",
+              "nativeQueryRef": "Schedule_Variance_SV"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_EVM_Periodic"
+                    }
+                  },
+                  "Property": "PV_S_Curve"
+                }
+              },
+              "queryRef": "Fact_EVM_Periodic.PV_S_Curve",
+              "nativeQueryRef": "PV_S_Curve"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_EVM_Periodic"
+                    }
+                  },
+                  "Property": "EV_S_Curve"
+                }
+              },
+              "queryRef": "Fact_EVM_Periodic.EV_S_Curve",
+              "nativeQueryRef": "EV_S_Curve"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_EVM_Periodic"
+                    }
+                  },
+                  "Property": "AC_S_Curve"
+                }
+              },
+              "queryRef": "Fact_EVM_Periodic.AC_S_Curve",
+              "nativeQueryRef": "AC_S_Curve"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Dim_Date"
+                  }
+                },
+                "Property": "Date_Key"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 2,
+                      "Percent": 0.2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_EVM_Periodic.EV_S_Curve"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 7,
+                      "Percent": -0.5
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_EVM_Periodic.PV_S_Curve"
+          }
+        }
+      ],
+      "lineStyles": [
+        {
+          "properties": {
+            "lineStyle": {
+              "expr": {
+                "Literal": {
+                  "Value": "'dashed'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_EVM_Periodic.PV_S_Curve"
+          }
+        }
+      ]
+    }
+  }
+}

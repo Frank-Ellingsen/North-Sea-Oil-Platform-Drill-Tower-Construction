@@ -1,0 +1,120 @@
+table Fact_Monte_Carlo
+	lineageTag: 8ecc4880-a15f-4f6e-bb6e-ea72f1b76a67
+
+	measure MonteCarlo_P10_EAC = 32444302.00
+		formatString: $#,##0
+		lineageTag: dbd8d54b-6ef1-4bc6-bef5-89a3da71c262
+
+	measure MonteCarlo_P50_EAC = 34060783.00
+		formatString: $#,##0
+		lineageTag: e67ebd12-56d5-4cc3-a848-d633a550e28b
+
+	measure MonteCarlo_P80_EAC = 35195026.00
+		formatString: $#,##0
+		lineageTag: c539a6d3-0bf8-4f49-a4f0-0ccdb658cd9f
+
+	measure MonteCarlo_P90_EAC = 35815202.00
+		formatString: $#,##0
+		lineageTag: f5953c80-6fd1-459a-a406-d6ac5c3171a0
+
+	measure MonteCarlo_P95_EAC = 36272986.00
+		formatString: $#,##0
+		lineageTag: b4888fc8-8b01-4a48-85b5-35f4df49d85e
+
+	measure MonteCarlo_P90_Contingency_Needed = 401598.00
+		formatString: $#,##0
+		lineageTag: b3b21c80-5c05-4170-9f5c-0dd9a07b2741
+
+	measure MonteCarlo_P90_Completion_Date = DATE(2027, 3, 14)
+		formatString: yyyy-MM-dd
+		lineageTag: 7d91641e-f5b5-4f7f-b84a-82848a6a2bef
+
+	column Percentile
+		dataType: string
+		lineageTag: f4b89b80-3782-43cc-9e50-1688271720ba
+		summarizeBy: none
+		sourceColumn: Percentile
+
+		annotation SummarizationSetBy = Automatic
+
+	column Confidence_Level
+		dataType: string
+		lineageTag: 54e345f2-a4f9-46f7-b61f-935178cd8978
+		summarizeBy: none
+		sourceColumn: Confidence_Level
+
+		annotation SummarizationSetBy = Automatic
+
+	column Outturn_Cost_EAC
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 2b26e5a5-331b-46bd-b570-b8271d8786cd
+		summarizeBy: sum
+		sourceColumn: Outturn_Cost_EAC
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Cost_Overrun_VAC
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: f90bdfc2-726f-44e3-92a9-dc48cf637a09
+		summarizeBy: sum
+		sourceColumn: Cost_Overrun_VAC
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Contingency_Reserve
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 9feb963a-192c-4407-afe7-46c4c7aaa893
+		summarizeBy: sum
+		sourceColumn: Contingency_Reserve
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Duration_Days
+		dataType: double
+		lineageTag: ba597f59-a787-43fc-b712-7a48fa87b9a3
+		summarizeBy: sum
+		sourceColumn: Duration_Days
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Completion_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: f0efeb35-a81b-4522-8990-f11af4753f29
+		summarizeBy: none
+		sourceColumn: Completion_Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Schedule_Delay_Days
+		dataType: double
+		lineageTag: c45c7f36-9ff6-4350-83ed-97c874371549
+		summarizeBy: sum
+		sourceColumn: Schedule_Delay_Days
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Partition = m
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\\Users\\frank\\Desktop\\EVM\\03_power_bi\\Fact_Monte_Carlo.csv"),[Delimiter=",", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Percentile", type text}, {"Confidence_Level", type text}, {"Outturn_Cost_EAC", Currency.Type}, {"Cost_Overrun_VAC", Currency.Type}, {"Contingency_Reserve", Currency.Type}, {"Duration_Days", type number}, {"Completion_Date", type date}, {"Schedule_Delay_Days", type number}})
+				in
+				    #"Changed Type"
+

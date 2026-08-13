@@ -8,9 +8,9 @@
 
 ## 🚦 OVERALL PROJECT HEALTH DASHBOARD: RED (CRITICAL)
 
-| Overall RAG Status | Cost Performance ($CPI$) | Schedule Performance ($SPI_t$) | Budget Burn Out Month | Predicted Outturn Cost ($EAC_1$) | Predicted Commercial COD |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| 🚨 **CRITICAL OVERRUN** | **0.7483** (Red) | **0.9250** (Amber) | **Month 9 (Sep 2026)** | **$35,413,604** (+$8.91M) | **Jan 31, 2027** (+31 Days) |
+| Overall RAG Status | Cost Performance ($CPI$) | Schedule Performance ($SPI_t$) | Critical Ratio ($CR$) | Budget Burn Out Month | Predicted Outturn Cost ($EAC_1$) | Predicted Commercial COD |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| 🚨 **CRITICAL OVERRUN** | **0.7483** (Red) | **0.9250** (Amber) | **0.6402** (Red) | **Month 9 (Sep 2026)** | **$35,413,604** (+$8.91M) | **Jan 31, 2027** (+31 Days) |
 
 ---
 

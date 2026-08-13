@@ -1,0 +1,99 @@
+table Fact_Monthly_Burn_Rate
+	lineageTag: 4e93f8a9-0983-4bc7-b9e9-63776f599429
+
+	measure CFO_Cash_Burn_Rate_Monthly = DIVIDE([AC_S_Curve], MAX(Dim_Date[Month_Number]), 0)
+		formatString: $#,##0 / Mo
+		lineageTag: a2a73729-7d44-4dc3-80bf-099767e0fda9
+
+	measure Avg_Monthly_Cash_Burn_Actual = AVERAGEX(FILTER(Fact_Monthly_Burn_Rate, Fact_Monthly_Burn_Rate[Cum_AC] <= 23440000), Fact_Monthly_Burn_Rate[Monthly_AC])
+		formatString: $#,##0 / Mo
+		lineageTag: e1de8466-50c2-4ba2-8892-7a058f731f92
+
+	measure Remaining_Baseline_Capital = [Total_Budget_at_Completion_BAC] - [AC_S_Curve]
+		formatString: $#,##0
+		lineageTag: 6b111d6e-3569-40c8-9a78-25e66e0d99f7
+
+	measure Required_Overrun_Financing = [Estimate_at_Completion_EAC] - [Total_Budget_at_Completion_BAC]
+		formatString: $#,##0
+		lineageTag: e1616e81-06e7-462f-ad16-345c59869201
+
+	column Period
+		dataType: string
+		lineageTag: 70f61694-9b9a-47b5-9004-35044d22680f
+		summarizeBy: none
+		sourceColumn: Period
+
+		annotation SummarizationSetBy = Automatic
+
+	column Monthly_PV
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: c0570a4a-0acb-4ee4-9afe-605c7ab385f8
+		summarizeBy: sum
+		sourceColumn: Monthly_PV
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Monthly_EV
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 438735a1-1239-447d-b04c-b6bee38655d6
+		summarizeBy: sum
+		sourceColumn: Monthly_EV
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Monthly_AC
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 0f21cb4f-ea8f-4ab0-9e9e-e887d425b34e
+		summarizeBy: sum
+		sourceColumn: Monthly_AC
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Cum_AC
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 11171ea3-2356-4177-b79b-fdcff5da7258
+		summarizeBy: sum
+		sourceColumn: Cum_AC
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Remaining_BAC
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 34ac5bde-4c0c-4f21-adfb-b4e9888f77db
+		summarizeBy: sum
+		sourceColumn: Remaining_BAC
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Runway_Status
+		dataType: string
+		lineageTag: ae081ec8-a70e-42db-9eb4-5291140f596c
+		summarizeBy: none
+		sourceColumn: Runway_Status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Partition = m
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\\Users\\frank\\Desktop\\EVM\\03_power_bi\\Fact_Monthly_Burn_Rate.csv"),[Delimiter=",", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Period", type text}, {"Monthly_PV", Currency.Type}, {"Monthly_EV", Currency.Type}, {"Monthly_AC", Currency.Type}, {"Cum_AC", Currency.Type}, {"Remaining_BAC", Currency.Type}, {"Runway_Status", type text}})
+				in
+				    #"Changed Type"
+

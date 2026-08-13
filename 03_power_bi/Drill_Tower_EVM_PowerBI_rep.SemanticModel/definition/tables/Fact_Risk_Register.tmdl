@@ -1,0 +1,141 @@
+table Fact_Risk_Register
+	lineageTag: 2e876137-c5ea-46b6-868b-3440ad899102
+
+	measure Total_Risk_Count = COUNTROWS(Fact_Risk_Register)
+		formatString: #,##0
+		lineageTag: e68fef45-5dc0-4a25-8c15-b8f297b2e1b2
+
+	measure Critical_Risk_Count = CALCULATE(COUNTROWS(Fact_Risk_Register), Fact_Risk_Register[Risk_Score] >= 15)
+		formatString: #,##0
+		lineageTag: 63f0f9ed-7d27-4a33-b329-d761e2339e6a
+
+	measure Total_Financial_Exposure = SUM(Fact_Risk_Register[Financial_Exposure])
+		formatString: $#,##0
+		lineageTag: 9630d186-2b88-4eca-9c30-724845f4ad7a
+
+	measure Total_Expected_Monetary_Value = SUM(Fact_Risk_Register[Expected_Monetary_Value])
+		formatString: $#,##0
+		lineageTag: 56540057-60e3-4317-b78b-6d91fcc8c5d1
+
+	column Calculated_Risk_Score = Fact_Risk_Register[Probability] * Fact_Risk_Register[Impact]
+		dataType: int64
+		lineageTag: 3d08d676-8c54-40db-8b9b-3d9630871184
+
+	column Risk_Severity_Category = SWITCH(TRUE(), Fact_Risk_Register[Risk_Score] >= 15, "Critical Red", Fact_Risk_Register[Risk_Score] >= 8, "High/Medium Amber", "Low Green")
+		dataType: string
+		lineageTag: 2d9268b0-7463-491c-895f-d41b38b5505a
+
+	column Risk_RAG_Hex_Code = SWITCH(TRUE(), Fact_Risk_Register[Risk_Score] >= 15, "#DC2626", Fact_Risk_Register[Risk_Score] >= 8, "#D97706", "#059669")
+		dataType: string
+		lineageTag: 2e46318b-7689-419d-8e0a-b2bb09609605
+
+	column Heatmap_Coordinate = "P" & FORMAT(Fact_Risk_Register[Probability], "0") & "-I" & FORMAT(Fact_Risk_Register[Impact], "0")
+		dataType: string
+		lineageTag: 87f8d229-a893-4a76-8ac2-b5213934bc51
+
+	column Risk_ID
+		dataType: string
+		lineageTag: 39b73d16-140d-4d69-8d81-0a19ae37d6f8
+		summarizeBy: none
+		sourceColumn: Risk_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Risk_Title
+		dataType: string
+		lineageTag: 11cd7e79-39ff-4caa-840c-9edd0e08b2c9
+		summarizeBy: none
+		sourceColumn: Risk_Title
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: 11f29843-04b8-470e-b2ac-a249584b7aef
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column Probability
+		dataType: int64
+		formatString: 0
+		lineageTag: 8c91fff4-ec34-433d-a1e9-fbda0c59c145
+		summarizeBy: sum
+		sourceColumn: Probability
+
+		annotation SummarizationSetBy = Automatic
+
+	column Impact
+		dataType: int64
+		formatString: 0
+		lineageTag: 6838e0ce-9f9b-4447-a76b-4ab8019b89f0
+		summarizeBy: sum
+		sourceColumn: Impact
+
+		annotation SummarizationSetBy = Automatic
+
+	column Risk_Score
+		dataType: int64
+		formatString: 0
+		lineageTag: c6953937-3d6d-4a35-bdd8-175b4cedef70
+		summarizeBy: sum
+		sourceColumn: Risk_Score
+
+		annotation SummarizationSetBy = Automatic
+
+	column RAG_Level
+		dataType: string
+		lineageTag: f9efd933-57df-45fa-84d3-a37de3df02ac
+		summarizeBy: none
+		sourceColumn: RAG_Level
+
+		annotation SummarizationSetBy = Automatic
+
+	column Financial_Exposure
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 4b0e5889-583e-4013-88ac-5a629e38538f
+		summarizeBy: sum
+		sourceColumn: Financial_Exposure
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Expected_Monetary_Value
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 7f271ea4-f225-4295-9f45-aa04c8abd541
+		summarizeBy: sum
+		sourceColumn: Expected_Monetary_Value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Mitigation_Strategy
+		dataType: string
+		lineageTag: ccf6f75c-9cde-43c9-ae4f-935c49dc1853
+		summarizeBy: none
+		sourceColumn: Mitigation_Strategy
+
+		annotation SummarizationSetBy = Automatic
+
+	column CAM_Owner
+		dataType: string
+		lineageTag: cb160639-c1e9-4b32-9d85-099199ce0fe4
+		summarizeBy: none
+		sourceColumn: CAM_Owner
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Partition = m
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\\Users\\frank\\Desktop\\EVM\\03_power_bi\\Fact_Risk_Register.csv"),[Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Risk_ID", type text}, {"Risk_Title", type text}, {"Category", type text}, {"Probability", Int64.Type}, {"Impact", Int64.Type}, {"Risk_Score", Int64.Type}, {"RAG_Level", type text}, {"Financial_Exposure", Currency.Type}, {"Expected_Monetary_Value", Currency.Type}, {"Mitigation_Strategy", type text}, {"CAM_Owner", type text}})
+				in
+				    #"Changed Type"
+

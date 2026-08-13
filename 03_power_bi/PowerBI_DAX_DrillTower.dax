@@ -113,6 +113,8 @@ Controller_Schedule_Variance_SV = [EV_S_Curve] - [PV_S_Curve_WINDOW]
 
 Controller_Schedule_Performance_Index_SPI = DIVIDE([EV_S_Curve], [PV_S_Curve_WINDOW], 1.0)
 
+Controller_Critical_Ratio_CR = [CFO_Cost_Performance_Index_CPI] * [Controller_Schedule_Performance_Index_SPI]
+
 Controller_TCPI_BAC = 
 VAR BAC = [Total_Budget_at_Completion_BAC]
 VAR EV = [EV_S_Curve]

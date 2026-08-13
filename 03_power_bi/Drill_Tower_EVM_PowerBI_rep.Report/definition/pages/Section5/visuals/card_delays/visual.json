@@ -1,0 +1,14 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "card_delays",
+  "position": {
+    "x": 300,
+    "y": 20,
+    "z": 1000,
+    "height": 100,
+    "width": 260
+  },
+  "visual": {
+    "visualType": "card"
+  }
+}

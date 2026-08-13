@@ -113,6 +113,7 @@ def build_excel_report():
         ["Cost Variance", "CV", "=$C$9-$C$11", 0, "=$C$12", "=C9/C11", "🚨 CRITICAL", "Overrun of -$5.90M (CPI = 0.748)"],
         ["Schedule Variance", "SV", "=$C$9-$C$10", 0, "=$C$13", "=C9/C10", "🟡 DELAYED", "Value delay of -$2.96M (SPI = 0.856)"],
         ["Earned Schedule Velocity", "SPIt", 0.925, 1.000, -18.2, 0.925, "🟡 -18 Days", "Time-based schedule velocity (ES 7.40M)"],
+        ["Critical Ratio (CPI*SPI)", "CR", "=(C9/C11)*(C9/C10)", 1.000, 0.6402, 0.6402, "🚨 CRITICAL", "Compound project health ratio (0.7483 * 0.8556 < 0.90)"],
         ["To-Complete Index (BAC)", "TCPI_BAC", "=(C8-C9)/(C8-C11)", 1.000, 5.07, 6.07, "🚨 UNVIABLE", "Requires impossible 607% efficiency"]
     ]
 
@@ -328,24 +329,24 @@ def build_excel_report():
     apply_header_banner(ws4, "Performance Measurement Baseline (S-Curves) & Cumulative EVM", "Direct Endpoint Metrics, Cost Variance & Time Slippage Analysis")
 
     ws4.cell(row=4, column=1, value="Monthly Cumulative Performance Measurement Baseline (PMB S-Curve)").font = font_sec_hdr
-    pmb_headers = ["Month #", "Month Name", "Planned Value ($PV)", "Earned Value ($EV)", "Actual Cost ($AC)", "Cost Variance ($CV)", "Schedule Variance ($SV)", "CPI Index", "SPI Index"]
+    pmb_headers = ["Month #", "Month Name", "Planned Value ($PV)", "Earned Value ($EV)", "Actual Cost ($AC)", "Cost Variance ($CV)", "Schedule Variance ($SV)", "CPI Index", "SPI Index", "Critical Ratio (CR)"]
     ws4.row_dimensions[5].height = 24
     for c_idx, h in enumerate(pmb_headers, start=1):
         cell = ws4.cell(row=5, column=c_idx, value=h)
         cell.font = font_tbl_hdr
         cell.fill = fill_header
-        cell.alignment = align_center if c_idx in [1,2] else (align_right if c_idx in [3,4,5,6,7,8,9] else align_left)
+        cell.alignment = align_center if c_idx in [1,2] else (align_right if c_idx in [3,4,5,6,7,8,9,10] else align_left)
         cell.border = border_header
 
     pmb_data = [
-        [1, "Jan 2026", 300000, 300000, 320000, "=D6-E6", "=D6-C6", "=D6/E6", "=D6/C6"],
-        [2, "Feb 2026", 1200000, 1140000, 1270000, "=D7-E7", "=D7-C7", "=D7/E7", "=D7/C7"],
-        [3, "Mar 2026", 3900000, 3400000, 4170000, "=D8-E8", "=D8-C8", "=D8/E8", "=D8/C8"],
-        [4, "Apr 2026", 7700000, 6920000, 8220000, "=D9-E9", "=D9-C9", "=D9/E9", "=D9/C9"],
-        [5, "May 2026", 10700000, 9820000, 11440000, "=D10-E10", "=D10-C10", "=D10/E10", "=D10/C10"],
-        [6, "Jun 2026", 14700000, 12570000, 15890000, "=D11-E11", "=D11-C11", "=D11/E11", "=D11/C11"],
-        [7, "Jul 2026", 17700000, 15190000, 19740000, "=D12-E12", "=D12-C12", "=D12/E12", "=D12/C12"],
-        [8, "Aug 2026 (Status)", 20500000, 17540000, 23440000, "=D13-E13", "=D13-C13", "=D13/E13", "=D13/C13"]
+        [1, "Jan 2026", 300000, 300000, 320000, "=D6-E6", "=D6-C6", "=D6/E6", "=D6/C6", "=H6*I6"],
+        [2, "Feb 2026", 1200000, 1140000, 1270000, "=D7-E7", "=D7-C7", "=D7/E7", "=D7/C7", "=H7*I7"],
+        [3, "Mar 2026", 3900000, 3400000, 4170000, "=D8-E8", "=D8-C8", "=D8/E8", "=D8/C8", "=H8*I8"],
+        [4, "Apr 2026", 7700000, 6920000, 8220000, "=D9-E9", "=D9-C9", "=D9/E9", "=D9/C9", "=H9*I9"],
+        [5, "May 2026", 10700000, 9820000, 11440000, "=D10-E10", "=D10-C10", "=D10/E10", "=D10/C10", "=H10*I10"],
+        [6, "Jun 2026", 14700000, 12570000, 15890000, "=D11-E11", "=D11-C11", "=D11/E11", "=D11/C11", "=H11*I11"],
+        [7, "Jul 2026", 17700000, 15190000, 19740000, "=D12-E12", "=D12-C12", "=D12/E12", "=D12/C12", "=H12*I12"],
+        [8, "Aug 2026 (Status)", 20500000, 17540000, 23440000, "=D13-E13", "=D13-C13", "=D13/E13", "=D13/C13", "=H13*I13"]
     ]
 
     for r_offset, r_data in enumerate(pmb_data, start=6):
@@ -359,7 +360,7 @@ def build_excel_report():
             elif c_offset in [3, 4, 5, 6, 7]:
                 cell.alignment = align_right
                 cell.number_format = fmt_currency
-            elif c_offset in [8, 9]:
+            elif c_offset in [8, 9, 10]:
                 cell.alignment = align_right
                 cell.number_format = fmt_index
             
@@ -481,10 +482,20 @@ def build_excel_report():
     # Save to both 06_docs and 01_raw_data
     file1 = os.path.join(docs_dir, "Drill_Tower_EVM_Master_Report.xlsx")
     file2 = os.path.join(raw_dir, "Drill_Tower_EVM_Master_Report.xlsx")
-    wb.save(file1)
-    wb.save(file2)
-    print(f"✅ Generated: 06_docs/Drill_Tower_EVM_Master_Report.xlsx")
-    print(f"✅ Generated: 01_raw_data/Drill_Tower_EVM_Master_Report.xlsx")
+    try:
+        wb.save(file1)
+        print(f"✅ Generated: 06_docs/Drill_Tower_EVM_Master_Report.xlsx")
+    except PermissionError:
+        alt1 = file1.replace(".xlsx", "_updated.xlsx")
+        wb.save(alt1)
+        print(f"⚠️ Locked! Generated: {alt1}")
+    try:
+        wb.save(file2)
+        print(f"✅ Generated: 01_raw_data/Drill_Tower_EVM_Master_Report.xlsx")
+    except PermissionError:
+        alt2 = file2.replace(".xlsx", "_updated.xlsx")
+        wb.save(alt2)
+        print(f"⚠️ Locked! Generated: {alt2}")
 
 if __name__ == "__main__":
     build_excel_report()

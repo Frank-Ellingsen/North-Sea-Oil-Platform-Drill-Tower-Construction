@@ -1,0 +1,220 @@
+table Fact_EVM_Periodic
+	lineageTag: f40bd22c-354c-4e33-ba73-f3066e1013e1
+
+	measure Status_Date = MAX(Fact_EVM_Periodic[Date_Key])
+		formatString: yyyy-MM-dd
+		lineageTag: a7a05a02-0bfc-43a6-9185-00eccc4d70fa
+
+	measure PV_Incremental_Period = SUM(Fact_EVM_Periodic[PV_Incremental])
+		formatString: $#,##0
+		lineageTag: 1c9cb7ea-be71-4ab6-b616-2fad0586670a
+
+	measure EV_Incremental_Period = SUM(Fact_EVM_Periodic[EV_Incremental_Calculated])
+		formatString: $#,##0
+		lineageTag: d6a39a56-b629-4368-87c6-4d59a4ce29d7
+
+	measure AC_Incremental_Period = SUM(Fact_EVM_Periodic[AC_Incremental])
+		formatString: $#,##0
+		lineageTag: f7f56ad0-03fc-454d-be5b-73d5f4ab2f23
+
+	measure PV_S_Curve = CALCULATE(SUM(Fact_EVM_Periodic[PV_Incremental]), WINDOW(1, ABS, 0, REL, ORDERBY(Dim_Date[Date_Key])))
+		formatString: $#,##0
+		lineageTag: a35fe9f5-9f56-4a7b-a2fd-58d9dc8f6352
+
+	measure EV_S_Curve = VAR CurrentDate = MAX(Dim_Date[Date_Key]) RETURN IF(CurrentDate <= [Status_Date], CALCULATE(SUM(Fact_EVM_Periodic[EV_Incremental_Calculated]), WINDOW(1, ABS, 0, REL, ORDERBY(Dim_Date[Date_Key]))), BLANK())
+		formatString: $#,##0
+		lineageTag: 240a3485-184c-4a00-b22f-51cc6e80e8b6
+
+	measure AC_S_Curve = VAR CurrentDate = MAX(Dim_Date[Date_Key]) RETURN IF(CurrentDate <= [Status_Date], CALCULATE(SUM(Fact_EVM_Periodic[AC_Incremental]), WINDOW(1, ABS, 0, REL, ORDERBY(Dim_Date[Date_Key]))), BLANK())
+		formatString: $#,##0
+		lineageTag: 55d19a73-4858-4f42-a077-9b266d42b14a
+
+	measure Cost_Variance_CV = [EV_S_Curve] - [AC_S_Curve]
+		formatString: $#,##0;($#,##0);$0
+		lineageTag: 109d9c62-9db0-4d0d-9ce8-230b41c5636f
+
+	measure Cost_Variance_CV_Pct = DIVIDE([Cost_Variance_CV], [EV_S_Curve], 0)
+		formatString: 0.0%
+		lineageTag: 272d4cb4-72df-4901-966f-4a1037f89dc1
+
+	measure Schedule_Variance_SV = [EV_S_Curve] - [PV_S_Curve]
+		formatString: $#,##0;($#,##0);$0
+		lineageTag: cd934250-ceca-4249-8c64-a57763cd8a0f
+
+	measure Schedule_Variance_SV_Pct = DIVIDE([Schedule_Variance_SV], [PV_S_Curve], 0)
+		formatString: 0.0%
+		lineageTag: 2a0ab668-4cb1-4423-adad-61e62da56711
+
+	measure Cost_Performance_Index_CPI = DIVIDE([EV_S_Curve], [AC_S_Curve], 1.0)
+		formatString: 0.0000
+		lineageTag: bc010da9-4b33-4560-9a36-8b79a0139975
+
+	measure Schedule_Performance_Index_SPI = DIVIDE([EV_S_Curve], [PV_S_Curve], 1.0)
+		formatString: 0.0000
+		lineageTag: cee299ce-97c6-46b0-8bb8-178137e9809e
+
+	measure PM_Overall_Completion_Pct = DIVIDE([EV_S_Curve], [Total_Budget_at_Completion_BAC], 0)
+		formatString: 0.0%
+		lineageTag: 69a73bc7-0831-4cdf-897c-5bab9c1dc556
+
+	measure Estimate_at_Completion_EAC = DIVIDE([Total_Budget_at_Completion_BAC], [Cost_Performance_Index_CPI], [Total_Budget_at_Completion_BAC])
+		formatString: $#,##0
+		lineageTag: cbc1a419-3bc5-49c6-8400-0c669c07295d
+
+	measure Variance_at_Completion_VAC = [Total_Budget_at_Completion_BAC] - [Estimate_at_Completion_EAC]
+		formatString: $#,##0;($#,##0);$0
+		lineageTag: 587e7f47-5698-495f-ae05-52b28d086921
+
+	measure TCPI_BAC = VAR BAC = [Total_Budget_at_Completion_BAC] VAR EV = [EV_S_Curve] VAR AC = [AC_S_Curve] RETURN DIVIDE(BAC - EV, BAC - AC, 1.0)
+		formatString: 0.00
+		lineageTag: c4a4b40f-1858-4ab3-bac4-bc8c989d221c
+
+	measure TCPI_EAC = VAR BAC = [Total_Budget_at_Completion_BAC] VAR EAC = [Estimate_at_Completion_EAC] VAR EV = [EV_S_Curve] VAR AC = [AC_S_Curve] RETURN DIVIDE(BAC - EV, EAC - AC, 1.0)
+		formatString: 0.00
+		lineageTag: 586bb122-0d34-473d-a0f9-e740545ca46b
+
+	measure ETC_Remaining_Liquidity_Needed = [Estimate_at_Completion_EAC] - [AC_S_Curve]
+		formatString: $#,##0
+		lineageTag: 0d0ca51f-100b-4587-a536-3ba8b6ab7efc
+
+	measure Earned_Schedule_Months = VAR CurrentEV = [EV_S_Curve] VAR DateTableWithPV = FILTER(ALL(Dim_Date), [PV_S_Curve] <= CurrentEV) VAR C_MonthDate = MAXX(DateTableWithPV, Dim_Date[Date_Key]) VAR C_MonthNumber = MAXX(DateTableWithPV, Dim_Date[Month_Number]) VAR PV_At_C = CALCULATE([PV_S_Curve], Dim_Date[Date_Key] = C_MonthDate) VAR PV_At_C_Plus_1 = CALCULATE([PV_S_Curve], DATEADD(Dim_Date[Date_Key], 1, MONTH)) VAR Interpolation = DIVIDE(CurrentEV - PV_At_C, PV_At_C_Plus_1 - PV_At_C, 0) RETURN IF(CurrentEV >= [Total_Budget_at_Completion_BAC], MAX(Dim_Date[Month_Number]), C_MonthNumber + Interpolation)
+		formatString: 0.00
+		lineageTag: deb53603-3c66-4615-9900-187fb9dabfd4
+
+	measure SPI_Time_Based = DIVIDE([Earned_Schedule_Months], MAX(Dim_Date[Month_Number]), 1.0)
+		formatString: 0.0000
+		lineageTag: 5d3eaa3b-4d06-4bb1-8495-f5ea864f3440
+
+	measure Time_Variance_Days = VAR ActualMonths = MAX(Dim_Date[Month_Number]) VAR ES_Months = [Earned_Schedule_Months] RETURN ROUND((ES_Months - ActualMonths) * 30.4375, 0)
+		formatString: 0
+		lineageTag: 659b129f-3e5f-48fa-a2c6-d30e336744b4
+
+	measure Scatter_X_Schedule_Variance_Pct = DIVIDE([Schedule_Variance_SV], [PV_S_Curve], 0)
+		formatString: 0.0%
+		lineageTag: d74ada26-ad25-4fd8-9af3-7537c2d3710c
+
+	measure Scatter_Y_Cost_Variance_Pct = DIVIDE([Cost_Variance_CV], [EV_S_Curve], 0)
+		formatString: 0.0%
+		lineageTag: da494bb9-a210-4301-b794-1e122385bbc6
+
+	measure CPI_RAG_Color =
+			
+			VAR CPI = [Cost_Performance_Index_CPI]
+			RETURN
+			"" & SWITCH(
+			    TRUE(),
+			    ISBLANK(CPI), "#737373",  // Muted Grey for blank/no data
+			    CPI < 0.90, "#DC2626",    // Highlight Red
+			    CPI < 1.00, "#D97706",    // Amber
+			    "#059669"                 // Muted Green
+			)
+		formatString: string
+		lineageTag: acaa8980-cd0a-47b9-82a6-b73cfc203587
+
+	measure SPI_RAG_Color = VAR SPI = [Schedule_Performance_Index_SPI] RETURN SWITCH(TRUE(), SPI < 0.95, "#DC2626", SPI < 1.00, "#D97706", "#059669")
+		formatString: string
+		lineageTag: ed6f8b3a-2b79-4e69-b23a-bcf123992027
+
+	measure CV_RAG_Color = VAR CV = [Cost_Variance_CV] RETURN IF(CV < 0, "#DC2626", "#059669")
+		formatString: string
+		lineageTag: 05a5c5f1-7efb-4703-b137-0f4b8c34ffb7
+
+	measure SV_RAG_Color = VAR SV = [Schedule_Variance_SV] RETURN IF(SV < 0, "#D97706", "#059669")
+		formatString: string
+		lineageTag: 63fa5388-7f31-4bee-939d-f94b4123947d
+
+	measure VAC_RAG_Color = VAR VAC = [Variance_at_Completion_VAC] RETURN IF(VAC < 0, "#DC2626", "#059669")
+		formatString: string
+		lineageTag: 407d764d-63c7-49fe-b3f2-eb9549cd3050
+
+	measure TCPI_RAG_Color = VAR TCPI = [TCPI_BAC] VAR CPI = [Cost_Performance_Index_CPI] RETURN IF(TCPI - CPI > 0.10, "#DC2626", "#059669")
+		formatString: string
+		lineageTag: 219c7f0c-97fd-4d78-886d-9a5b9d8fcbcc
+
+	measure CR = [Cost_Performance_Index_CPI]*[Schedule_Performance_Index_SPI]
+		lineageTag: 3a84770e-7d56-4e15-8065-4958d47b91d0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Task_ID
+		dataType: string
+		lineageTag: 59feca3c-443b-4deb-a986-fe9d1eb7e02f
+		summarizeBy: none
+		sourceColumn: Task_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date_Key
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 2f99bb79-cce7-4a16-97f3-885609e8a63e
+		summarizeBy: none
+		sourceColumn: Date_Key
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Total_Budget_Cost
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 95401b31-08c9-4907-9468-4375f5f2fd1e
+		summarizeBy: sum
+		sourceColumn: Total_Budget_Cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column PV_Incremental
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: a307ad0a-9b62-464d-b174-743361302876
+		summarizeBy: sum
+		sourceColumn: PV_Incremental
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column EV_Physical_Percent
+		dataType: double
+		lineageTag: 07a18ba0-ccff-4416-9a0a-fe01a1dc2ea6
+		summarizeBy: sum
+		sourceColumn: EV_Physical_Percent
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column EV_Incremental_Calculated
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 68e7dc3c-95d2-42d5-9517-d46a35c6e515
+		summarizeBy: sum
+		sourceColumn: EV_Incremental_Calculated
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column AC_Incremental
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 72480548-a0d5-4c0c-b27d-1657f6714bdf
+		summarizeBy: sum
+		sourceColumn: AC_Incremental
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	partition Partition = m
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\\Users\\frank\\Desktop\\EVM\\03_power_bi\\Fact_EVM_Periodic.csv"),[Delimiter=",", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Task_ID", type text}, {"Date_Key", type date}, {"Total_Budget_Cost", Currency.Type}, {"PV_Incremental", Currency.Type}, {"EV_Physical_Percent", type number}, {"EV_Incremental_Calculated", Currency.Type}, {"AC_Incremental", Currency.Type}})
+				in
+				    #"Changed Type"
+

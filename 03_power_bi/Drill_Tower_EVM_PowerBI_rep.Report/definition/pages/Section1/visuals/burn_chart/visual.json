@@ -1,0 +1,14 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "burn_chart",
+  "position": {
+    "x": 640,
+    "y": 140,
+    "z": 5000,
+    "height": 260,
+    "width": 600
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart"
+  }
+}

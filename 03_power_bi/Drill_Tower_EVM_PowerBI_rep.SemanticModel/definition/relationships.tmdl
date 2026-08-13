@@ -1,0 +1,14 @@
+relationship AutoDetected_61a1a9c3-2ac1-47a2-930c-b16173dc6fc7
+	fromColumn: Fact_EVM_Periodic.Task_ID
+	toColumn: Dim_WBS.Task_ID
+
+relationship AutoDetected_7dc3556b-cc77-4d5d-b93c-4bd0055e23e0
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: Fact_Gantt_Schedule.Task_ID
+	toColumn: Dim_WBS.Task_ID
+
+relationship 46c5818b-5fbe-aa0b-3547-e836caaa287d
+	fromColumn: Fact_EVM_Periodic.Date_Key
+	toColumn: Dim_Date.Date_Key
+

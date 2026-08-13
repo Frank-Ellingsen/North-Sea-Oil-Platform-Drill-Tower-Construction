@@ -9,7 +9,10 @@ def create_sqlite_database():
 
     db_path = os.path.join(db_dir, "evm_transactional.db")
     if os.path.exists(db_path):
-        os.remove(db_path)
+        try:
+            os.remove(db_path)
+        except Exception:
+            pass
 
     print("=" * 80)
     print(f"Building Production SQLite Database ({db_path})...")
@@ -18,6 +21,12 @@ def create_sqlite_database():
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
+    cursor.execute("PRAGMA foreign_keys = OFF;")
+    cursor.execute("DROP VIEW IF EXISTS View_EVM_Summary;")
+    cursor.execute("DROP TABLE IF EXISTS Fact_EVM_Periodic;")
+    cursor.execute("DROP TABLE IF EXISTS Fact_Gantt_Schedule;")
+    cursor.execute("DROP TABLE IF EXISTS Dim_WBS;")
+    cursor.execute("DROP TABLE IF EXISTS Dim_Date;")
     cursor.execute("PRAGMA foreign_keys = ON;")
 
     cursor.execute("""
@@ -111,6 +120,7 @@ def create_sqlite_database():
         ROUND(f.EV_Incremental_Calculated - f.PV_Incremental, 2) AS SV,
         CASE WHEN f.AC_Incremental = 0 THEN 1.0 ELSE ROUND(f.EV_Incremental_Calculated / f.AC_Incremental, 4) END AS CPI,
         CASE WHEN f.PV_Incremental = 0 THEN 1.0 ELSE ROUND(f.EV_Incremental_Calculated / f.PV_Incremental, 4) END AS SPI,
+        ROUND((CASE WHEN f.AC_Incremental = 0 THEN 1.0 ELSE f.EV_Incremental_Calculated / f.AC_Incremental END) * (CASE WHEN f.PV_Incremental = 0 THEN 1.0 ELSE f.EV_Incremental_Calculated / f.PV_Incremental END), 4) AS CR,
         CASE 
             WHEN (CASE WHEN f.AC_Incremental = 0 THEN 1.0 ELSE f.EV_Incremental_Calculated / f.AC_Incremental END) >= 1.0 THEN 'GREEN'
             WHEN (CASE WHEN f.AC_Incremental = 0 THEN 1.0 ELSE f.EV_Incremental_Calculated / f.AC_Incremental END) >= 0.90 THEN 'AMBER'
@@ -120,7 +130,12 @@ def create_sqlite_database():
             WHEN (CASE WHEN f.PV_Incremental = 0 THEN 1.0 ELSE f.EV_Incremental_Calculated / f.PV_Incremental END) >= 1.0 THEN 'GREEN'
             WHEN (CASE WHEN f.PV_Incremental = 0 THEN 1.0 ELSE f.EV_Incremental_Calculated / f.PV_Incremental END) >= 0.95 THEN 'AMBER'
             ELSE 'RED'
-        END AS SPI_RAG_Status
+        END AS SPI_RAG_Status,
+        CASE 
+            WHEN ((CASE WHEN f.AC_Incremental = 0 THEN 1.0 ELSE f.EV_Incremental_Calculated / f.AC_Incremental END) * (CASE WHEN f.PV_Incremental = 0 THEN 1.0 ELSE f.EV_Incremental_Calculated / f.PV_Incremental END)) >= 1.0 THEN 'GREEN'
+            WHEN ((CASE WHEN f.AC_Incremental = 0 THEN 1.0 ELSE f.EV_Incremental_Calculated / f.AC_Incremental END) * (CASE WHEN f.PV_Incremental = 0 THEN 1.0 ELSE f.EV_Incremental_Calculated / f.PV_Incremental END)) >= 0.90 THEN 'AMBER'
+            ELSE 'RED'
+        END AS CR_RAG_Status
     FROM Fact_EVM_Periodic f
     JOIN Dim_WBS w ON f.Task_ID = w.Task_ID
     JOIN Dim_Date d ON f.Date_Key = d.Date_Key;

@@ -51,6 +51,14 @@ SPI < 1 → schedule delay
 
 SPI > 1 → schedule efficiency
 
+Critical Ratio (CR) = CPI × SPI
+
+CR < 0.90 → critical combined risk (cost overrun + schedule delay)
+
+0.90 ≤ CR < 1.00 → warning / moderate deficit
+
+CR ≥ 1.00 → healthy overall project health
+
 📅 Forecasting Metrics
 BAC (Budget at Completion) – Total approved project budget.
 

@@ -309,7 +309,7 @@ def create_deck():
     add_kpi_card(slide5, Inches(6.7), Inches(1.4), Inches(2.9), Inches(1.2), "Earned Schedule (ES)", "7.40 Months", "Actual Time Elapsed: 8.0M", C_AMBER)
     add_kpi_card(slide5, Inches(9.8), Inches(1.4), Inches(3.033), Inches(1.2), "Time Variance (SVt)", "-18.2 Days", "Behind Baseline Plan", C_RED)
 
-    scurve_table = slide5.shapes.add_table(7, 5, Inches(0.5), Inches(2.8), Inches(12.333), Inches(4.3)).table
+    scurve_table = slide5.shapes.add_table(8, 5, Inches(0.5), Inches(2.8), Inches(12.333), Inches(4.3)).table
     sc_headers = ["Performance Metric", "Formula / Standard", "Current Value", "Threshold Status", "Operational Meaning"]
     for i, h in enumerate(sc_headers):
         cell = scurve_table.cell(0, i)
@@ -327,6 +327,7 @@ def create_deck():
         ["Actual Spend (AC)", "Cumulative General Ledger", "$23,440,000", "🚨 Exceeds EV", "Actual funds disbursed"],
         ["Cost Performance Index (CPI)", "EV / AC", "0.7483", "🚨 Red (< 0.90)", "$0.75 earned value generated for every $1.00 spent"],
         ["Schedule Index (SPI)", "EV / PV", "0.8556", "🟡 Amber (< 0.95)", "Scope earned velocity lags baseline schedule"],
+        ["Critical Ratio (CR)", "CPI × SPI", "0.6402", "🚨 Red (< 0.90)", "Overall combined project health index"],
         ["TCPI (Target BAC)", "(BAC - EV) / (BAC - AC)", "6.07", "🚨 Unviable (> 1.10)", "Impossible cost efficiency required to hit $26.50M BAC"]
     ]
     for r_idx, r_data in enumerate(sc_data, start=1):
@@ -520,8 +521,13 @@ def create_deck():
 
     # Save presentation
     output_pptx = os.path.join(prs_dir, "Drill_Tower_Executive_Steering_Presentation.pptx") if 'prs_dir' in locals() else os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "06_docs", "Drill_Tower_Executive_Steering_Presentation.pptx")
-    prs.save(output_pptx)
-    print(f"✅ Generated: 06_docs/Drill_Tower_Executive_Steering_Presentation.pptx")
+    try:
+        prs.save(output_pptx)
+        print(f"✅ Generated: 06_docs/Drill_Tower_Executive_Steering_Presentation.pptx")
+    except PermissionError:
+        alt_pptx = output_pptx.replace(".pptx", "_updated.pptx")
+        prs.save(alt_pptx)
+        print(f"⚠️ Locked! Saved presentation to: {alt_pptx}")
 
 if __name__ == "__main__":
     create_deck()

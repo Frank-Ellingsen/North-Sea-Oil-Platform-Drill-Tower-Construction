@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Drill_Tower_EVM_PowerBI_rep"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "09b0858e-b7bf-40eb-ad72-c646b870865f"
+  }
+}

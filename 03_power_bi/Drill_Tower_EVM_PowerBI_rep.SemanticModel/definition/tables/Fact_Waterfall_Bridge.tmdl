@@ -1,0 +1,93 @@
+table Fact_Waterfall_Bridge
+	lineageTag: e40c5fb2-5dc2-44a3-a383-9b917fc18512
+
+	measure Waterfall_Incremental_Cost = SUM(Fact_Waterfall_Bridge[Incremental_Cost])
+		formatString: $#,##0
+		lineageTag: 984d3626-fd34-47aa-bea9-dd41be0b5b0c
+
+	measure Waterfall_Cumulative_Cost = SUM(Fact_Waterfall_Bridge[Cumulative_Cost])
+		formatString: $#,##0
+		lineageTag: 65c60afe-99d5-477f-89d2-4c0420fcf51f
+
+	column Is_Overrun_Step = IF(Fact_Waterfall_Bridge[Type] = "Variance", TRUE(), FALSE())
+		dataType: boolean
+		lineageTag: b091b6bc-8b73-4f0e-b775-b450a0eda629
+
+	column Waterfall_Bar_Color = SWITCH(TRUE(), Fact_Waterfall_Bridge[Type] = "Baseline", "#2563EB", Fact_Waterfall_Bridge[Type] = "Outturn", "#111827", Fact_Waterfall_Bridge[Step_ID] = 4, "#7F1D1D", Fact_Waterfall_Bridge[Step_ID] = 8, "#B91C1C", "#DC2626")
+		dataType: string
+		lineageTag: e0833608-710d-4664-8ca7-1ead91d047e7
+
+	column Step_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 358f4f27-99ee-43b8-9136-32dfd20eb1f1
+		summarizeBy: count
+		sourceColumn: Step_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Component_Name
+		dataType: string
+		lineageTag: cbdc19bd-d011-48d2-9ae4-0f538b17042f
+		summarizeBy: none
+		sourceColumn: Component_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Type
+		dataType: string
+		lineageTag: 666b3ad3-0655-4473-b00f-4a05a643020e
+		summarizeBy: none
+		sourceColumn: Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column Incremental_Cost
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: bf561eaa-75c8-42ef-b851-c11beafd77e7
+		summarizeBy: sum
+		sourceColumn: Incremental_Cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Cumulative_Cost
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 4f3cf26d-87b9-4355-85c3-d4e2fcebd75e
+		summarizeBy: sum
+		sourceColumn: Cumulative_Cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Pct_Share
+		dataType: double
+		lineageTag: 1381f4ad-e3a0-43cb-a097-9e8cb983c714
+		summarizeBy: sum
+		sourceColumn: Pct_Share
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Description
+		dataType: string
+		lineageTag: f25dde15-b0dc-4c56-af29-aacc28cab55c
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Partition = m
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\\Users\\frank\\Desktop\\EVM\\03_power_bi\\Fact_Waterfall_Bridge.csv"),[Delimiter=",", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Step_ID", Int64.Type}, {"Component_Name", type text}, {"Type", type text}, {"Incremental_Cost", Currency.Type}, {"Cumulative_Cost", Currency.Type}, {"Pct_Share", type number}, {"Description", type text}})
+				in
+				    #"Changed Type"
+

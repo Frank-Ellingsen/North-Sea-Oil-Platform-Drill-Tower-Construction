@@ -1,0 +1,74 @@
+table Fact_Milestones
+	lineageTag: 7611215f-2df8-4a4b-a2d6-5e8462ca3064
+
+	column Milestone_ID
+		dataType: string
+		lineageTag: 0296bcee-8164-41df-9c3c-fb223f3097e8
+		summarizeBy: none
+		sourceColumn: Milestone_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Milestone_Name
+		dataType: string
+		lineageTag: b8299ef4-e0ed-4a88-ac1a-ddd47e9bd934
+		summarizeBy: none
+		sourceColumn: Milestone_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Target_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a484d961-2f6c-444f-82fa-9d47f2ea2303
+		summarizeBy: none
+		sourceColumn: Target_Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Baseline_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 3974f1aa-e7e4-4c56-9299-b976cab63e79
+		summarizeBy: none
+		sourceColumn: Baseline_Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Status
+		dataType: string
+		lineageTag: df44e683-cbf3-42f1-9971-597040caf991
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column RAG
+		dataType: string
+		lineageTag: b18c8e45-66d8-4e3a-9b0a-c51fac7c5ae9
+		summarizeBy: none
+		sourceColumn: RAG
+
+		annotation SummarizationSetBy = Automatic
+
+	column WBS_Code
+		dataType: string
+		lineageTag: bb7a9d29-8bce-460a-807a-a8930b17da43
+		summarizeBy: none
+		sourceColumn: WBS_Code
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Partition = m
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\\Users\\frank\\Desktop\\EVM\\03_power_bi\\Fact_Milestones.csv"),[Delimiter=",", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Milestone_ID", type text}, {"Milestone_Name", type text}, {"Target_Date", type date}, {"Baseline_Date", type date}, {"Status", type text}, {"RAG", type text}, {"WBS_Code", type text}})
+				in
+				    #"Changed Type"
+

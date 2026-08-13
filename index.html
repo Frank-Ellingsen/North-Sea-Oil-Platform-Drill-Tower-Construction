@@ -88,7 +88,7 @@
 
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 12px;
             margin-bottom: 16px;
         }
@@ -835,6 +835,11 @@
                             <td style="text-align: right; font-weight: 600; color: var(--rag-amber);">0.9250</td>
                             <td style="padding-left: 20px; color: var(--text-secondary);">-18.2 Days behind baseline schedule progress</td>
                         </tr>
+                        <tr>
+                            <td>Critical Ratio (<strong>CR</strong> = CPI × SPI)</td>
+                            <td style="text-align: right; font-weight: 600; color: var(--rag-red);">0.6402</td>
+                            <td style="padding-left: 20px; color: var(--text-secondary);">Compound overall project health index (CPI 0.7483 × SPI 0.8556 &lt; 0.90)</td>
+                        </tr>
                     </tbody>
                 </table>
 
@@ -1176,6 +1181,11 @@
                 <div class="kpi-value">0.86 <span class="badge badge-amber">Delayed</span></div>
                 <div class="kpi-subtext">Planned: $20,500,000</div>
             </div>
+            <div class="kpi-card" style="cursor:pointer;" onclick="showActionModal('cr')" title="Click for Critical Ratio details">
+                <div class="kpi-label">Critical Ratio (CR)</div>
+                <div class="kpi-value" style="color: var(--rag-red);">0.64 <span class="badge badge-red">Critical Risk</span></div>
+                <div class="kpi-subtext">CPI (0.75) × SPI (0.86)</div>
+            </div>
         </div>
 
         <!-- PERFORMANCE MEASUREMENT BASELINE (S-CURVE) WITH VARIANCE LABELS -->
@@ -1382,6 +1392,14 @@
                         <td class="center"><span class="badge badge-red">Unviable</span> (&gt; 1.10)</td>
                         <td>Original $BAC$ budget target requires impossible cost efficiency of $607\%$ for remaining work.</td>
                         <td>Formally transition operational target to $TCPI_{EAC} = 1.00$. Enforce weekly EVM gate reviews for CAMs with $TCPI &gt; 1.05$.</td>
+                        <td class="center">Frank Ellingsen</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Critical Ratio (CR)</strong></td>
+                        <td class="center"><span class="badge badge-red" style="cursor:pointer;" onclick="showActionModal('cr')" title="Click for interactive details">0.6402</span></td>
+                        <td class="center"><span class="badge badge-red">CR &lt; 0.90</span></td>
+                        <td>Compound performance degradation ($0.75 \times 0.86 = 0.64$). Indicates simultaneous cost overrun and schedule delay across primary control accounts.</td>
+                        <td>Mandate joint Cost &amp; Schedule Steering Committee intervention. Establish weekly EVM gate reviews for any CAM with $CR &lt; 0.85$.</td>
                         <td class="center">Frank Ellingsen</td>
                     </tr>
                     <tr>
@@ -2958,6 +2976,16 @@
                         'Mandate weekly EVM gate reviews for any CAM with TCPI_EAC > 1.05.'
                     ],
                     owner: 'Frank Ellingsen (Project Controller)'
+                },
+                'cr': {
+                    title: '🔴 Critical Ratio (CR: 0.6402 - Critical Combined Deficit)',
+                    explanation: 'Critical Ratio (CR = CPI × SPI = 0.7483 × 0.8556 = 0.6402) measures overall compound project health. A CR < 0.90 indicates severe compound cost and schedule failure, meaning the project is both over-budget and behind schedule simultaneously.',
+                    actions: [
+                        'Mandate immediate joint Cost & Schedule Steering Committee intervention.',
+                        'Re-baseline operational targets using TCPI_EAC and Earned Schedule (SPI_t).',
+                        'Enforce daily gates on fabrication yards (WBS 1.3) to prevent further CPI/SPI degradation.'
+                    ],
+                    owner: 'Frank Ellingsen (Project Controller) / Executive Steering Committee'
                 },
                 'sv': {
                     title: '🟡/🔴 Critical Path Delay (+31 Days / SV: -$2,960,000)',

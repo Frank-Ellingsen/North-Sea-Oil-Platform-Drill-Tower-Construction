@@ -1,0 +1,144 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 32,
+            "y": 23.118845666896107
+          },
+          "nodeIndex": "Dim_Date",
+          "nodeLineageTag": "64ec10a4-b604-4eb6-92e8-22259a463876",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 618.41040181545588,
+            "y": 10.378697769124898
+          },
+          "nodeIndex": "Dim_WBS",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 334.20225510460887,
+            "y": 85.886687578603215
+          },
+          "nodeIndex": "Fact_EVM_Periodic",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 279.059422833448
+          },
+          "nodeIndex": "Fact_Financial_Appraisal",
+          "nodeLineageTag": "5434493e-0bfb-4213-85bc-00173075c04a",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 902.62216291713673,
+            "y": -49.999999999999972
+          },
+          "nodeIndex": "Fact_Gantt_Schedule",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1420.6221629171368,
+            "y": 101.05942283344802
+          },
+          "nodeIndex": "Fact_Milestones",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1704.6221629171368,
+            "y": 75.059422833448025
+          },
+          "nodeIndex": "Fact_Monte_Carlo",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1988.6221629171368,
+            "y": 75.059422833448025
+          },
+          "nodeIndex": "Fact_Monthly_Burn_Rate",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2272.6221629171368,
+            "y": 75.059422833448025
+          },
+          "nodeIndex": "Fact_Risk_Register",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2556.6221629171368,
+            "y": 75.059422833448025
+          },
+          "nodeIndex": "Fact_Waterfall_Bridge",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

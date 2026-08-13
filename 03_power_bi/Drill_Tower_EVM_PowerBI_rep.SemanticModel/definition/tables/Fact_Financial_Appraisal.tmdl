@@ -1,0 +1,78 @@
+table Fact_Financial_Appraisal
+	lineageTag: 5434493e-0bfb-4213-85bc-00173075c04a
+
+	measure Project_NPV_10Pct_WACC = 14899563.00
+		formatString: $#,##0
+		lineageTag: 37f708d7-fedd-44da-9ad2-8df186581e17
+
+	measure Project_IRR = 0.1886
+		formatString: 0.00%
+		lineageTag: 697a8485-13fe-4e69-b84f-db4a4a8c8f90
+
+	measure Project_Simple_Payback_Years = 4.43
+		formatString: 0.00 Years
+		lineageTag: 2b4048b3-cc47-48f3-9981-6bf5db22b930
+
+	measure Project_Total_ROI = 1.3437
+		formatString: 0.00%
+		lineageTag: 82f2d8c0-304a-481f-b903-cdd5bf86b683
+
+	measure Project_Profitability_Index = 1.42
+		formatString: 0.00
+		lineageTag: baa4b916-fe55-4b5e-8f2f-a7823a386711
+
+	measure Project_Future_Value_Year10 = 130499397.00
+		formatString: $#,##0
+		lineageTag: 11be10eb-d1f1-4171-ab9b-ffecd6d78a2b
+
+	column Metric
+		dataType: string
+		lineageTag: 935cfaa5-40c7-4411-b9f2-db5be027091b
+		summarizeBy: none
+		sourceColumn: Metric
+
+		annotation SummarizationSetBy = Automatic
+
+	column Value
+		dataType: string
+		lineageTag: dea5afbc-425f-4aa6-9c20-eab6f0bcb1df
+		summarizeBy: none
+		sourceColumn: Value
+
+		annotation SummarizationSetBy = Automatic
+
+	column Numeric_Value
+		dataType: double
+		lineageTag: b5ccd7c3-8878-4bdd-9c38-95e6d58e5d1f
+		summarizeBy: sum
+		sourceColumn: Numeric_Value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Unit
+		dataType: string
+		lineageTag: 4ea62546-b0c5-42c2-8edc-d3ed43af840f
+		summarizeBy: none
+		sourceColumn: Unit
+
+		annotation SummarizationSetBy = Automatic
+
+	column Evaluation
+		dataType: string
+		lineageTag: bdd122a5-df55-4263-9c8f-73a6e38b1bc0
+		summarizeBy: none
+		sourceColumn: Evaluation
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Partition = m
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\\Users\\frank\\Desktop\\EVM\\03_power_bi\\Fact_Financial_Appraisal.csv"),[Delimiter=",", Columns=5, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Metric", type text}, {"Value", type text}, {"Numeric_Value", type number}, {"Unit", type text}, {"Evaluation", type text}})
+				in
+				    #"Changed Type"
+

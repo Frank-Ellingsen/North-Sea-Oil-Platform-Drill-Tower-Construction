@@ -127,7 +127,21 @@ CPI < 1, indicates cost overrun for work completed (bad performance)
 
 CPI > 1, indicates cost underrun for work completed (good performance)
 
-Note: When CPI and SPI are equal to 1 (CPI = SPI = 1), the project is performing as planned without any variance.
+Critical Ratio (CR)
+Definition: Overall project health index combining cost efficiency and schedule velocity into a single multiplicative metric.
+
+Formula: CR = CPI × SPI = (EV / AC) × (EV / PV)
+
+Threshold Interpretation:
+- CR ≥ 1.00: Healthy / Performing better than planned overall (Green)
+- 0.90 ≤ CR < 1.00: Warning / Mild combined deficit requiring monitoring (Amber)
+- CR < 0.90: Critical Alert / Severe combined cost overrun & schedule delay (Red)
+
+Application in Forecasting:
+Used in comprehensive EAC outturn forecasting when both cost and schedule factors compound remaining work:
+EAC_CR = AC + [(BAC - EV) / (CPI × SPI)] = AC + [(BAC - EV) / CR]
+
+Note: When CPI and SPI are equal to 1 (CPI = SPI = 1), CR = 1.00 and the project is performing exactly as planned without any variance.
 
 Conclusion
 EVM and cost management are integral to the cost control process in the M&C project phase. As a project manager, the metrics and formulas mentioned in this reading can assist with measuring project performance and success.

@@ -171,6 +171,11 @@ def build_powerbi_solution():
                             "formatString": "0.0000"
                         },
                         {
+                            "name": "Critical_Ratio_CR",
+                            "expression": "[Cost_Performance_Index_CPI] * [Schedule_Performance_Index_SPI]",
+                            "formatString": "0.0000"
+                        },
+                        {
                             "name": "PM_Overall_Completion_Pct",
                             "expression": "DIVIDE([EV_S_Curve], [Total_Budget_at_Completion_BAC], 0)",
                             "formatString": "0.0%"
@@ -253,6 +258,11 @@ def build_powerbi_solution():
                         {
                             "name": "TCPI_RAG_Color",
                             "expression": "VAR TCPI = [TCPI_BAC] VAR CPI = [Cost_Performance_Index_CPI] RETURN IF(TCPI - CPI > 0.10, \"#DC2626\", \"#059669\")",
+                            "formatString": "string"
+                        },
+                        {
+                            "name": "CR_RAG_Color",
+                            "expression": "VAR CR = [Critical_Ratio_CR] RETURN SWITCH(TRUE(), ISBLANK(CR), \"#737373\", CR < 0.90, \"#DC2626\", CR < 1.00, \"#D97706\", \"#059669\")",
                             "formatString": "string"
                         }
                     ],

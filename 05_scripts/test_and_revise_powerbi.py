@@ -53,6 +53,7 @@ def test_powerbi_project():
     sv = ev_cum - pv_cum
     cpi = round(ev_cum / ac_cum, 4)
     spi = round(ev_cum / pv_cum, 4)
+    cr = round(cpi * spi, 4)
     eac = round(bac / cpi, 2)
     vac = round(bac - eac, 2)
 
@@ -64,11 +65,13 @@ def test_powerbi_project():
     print(f" Month 8 Schedule Var (SV)   : ${sv:,.2f}")
     print(f" Month 8 CPI Efficiency      : {cpi}")
     print(f" Month 8 SPI Velocity        : {spi}")
+    print(f" Month 8 Critical Ratio (CR) : {cr}")
     print(f" Outturn Forecast EAC        : ${eac:,.2f}")
     print(f" Variance at Completion VAC  : ${vac:,.2f}")
 
     assert bac == 26500000.0, "[FAIL] BAC mismatch!"
     assert cpi == 0.7483, f"[FAIL] CPI calculation mismatch! Got {cpi}"
+    assert cr == 0.6402, f"[FAIL] CR calculation mismatch! Got {cr}"
     print(" [PASS] Mathematical DAX calculations 100% verified.")
 
     print("\n>>> ALL POWER BI PROJECT AUDIT TESTS PASSED SUCCESSFULLY <<<")

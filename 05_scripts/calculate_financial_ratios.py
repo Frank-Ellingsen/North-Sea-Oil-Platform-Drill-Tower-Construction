@@ -41,6 +41,14 @@ fv_capex = capex * ((1 + r) ** years)
 fv_cashflows = sum(cf * ((1 + r) ** (years - t)) for t, cf in enumerate(cash_flows[1:], 1))
 net_fv = fv_cashflows - fv_capex
 
+# 7. EVM Performance Indices & Critical Ratio (CR)
+ev = 17540000.0
+pv = 20500000.0
+ac = 23440000.0
+cpi = ev / ac
+spi = ev / pv
+cr = cpi * spi
+
 print("================================================================================")
 print("COMMERCIAL CAPITAL BUDGETING & APPRAISAL METRICS (DRILL TOWER PROJECT)")
 print("================================================================================")
@@ -58,4 +66,9 @@ print(f"6. Profitability Index (PI)   : {pi:.2f} (Benefit-Cost Ratio)")
 print(f"7. Present Value of Inflows   : ${pv_inflows:,.2f}")
 print(f"8. Future Value (FV at Yr 10) : ${fv_cashflows:,.2f}")
 print(f"9. Net Future Value (NFV)     : +${net_fv:,.2f}")
+print("--------------------------------------------------------------------------------")
+print(f"EVM Cost Performance (CPI)   : {cpi:.4f} ($0.75 Earned per $1.00 Spent)")
+print(f"EVM Schedule Velocity (SPI)  : {spi:.4f} (Scope Progress Lag)")
+print(f"EVM Critical Ratio (CR=CPI*SPI): {cr:.4f} (Critical Red < 0.90)")
 print("================================================================================")
+
