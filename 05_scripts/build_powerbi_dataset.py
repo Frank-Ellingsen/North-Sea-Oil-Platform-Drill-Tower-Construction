@@ -219,6 +219,23 @@ def build_powerbi_solution():
     print(f"✅ Generated: 03_power_bi/PowerBI_Dashboard_Specification.json")
 
     # 3. Create Power BI Project Definition Structure (.pbip)
+    # 3a. Create Dataset Folder (.Dataset) with definition.pbism & model.bim
+    pbi_dataset_dir = os.path.join(pbi_dir, "Drill_Tower_EVM_PowerBI.Dataset")
+    os.makedirs(pbi_dataset_dir, exist_ok=True)
+
+    pbism_content = {
+        "version": "1.0",
+        "settings": {}
+    }
+    with open(os.path.join(pbi_dataset_dir, "definition.pbism"), "w", encoding="utf-8") as f:
+        json.dump(pbism_content, f, indent=2)
+
+    with open(os.path.join(pbi_dataset_dir, "model.bim"), "w", encoding="utf-8") as f:
+        json.dump(bim_model, f, indent=2)
+
+    print(f"✅ Generated: 03_power_bi/Drill_Tower_EVM_PowerBI.Dataset/ (definition.pbism & model.bim)")
+
+    # 3b. Create Report Folder (.Report) with definition.pbir & report.json
     pbip_dir = os.path.join(pbi_dir, "Drill_Tower_EVM_PowerBI.Report")
     os.makedirs(pbip_dir, exist_ok=True)
     
@@ -231,6 +248,14 @@ def build_powerbi_solution():
     with open(os.path.join(pbip_dir, "definition.pbir"), "w", encoding="utf-8") as f:
         json.dump(definition_json, f, indent=2)
 
+    report_json = {
+        "config": "{}",
+        "layoutOptimization": 0
+    }
+    with open(os.path.join(pbip_dir, "report.json"), "w", encoding="utf-8") as f:
+        json.dump(report_json, f, indent=2)
+
+    # 3c. Create Root .pbip File
     pbip_root = os.path.join(pbi_dir, "Drill_Tower_EVM_PowerBI.pbip")
     pbip_content = {
         "version": "1.0",
