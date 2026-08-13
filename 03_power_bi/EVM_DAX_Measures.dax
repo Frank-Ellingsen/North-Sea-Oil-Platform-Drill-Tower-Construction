@@ -1,6 +1,7 @@
 // ===============================================================================
 // ENTERPRISE EARNED VALUE MANAGEMENT (EVM) DAX MEASURE LIBRARY
-// Designed for Power BI Star Schema Model: Fact_EVM_Periodic, Dim_Date, Dim_WBS
+// Designed for Power BI Star Schema Model: Fact_EVM_Periodic, Dim_Date, Dim_WBS, Fact_Gantt_Schedule
+// Aligned 100% with index.html Web Visuals & Steering Committee Briefing
 // ===============================================================================
 
 // -------------------------------------------------------------------------------
@@ -11,7 +12,7 @@ Status_Date =
 MAX(Fact_EVM_Periodic[Date_Key])
 
 Total_Budget_at_Completion_BAC = 
-SUM(Fact_EVM_Periodic[Total_Budget_Cost])
+SUM(Dim_WBS[TBC])
 
 // -------------------------------------------------------------------------------
 // 2. PERIODIC INCREMENTAL METRICS
@@ -30,28 +31,14 @@ SUM(Fact_EVM_Periodic[AC_Incremental])
 // 3. S-CURVE CUMULATIVE TIME-INTELLIGENCE MEASURES
 // -------------------------------------------------------------------------------
 
-// PV S-Curve Option A: Classic CALCULATE + ALLSELECTED Pattern (Legacy Compatible)
-PV_S_Curve_Classic = 
+// PV S-Curve (Cumulative Planned Value)
+PV_S_Curve = 
 CALCULATE(
     SUM(Fact_EVM_Periodic[PV_Incremental]),
-    FILTER(
-        ALLSELECTED(Dim_Date[Date_Key]),
-        Dim_Date[Date_Key] <= MAX(Dim_Date[Date_Key])
-    )
+    WINDOW(1, ABS, 0, REL, ORDERBY(Dim_Date[Date_Key]))
 )
 
-// PV S-Curve Option B: Optimized WINDOW Pattern (Power BI 2024+)
-PV_S_Curve_WINDOW = 
-CALCULATE(
-    SUM(Fact_EVM_Periodic[PV_Incremental]),
-    WINDOW(
-        1, ABS,
-        0, REL,
-        ORDERBY(Dim_Date[Date_Key])
-    )
-)
-
-// EV S-Curve (Constrained to Status Date cutoff)
+// EV S-Curve (Cumulative Earned Value - Constrained to Status Date Cutoff)
 EV_S_Curve = 
 VAR CurrentDate = MAX(Dim_Date[Date_Key])
 RETURN
@@ -64,7 +51,7 @@ IF(
     BLANK()
 )
 
-// AC S-Curve (Constrained to Status Date cutoff)
+// AC S-Curve (Cumulative Actual Costs - Constrained to Status Date Cutoff)
 AC_S_Curve = 
 VAR CurrentDate = MAX(Dim_Date[Date_Key])
 RETURN
@@ -84,17 +71,26 @@ IF(
 Cost_Variance_CV = 
 [EV_S_Curve] - [AC_S_Curve]
 
+Cost_Variance_CV_Pct = 
+DIVIDE([Cost_Variance_CV], [EV_S_Curve], 0)
+
 Schedule_Variance_SV = 
-[EV_S_Curve] - [PV_S_Curve_WINDOW]
+[EV_S_Curve] - [PV_S_Curve]
+
+Schedule_Variance_SV_Pct = 
+DIVIDE([Schedule_Variance_SV], [PV_S_Curve], 0)
 
 Cost_Performance_Index_CPI = 
 DIVIDE([EV_S_Curve], [AC_S_Curve], 1.0)
 
 Schedule_Performance_Index_SPI = 
-DIVIDE([EV_S_Curve], [PV_S_Curve_WINDOW], 1.0)
+DIVIDE([EV_S_Curve], [PV_S_Curve], 1.0)
+
+PM_Overall_Completion_Pct = 
+DIVIDE([EV_S_Curve], [Total_Budget_at_Completion_BAC], 0)
 
 // -------------------------------------------------------------------------------
-// 5. FORECASTING & TO-COMPLETE METRICS
+// 5. FORECASTING & TO-COMPLETE METRICS (EAC, VAC, TCPI)
 // -------------------------------------------------------------------------------
 
 Estimate_at_Completion_EAC = 
@@ -110,6 +106,17 @@ VAR AC = [AC_S_Curve]
 RETURN
 DIVIDE(BAC - EV, BAC - AC, 1.0)
 
+TCPI_EAC = 
+VAR BAC = [Total_Budget_at_Completion_BAC]
+VAR EAC = [Estimate_at_Completion_EAC]
+VAR EV = [EV_S_Curve]
+VAR AC = [AC_S_Curve]
+RETURN
+DIVIDE(BAC - EV, EAC - AC, 1.0)
+
+ETC_Remaining_Liquidity_Needed = 
+[Estimate_at_Completion_EAC] - [AC_S_Curve]
+
 // -------------------------------------------------------------------------------
 // 6. ADVANCED EARNED SCHEDULE (ES) & TIME-BASED SPI(t) MEASURES
 // -------------------------------------------------------------------------------
@@ -119,12 +126,12 @@ VAR CurrentEV = [EV_S_Curve]
 VAR DateTableWithPV = 
     FILTER(
         ALL(Dim_Date),
-        [PV_S_Curve_WINDOW] <= CurrentEV
+        [PV_S_Curve] <= CurrentEV
     )
 VAR C_MonthDate = MAXX(DateTableWithPV, Dim_Date[Date_Key])
 VAR C_MonthNumber = MAXX(DateTableWithPV, Dim_Date[Month_Number])
-VAR PV_At_C = CALCULATE([PV_S_Curve_WINDOW], Dim_Date[Date_Key] = C_MonthDate)
-VAR PV_At_C_Plus_1 = CALCULATE([PV_S_Curve_WINDOW], DATEADD(Dim_Date[Date_Key], 1, MONTH))
+VAR PV_At_C = CALCULATE([PV_S_Curve], Dim_Date[Date_Key] = C_MonthDate)
+VAR PV_At_C_Plus_1 = CALCULATE([PV_S_Curve], DATEADD(Dim_Date[Date_Key], 1, MONTH))
 VAR Interpolation = DIVIDE(CurrentEV - PV_At_C, PV_At_C_Plus_1 - PV_At_C, 0)
 RETURN
 IF(
@@ -136,18 +143,53 @@ IF(
 SPI_Time_Based = 
 DIVIDE([Earned_Schedule_Months], MAX(Dim_Date[Month_Number]), 1.0)
 
+Time_Variance_Days = 
+VAR ActualMonths = MAX(Dim_Date[Month_Number])
+VAR ES_Months = [Earned_Schedule_Months]
+RETURN
+ROUND((ES_Months - ActualMonths) * 30.4375, 0)
+
 // -------------------------------------------------------------------------------
-// 7. CONCENTRIC BULLSEYE RISK SCATTER PLOT COORDINATES
+// 7. MONTHLY CASH BURN SPEED & BUDGET DEPLETION ("BURN OUT") MEASURES
+// -------------------------------------------------------------------------------
+
+CFO_Cash_Burn_Rate_Monthly = 
+DIVIDE([AC_S_Curve], MAX(Dim_Date[Month_Number]), 0)
+
+Avg_Monthly_Cash_Burn_Actual = 
+AVERAGEX(
+    FILTER(Fact_Monthly_Burn_Rate, Fact_Monthly_Burn_Rate[Cum_AC] <= 23440000),
+    Fact_Monthly_Burn_Rate[Monthly_AC]
+)
+
+Remaining_Baseline_Capital = 
+[Total_Budget_at_Completion_BAC] - [AC_S_Curve]
+
+Required_Overrun_Financing = 
+[Estimate_at_Completion_EAC] - [Total_Budget_at_Completion_BAC]
+
+// -------------------------------------------------------------------------------
+// 8. COST VARIANCE WATERFALL BRIDGE MEASURES
+// -------------------------------------------------------------------------------
+
+Waterfall_Incremental_Cost = 
+SUM(Fact_Waterfall_Bridge[Incremental_Cost])
+
+Waterfall_Cumulative_Cost = 
+SUM(Fact_Waterfall_Bridge[Cumulative_Cost])
+
+// -------------------------------------------------------------------------------
+// 9. CONCENTRIC BULLSEYE RISK SCATTER PLOT COORDINATES
 // -------------------------------------------------------------------------------
 
 Scatter_X_Schedule_Variance_Pct = 
-DIVIDE([Schedule_Variance_SV], [PV_S_Curve_WINDOW], 0)
+DIVIDE([Schedule_Variance_SV], [PV_S_Curve], 0)
 
 Scatter_Y_Cost_Variance_Pct = 
 DIVIDE([Cost_Variance_CV], [EV_S_Curve], 0)
 
 // -------------------------------------------------------------------------------
-// 8. EDWARD TUFTE CONDITIONAL FORMATTING / RAG COLOR CODES (HEX)
+// 10. EDWARD TUFTE CONDITIONAL FORMATTING / RAG COLOR CODES (HEX)
 // -------------------------------------------------------------------------------
 
 CPI_RAG_Color = 
@@ -192,7 +234,7 @@ RETURN
 IF(TCPI - CPI > 0.10, "#DC2626", "#059669")
 
 // -------------------------------------------------------------------------------
-// 9. COMMERCIAL CAPITAL BUDGETING & FINANCIAL APPRAISAL MEASURES
+// 11. COMMERCIAL CAPITAL BUDGETING & FINANCIAL APPRAISAL MEASURES
 // -------------------------------------------------------------------------------
 
 Project_NPV_10Pct_WACC = 14899563.00
@@ -208,7 +250,7 @@ Project_Profitability_Index = 1.42
 Project_Future_Value_Year10 = 130499397.00
 
 // -------------------------------------------------------------------------------
-// 10. MONTE CARLO RISK SIMULATION PERCENTILE MEASURES (10,000 RUNS)
+// 12. MONTE CARLO RISK SIMULATION PERCENTILE MEASURES (10,000 RUNS)
 // -------------------------------------------------------------------------------
 
 MonteCarlo_P10_EAC = 32444302.00
@@ -224,5 +266,3 @@ MonteCarlo_P95_EAC = 36272986.00
 MonteCarlo_P90_Contingency_Needed = 401598.00
 
 MonteCarlo_P90_Completion_Date = DATE(2027, 3, 14)
-
-

@@ -1,6 +1,6 @@
 {
   "ReportTitle": "North Sea Oil Platform Drill Tower Construction - Enterprise Power BI Dashboard",
-  "Theme": "Tufte Minimalist Dark-Slate Controller Theme",
+  "Theme": "Edward Tufte Data-Ink Ratio Minimalist Executive Theme",
   "Pages": [
     {
       "PageNumber": 1,
@@ -8,45 +8,67 @@
       "Visuals": [
         {
           "VisualType": "Card",
-          "Metric": "Total_Budget_at_Completion_BAC",
-          "Title": "Baseline BAC Target",
-          "Target": "$26.50M"
+          "Metric": "Avg_Monthly_Cash_Burn_Actual",
+          "Title": "Avg Monthly Cash Burn (M1-M8)",
+          "Target": "$2.93M / Mo"
         },
         {
           "VisualType": "Card",
-          "Metric": "Cumulative_EV",
-          "Title": "Earned Value",
-          "Target": "$17.54M"
+          "Metric": "Remaining_Baseline_Capital",
+          "Title": "Remaining Baseline Capital ($BAC - AC)",
+          "Target": "$3.06M Remaining"
         },
         {
           "VisualType": "Card",
-          "Metric": "Cumulative_AC",
-          "Title": "Actual Spend",
-          "Target": "$23.44M"
+          "Metric": "Budget_Burn_Out_Month",
+          "Title": "Exact Budget Burn Out Month",
+          "Target": "Month 9 (Sep 2026)"
         },
         {
           "VisualType": "Card",
-          "Metric": "Cost_Variance_CV",
-          "Title": "Cost Overrun",
-          "Target": "-$5.90M"
+          "Metric": "Required_Overrun_Financing",
+          "Title": "Required Overrun Financing ($EAC - BAC)",
+          "Target": "+$8,913,604"
         },
         {
           "VisualType": "WaterfallChart",
           "SourceTable": "Fact_Waterfall_Bridge",
-          "XAxis": "WBS_Element",
-          "YAxis": "Step_Variance_Amount",
-          "Title": "Cost Variance Waterfall Bridge ($BAC to EAC)"
+          "XAxis": "Component_Name",
+          "YAxis": "Incremental_Cost",
+          "Title": "Cost Variance Waterfall Bridge ($BAC \u2192 EAC Outturn Breakdown)"
+        },
+        {
+          "VisualType": "DonutChart",
+          "Metric": "PM_Overall_Completion_Pct",
+          "Title": "Physical Progress ($EV / BAC)",
+          "Target": "66.2% Earned ($17.54M)"
+        },
+        {
+          "VisualType": "DonutChart",
+          "SourceTable": "Fact_Waterfall_Bridge",
+          "Title": "Cost Overrun Breakdown (+$8.91M)",
+          "Target": "Delay Overhead 42.8%, Egersund Mast 26.9%"
+        },
+        {
+          "VisualType": "DonutChart",
+          "SourceTable": "Dim_WBS",
+          "Title": "Baseline Budget Allocation (BAC $26.50M)",
+          "Target": "Fab 37.0%, Proc 32.1%, Marine 18.9%, Eng 12.1%"
         },
         {
           "VisualType": "ClusteredColumnChart",
           "SourceTable": "Fact_Monthly_Burn_Rate",
-          "XAxis": "Month_Name",
+          "XAxis": "Period",
           "YAxis": [
             "Monthly_PV",
             "Monthly_EV",
             "Monthly_AC"
           ],
-          "Title": "Monthly Cash Burn Speed & Month 9 Burn Out"
+          "Title": "Monthly Cash Burn Speed & Budget Depletion (Burn Out) Forecast"
+        },
+        {
+          "VisualType": "ExecutiveBriefingCard",
+          "Title": "1-Page Written Executive Project Status Report (Steering Committee Briefing)"
         }
       ]
     },
@@ -55,25 +77,54 @@
       "PageName": "\ud83d\udc54 Project Manager S-Curve & Variances",
       "Visuals": [
         {
+          "VisualType": "Card",
+          "Metric": "Total_Budget_at_Completion_BAC",
+          "Title": "Total Scope BAC",
+          "Target": "$26,500,000"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "PM_Overall_Completion_Pct",
+          "Title": "Physical Progress",
+          "Target": "66.2%"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "PM_Schedule_Slippage_Days_Max",
+          "Title": "Critical Path Slippage",
+          "Target": "+31 Days"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "Cost_Performance_Index_CPI",
+          "Title": "Cost Index (CPI)",
+          "Target": "0.75 (Severe Overrun)"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "Schedule_Performance_Index_SPI",
+          "Title": "Schedule Index (SPI)",
+          "Target": "0.86 (Delayed)"
+        },
+        {
           "VisualType": "LineChart",
           "SourceTable": "Fact_EVM_Periodic",
           "XAxis": "Date_Key",
           "YAxis": [
-            "PV_Cumulative",
-            "EV_Cumulative",
-            "AC_Cumulative"
+            "PV_S_Curve",
+            "EV_S_Curve",
+            "AC_S_Curve"
           ],
-          "Title": "Performance Measurement Baseline (PMB S-Curve)"
+          "Title": "Performance Measurement Baseline (S-Curves) & Variance Analysis"
+        },
+        {
+          "VisualType": "Table",
+          "SourceTable": "Fact_EVM_Periodic",
+          "Title": "Executive Variance Explanations & Actionable Audit"
         },
         {
           "VisualType": "Matrix",
           "SourceTable": "Dim_WBS",
-          "Columns": [
-            "WBS_Code",
-            "WBS_Element_Name",
-            "CAM_Owner",
-            "TBC"
-          ],
           "Title": "Executive Project Health & Milestone Summary"
         }
       ]
@@ -84,22 +135,40 @@
       "Visuals": [
         {
           "VisualType": "Card",
+          "Metric": "Total_Budget_at_Completion_BAC",
+          "Title": "Baseline BAC",
+          "Target": "$26,500,000"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "AC_S_Curve",
+          "Title": "Actual Cash Spent (AC)",
+          "Target": "$23,440,000"
+        },
+        {
+          "VisualType": "Card",
           "Metric": "Estimate_at_Completion_EAC",
-          "Title": "Outturn EAC Forecast",
-          "Target": "$35.41M"
+          "Title": "Outturn EAC (CPI-Based)",
+          "Target": "$35,413,604"
         },
         {
           "VisualType": "Card",
           "Metric": "Variance_at_Completion_VAC",
-          "Title": "Outturn Deficit",
-          "Target": "-$8.91M"
+          "Title": "Variance at Completion",
+          "Target": "-$8,913,604"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "ETC_Remaining_Liquidity_Needed",
+          "Title": "Liquidity Needed to Finish",
+          "Target": "$11,973,604"
         },
         {
           "VisualType": "Table",
           "SourceTable": "Dim_WBS",
           "Columns": [
             "WBS_Code",
-            "Control_Account",
+            "Task_Name",
             "TBC",
             "EV",
             "AC",
@@ -108,7 +177,12 @@
             "EAC",
             "VAC"
           ],
-          "Title": "CFO Control Account Outturn Forecast Table"
+          "Title": "CFO Outturn Forecast & Cost Variance Analysis"
+        },
+        {
+          "VisualType": "Table",
+          "SourceTable": "Fact_Financial_Appraisal",
+          "Title": "Commercial Capital Budgeting & Financial Appraisal Ratios"
         }
       ]
     },
@@ -117,31 +191,45 @@
       "PageName": "\ud83d\udcca Project Controller EVM & Earned Schedule",
       "Visuals": [
         {
-          "VisualType": "Gauge",
-          "Metric": "Cost_Performance_Index_CPI",
-          "Target": 1.0,
-          "Current": 0.748,
-          "Status": "Critical Red"
+          "VisualType": "Card",
+          "Metric": "Cost_Variance_CV",
+          "Title": "Cost Variance (CV)",
+          "Target": "-$5,900,000"
         },
         {
-          "VisualType": "Gauge",
-          "Metric": "Schedule_Performance_Index_SPI",
-          "Target": 1.0,
-          "Current": 0.856,
-          "Status": "Amber Delayed"
+          "VisualType": "Card",
+          "Metric": "Schedule_Variance_SV",
+          "Title": "Schedule Variance (SV)",
+          "Target": "-$2,960,000"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "Earned_Schedule_Months",
+          "Title": "Earned Schedule (ES)",
+          "Target": "7.40 Months"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "SPI_Time_Based",
+          "Title": "Time-Based Index SPI(t)",
+          "Target": "0.9250 (-18.2 Days)"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "TCPI_BAC",
+          "Title": "TCPI (BAC Target)",
+          "Target": "6.07 (Unviable)"
         },
         {
           "VisualType": "Table",
-          "SourceTable": "Fact_EVM_Periodic",
-          "Columns": [
-            "WBS_Code",
-            "PV_Cumulative",
-            "EV_Cumulative",
-            "AC_Cumulative",
-            "CV_Cumulative",
-            "CPI_Cumulative"
-          ],
-          "Title": "Earned Schedule & TCPI Efficiency Deep-Dive"
+          "SourceTable": "Dim_WBS",
+          "Title": "Control Account Earned Value & Earned Schedule Deep-Dive"
+        },
+        {
+          "VisualType": "ScatterPlot",
+          "XAxis": "Scatter_X_Schedule_Variance_Pct",
+          "YAxis": "Scatter_Y_Cost_Variance_Pct",
+          "Title": "Concentric Bullseye Risk Scatter Plot Coordinates"
         }
       ]
     },
@@ -150,20 +238,39 @@
       "PageName": "\ud83c\udfd7\ufe0f Project Planner Gantt & Risk Matrix",
       "Visuals": [
         {
-          "VisualType": "GanttChart",
-          "SourceTable": "Fact_Gantt_Schedule",
-          "TaskField": "Task_Name",
-          "StartField": "Actual_Forecast_Start",
-          "FinishField": "Actual_Forecast_Finish",
-          "CriticalField": "Is_Critical_Path"
+          "VisualType": "Card",
+          "Metric": "Total_Schedule_Tasks",
+          "Target": "10 Tasks"
         },
         {
-          "VisualType": "MatrixHeatmap",
+          "VisualType": "Card",
+          "Metric": "PM_Critical_Path_Task_Count",
+          "Target": "8 Tasks"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "Planner_Cascading_Delay_Tasks",
+          "Target": "3 Predecessor Delays"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "Planner_Avg_Task_Delay_Days",
+          "Target": "+26.5 Days"
+        },
+        {
+          "VisualType": "GanttChart",
+          "SourceTable": "Fact_Gantt_Schedule",
+          "Title": "Offshore EPC Gantt Schedule, Key Milestones (\u25c6) & Predecessor Logic"
+        },
+        {
+          "VisualType": "RiskHeatmapMatrix",
           "SourceTable": "Fact_Risk_Register",
-          "Row": "Probability_Score",
-          "Column": "Impact_Score",
-          "Values": "Risk_ID",
-          "Title": "5x5 EPC Executive Risk Probability vs Impact Heatmap"
+          "Title": "EPC Executive Risk Matrix & Quantitative Heatmap (5x5 Grid)"
+        },
+        {
+          "VisualType": "SwimlaneGrid",
+          "SourceTable": "Dim_WBS",
+          "Title": "Vertical Swimlane WBS Breakdown by Category & Discipline"
         }
       ]
     }

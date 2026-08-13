@@ -1,6 +1,7 @@
 // ===============================================================================
 // CONSOLIDATED POWER BI DAX MASTER LIBRARY (REVISED & AUDITED)
 // Enterprise EVM & North Sea Oil Platform Drill Tower Construction Project
+// Aligned 100% with index.html Web Visuals, Role Views & Steering Briefing
 // ===============================================================================
 
 // -------------------------------------------------------------------------------
@@ -63,7 +64,11 @@ IF(
 
 Cost_Variance_CV = [EV_S_Curve] - [AC_S_Curve]
 
+Cost_Variance_CV_Pct = DIVIDE([Cost_Variance_CV], [EV_S_Curve], 0)
+
 Schedule_Variance_SV = [EV_S_Curve] - [PV_S_Curve_WINDOW]
+
+Schedule_Variance_SV_Pct = DIVIDE([Schedule_Variance_SV], [PV_S_Curve_WINDOW], 0)
 
 Cost_Performance_Index_CPI = 
 DIVIDE([EV_S_Curve], [AC_S_Curve], 1.0)
@@ -89,11 +94,15 @@ RETURN
 DIVIDE(BAC - EV, BAC - AC, 1.0)
 
 TCPI_EAC = 
+VAR BAC = [Total_Budget_at_Completion_BAC]
 VAR EAC = [Estimate_at_Completion_EAC]
 VAR EV = [EV_S_Curve]
 VAR AC = [AC_S_Curve]
 RETURN
 DIVIDE(BAC - EV, EAC - AC, 1.0)
+
+ETC_Remaining_Liquidity_Needed = 
+[Estimate_at_Completion_EAC] - [AC_S_Curve]
 
 // -------------------------------------------------------------------------------
 // 6. EARNED SCHEDULE (LIPKE TIME-BASED MODEL)
@@ -148,17 +157,26 @@ MAXX(
 )
 
 // -------------------------------------------------------------------------------
-// 8. ROLE 2: CFO FINANCIAL MEASURES
+// 8. ROLE 2: CFO FINANCIAL & CASH BURN MEASURES
 // -------------------------------------------------------------------------------
 
 CFO_Cash_Burn_Rate_Monthly = 
 DIVIDE([AC_S_Curve], MAX(Dim_Date[Month_Number]), 0)
 
-CFO_Remaining_Liquidity_Needed = 
-[Estimate_at_Completion_EAC] - [AC_S_Curve]
+Avg_Monthly_Cash_Burn_Actual = 
+AVERAGEX(
+    FILTER(Fact_Monthly_Burn_Rate, Fact_Monthly_Burn_Rate[Cum_AC] <= 23440000),
+    Fact_Monthly_Burn_Rate[Monthly_AC]
+)
+
+Remaining_Baseline_Capital = 
+[Total_Budget_at_Completion_BAC] - [AC_S_Curve]
+
+Required_Overrun_Financing = 
+[Estimate_at_Completion_EAC] - [Total_Budget_at_Completion_BAC]
 
 // -------------------------------------------------------------------------------
-// 9. ROLE 4: PROJECT PLANNER MEASURES
+// 9. ROLE 4: PROJECT PLANNER GANTT & RISK MEASURES
 // -------------------------------------------------------------------------------
 
 Planner_Cascading_Delay_Tasks = 
@@ -173,6 +191,14 @@ AVERAGEX(
     Fact_Gantt_Schedule,
     DATEDIFF(Fact_Gantt_Schedule[Baseline_End], Fact_Gantt_Schedule[Actual_End], DAY)
 )
+
+Total_Risk_Count = COUNTROWS(Fact_Risk_Register)
+
+Critical_Risk_Count = CALCULATE(COUNTROWS(Fact_Risk_Register), Fact_Risk_Register[Risk_Score] >= 15)
+
+Total_Financial_Exposure = SUM(Fact_Risk_Register[Financial_Exposure])
+
+Total_Expected_Monetary_Value = SUM(Fact_Risk_Register[Expected_Monetary_Value])
 
 // -------------------------------------------------------------------------------
 // 10. TUFTE RAG CONDITIONAL FORMATTING COLORS (HEX)
@@ -228,4 +254,3 @@ MonteCarlo_P95_EAC = 36272986.00
 MonteCarlo_P90_Contingency_Needed = 401598.00
 
 MonteCarlo_P90_Completion_Date = DATE(2027, 3, 14)
-

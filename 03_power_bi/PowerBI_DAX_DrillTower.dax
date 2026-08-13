@@ -1,7 +1,8 @@
 // ===============================================================================
 // NORTH SEA DRILL TOWER CONSTRUCTION PROJECT - POWER BI DAX MEASURE LIBRARY
-// Data Model: Fact_EVM_Periodic, Fact_Gantt_Schedule, Dim_WBS, Dim_Date
+// Data Model: Fact_EVM_Periodic, Fact_Gantt_Schedule, Dim_WBS, Dim_Date, Fact_Risk_Register, Fact_Waterfall_Bridge
 // Roles Covered: Project Manager, CFO, Project Controller, Project Planner
+// Aligned 100% with index.html Web Visuals & Steering Committee Briefing
 // ===============================================================================
 
 // -------------------------------------------------------------------------------
@@ -12,7 +13,7 @@ Status_Date =
 MAX(Fact_EVM_Periodic[Date_Key])
 
 Total_Budget_at_Completion_BAC = 
-SUM(Fact_EVM_Periodic[Total_Budget_Cost])
+SUM(Dim_WBS[TBC])
 
 // -------------------------------------------------------------------------------
 // 2. PERIODIC INCREMENTAL METRICS
@@ -119,6 +120,14 @@ VAR AC = [AC_S_Curve]
 RETURN
 DIVIDE(BAC - EV, BAC - AC, 1.0)
 
+Controller_TCPI_EAC = 
+VAR BAC = [Total_Budget_at_Completion_BAC]
+VAR EAC = [CFO_Estimate_at_Completion_Trend]
+VAR EV = [EV_S_Curve]
+VAR AC = [AC_S_Curve]
+RETURN
+DIVIDE(BAC - EV, EAC - AC, 1.0)
+
 Controller_Earned_Schedule_Months = 
 VAR CurrentEV = [EV_S_Curve]
 VAR DateTableWithPV = 
@@ -140,15 +149,10 @@ RETURN
 ROUND((ES_Months - ActualMonths) * 30.4375, 0)
 
 // -------------------------------------------------------------------------------
-// 7. ROLE 4: PROJECT PLANNER GANTT & DEPENDENCY CALCULATED COLUMNS & MEASURES
+// 7. ROLE 4: PROJECT PLANNER GANTT & DEPENDENCY MEASURES
 // -------------------------------------------------------------------------------
 
-// (Calculated Columns inside Fact_Gantt_Schedule)
-// Baseline_Duration_Days = DATEDIFF(Fact_Gantt_Schedule[Baseline_Start], Fact_Gantt_Schedule[Baseline_End], DAY)
-// Actual_Duration_Days = DATEDIFF(Fact_Gantt_Schedule[Actual_Start], Fact_Gantt_Schedule[Actual_End], DAY)
-// Schedule_Variance_Days = DATEDIFF(Fact_Gantt_Schedule[Baseline_End], Fact_Gantt_Schedule[Actual_End], DAY)
-
-Planner_Predecessor_Cascading_Delay_Tasks = 
+Planner_Cascading_Delay_Tasks = 
 CALCULATE(
     COUNTROWS(Fact_Gantt_Schedule),
     NOT(ISBLANK(Fact_Gantt_Schedule[Predecessor_Task_ID])),
@@ -176,6 +180,11 @@ RETURN SWITCH(TRUE(), SPI < 0.95, "#DC2626", SPI < 1.00, "#D97706", "#059669")
 RAG_VAC_Color = 
 VAR VAC = [CFO_Variance_at_Completion_VAC]
 RETURN IF(VAC < 0, "#DC2626", "#059669")
+
+RAG_TCPI_Color = 
+VAR TCPI = [Controller_TCPI_BAC]
+VAR CPI = [CFO_Cost_Performance_Index_CPI]
+RETURN IF(TCPI - CPI > 0.10, "#DC2626", "#059669")
 
 // -------------------------------------------------------------------------------
 // 9. COMMERCIAL CAPITAL BUDGETING & FINANCIAL APPRAISAL MEASURES
@@ -210,4 +219,3 @@ MonteCarlo_P95_EAC = 36272986.00
 MonteCarlo_P90_Contingency_Needed = 401598.00
 
 MonteCarlo_P90_Completion_Date = DATE(2027, 3, 14)
-

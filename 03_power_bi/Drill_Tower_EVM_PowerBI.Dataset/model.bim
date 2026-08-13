@@ -13,24 +13,28 @@
         "name": "Dim_WBS",
         "columns": [
           {
-            "name": "WBS_Code",
+            "name": "Task_ID",
             "dataType": "string",
             "isKey": true
           },
           {
-            "name": "WBS_Element_Name",
+            "name": "WBS_Code",
             "dataType": "string"
           },
           {
-            "name": "CAM_Owner",
+            "name": "WBS_Level_1",
             "dataType": "string"
           },
           {
-            "name": "Level",
-            "dataType": "int64"
+            "name": "WBS_Level_2",
+            "dataType": "string"
           },
           {
-            "name": "Parent_WBS",
+            "name": "Task_Name",
+            "dataType": "string"
+          },
+          {
+            "name": "CAM",
             "dataType": "string"
           },
           {
@@ -39,8 +43,32 @@
             "formatString": "$#,##0"
           },
           {
-            "name": "Control_Account",
-            "dataType": "string"
+            "name": "WBS_Category",
+            "dataType": "string",
+            "type": "calculated",
+            "expression": "SWITCH(TRUE(), LEFT(Dim_WBS[WBS_Code], 3) = \"1.1\", \"Engineering\", LEFT(Dim_WBS[WBS_Code], 3) = \"1.2\", \"Procurement\", LEFT(Dim_WBS[WBS_Code], 3) = \"1.3\", \"Yard Fabrication\", LEFT(Dim_WBS[WBS_Code], 3) = \"1.4\", \"Offshore Installation\", LEFT(Dim_WBS[WBS_Code], 3) = \"1.5\", \"Commissioning\", \"General PMO\")"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Total_Budget_at_Completion_BAC",
+            "expression": "SUM(Dim_WBS[TBC])",
+            "formatString": "$#,##0"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Dim_WBS.csv\"),[Delimiter=\",\", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "in",
+                "    #\"Promoted Headers\""
+              ]
+            }
           }
         ]
       },
@@ -65,13 +93,28 @@
             "name": "Year",
             "dataType": "int64"
           }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Dim_Date.csv\"),[Delimiter=\",\", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "in",
+                "    #\"Promoted Headers\""
+              ]
+            }
+          }
         ]
       },
       {
         "name": "Fact_EVM_Periodic",
         "columns": [
           {
-            "name": "Fact_ID",
+            "name": "Task_ID",
             "dataType": "string"
           },
           {
@@ -80,13 +123,19 @@
             "formatString": "yyyy-MM-dd"
           },
           {
-            "name": "WBS_Code",
-            "dataType": "string"
+            "name": "Total_Budget_Cost",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
           },
           {
             "name": "PV_Incremental",
             "dataType": "decimal",
             "formatString": "$#,##0"
+          },
+          {
+            "name": "EV_Physical_Percent",
+            "dataType": "double",
+            "formatString": "0.0%"
           },
           {
             "name": "EV_Incremental_Calculated",
@@ -97,41 +146,568 @@
             "name": "AC_Incremental",
             "dataType": "decimal",
             "formatString": "$#,##0"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Status_Date",
+            "expression": "MAX(Fact_EVM_Periodic[Date_Key])",
+            "formatString": "yyyy-MM-dd"
           },
           {
-            "name": "Physical_Pct_Complete",
+            "name": "PV_Incremental_Period",
+            "expression": "SUM(Fact_EVM_Periodic[PV_Incremental])",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "EV_Incremental_Period",
+            "expression": "SUM(Fact_EVM_Periodic[EV_Incremental_Calculated])",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "AC_Incremental_Period",
+            "expression": "SUM(Fact_EVM_Periodic[AC_Incremental])",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "PV_S_Curve",
+            "expression": "CALCULATE(SUM(Fact_EVM_Periodic[PV_Incremental]), WINDOW(1, ABS, 0, REL, ORDERBY(Dim_Date[Date_Key])))",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "EV_S_Curve",
+            "expression": "VAR CurrentDate = MAX(Dim_Date[Date_Key]) RETURN IF(CurrentDate <= [Status_Date], CALCULATE(SUM(Fact_EVM_Periodic[EV_Incremental_Calculated]), WINDOW(1, ABS, 0, REL, ORDERBY(Dim_Date[Date_Key]))), BLANK())",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "AC_S_Curve",
+            "expression": "VAR CurrentDate = MAX(Dim_Date[Date_Key]) RETURN IF(CurrentDate <= [Status_Date], CALCULATE(SUM(Fact_EVM_Periodic[AC_Incremental]), WINDOW(1, ABS, 0, REL, ORDERBY(Dim_Date[Date_Key]))), BLANK())",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Cost_Variance_CV",
+            "expression": "[EV_S_Curve] - [AC_S_Curve]",
+            "formatString": "$#,##0;($#,##0);$0"
+          },
+          {
+            "name": "Cost_Variance_CV_Pct",
+            "expression": "DIVIDE([Cost_Variance_CV], [EV_S_Curve], 0)",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Schedule_Variance_SV",
+            "expression": "[EV_S_Curve] - [PV_S_Curve]",
+            "formatString": "$#,##0;($#,##0);$0"
+          },
+          {
+            "name": "Schedule_Variance_SV_Pct",
+            "expression": "DIVIDE([Schedule_Variance_SV], [PV_S_Curve], 0)",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Cost_Performance_Index_CPI",
+            "expression": "DIVIDE([EV_S_Curve], [AC_S_Curve], 1.0)",
+            "formatString": "0.0000"
+          },
+          {
+            "name": "Schedule_Performance_Index_SPI",
+            "expression": "DIVIDE([EV_S_Curve], [PV_S_Curve], 1.0)",
+            "formatString": "0.0000"
+          },
+          {
+            "name": "PM_Overall_Completion_Pct",
+            "expression": "DIVIDE([EV_S_Curve], [Total_Budget_at_Completion_BAC], 0)",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Estimate_at_Completion_EAC",
+            "expression": "DIVIDE([Total_Budget_at_Completion_BAC], [Cost_Performance_Index_CPI], [Total_Budget_at_Completion_BAC])",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Variance_at_Completion_VAC",
+            "expression": "[Total_Budget_at_Completion_BAC] - [Estimate_at_Completion_EAC]",
+            "formatString": "$#,##0;($#,##0);$0"
+          },
+          {
+            "name": "TCPI_BAC",
+            "expression": "VAR BAC = [Total_Budget_at_Completion_BAC] VAR EV = [EV_S_Curve] VAR AC = [AC_S_Curve] RETURN DIVIDE(BAC - EV, BAC - AC, 1.0)",
+            "formatString": "0.00"
+          },
+          {
+            "name": "TCPI_EAC",
+            "expression": "VAR BAC = [Total_Budget_at_Completion_BAC] VAR EAC = [Estimate_at_Completion_EAC] VAR EV = [EV_S_Curve] VAR AC = [AC_S_Curve] RETURN DIVIDE(BAC - EV, EAC - AC, 1.0)",
+            "formatString": "0.00"
+          },
+          {
+            "name": "ETC_Remaining_Liquidity_Needed",
+            "expression": "[Estimate_at_Completion_EAC] - [AC_S_Curve]",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Earned_Schedule_Months",
+            "expression": "VAR CurrentEV = [EV_S_Curve] VAR DateTableWithPV = FILTER(ALL(Dim_Date), [PV_S_Curve] <= CurrentEV) VAR C_MonthDate = MAXX(DateTableWithPV, Dim_Date[Date_Key]) VAR C_MonthNumber = MAXX(DateTableWithPV, Dim_Date[Month_Number]) VAR PV_At_C = CALCULATE([PV_S_Curve], Dim_Date[Date_Key] = C_MonthDate) VAR PV_At_C_Plus_1 = CALCULATE([PV_S_Curve], DATEADD(Dim_Date[Date_Key], 1, MONTH)) VAR Interpolation = DIVIDE(CurrentEV - PV_At_C, PV_At_C_Plus_1 - PV_At_C, 0) RETURN IF(CurrentEV >= [Total_Budget_at_Completion_BAC], MAX(Dim_Date[Month_Number]), C_MonthNumber + Interpolation)",
+            "formatString": "0.00"
+          },
+          {
+            "name": "SPI_Time_Based",
+            "expression": "DIVIDE([Earned_Schedule_Months], MAX(Dim_Date[Month_Number]), 1.0)",
+            "formatString": "0.0000"
+          },
+          {
+            "name": "Time_Variance_Days",
+            "expression": "VAR ActualMonths = MAX(Dim_Date[Month_Number]) VAR ES_Months = [Earned_Schedule_Months] RETURN ROUND((ES_Months - ActualMonths) * 30.4375, 0)",
+            "formatString": "0"
+          },
+          {
+            "name": "Scatter_X_Schedule_Variance_Pct",
+            "expression": "DIVIDE([Schedule_Variance_SV], [PV_S_Curve], 0)",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Scatter_Y_Cost_Variance_Pct",
+            "expression": "DIVIDE([Cost_Variance_CV], [EV_S_Curve], 0)",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "CPI_RAG_Color",
+            "expression": "VAR CPI = [Cost_Performance_Index_CPI] RETURN SWITCH(TRUE(), CPI < 0.90, \"#DC2626\", CPI < 1.00, \"#D97706\", \"#059669\")",
+            "formatString": "string"
+          },
+          {
+            "name": "SPI_RAG_Color",
+            "expression": "VAR SPI = [Schedule_Performance_Index_SPI] RETURN SWITCH(TRUE(), SPI < 0.95, \"#DC2626\", SPI < 1.00, \"#D97706\", \"#059669\")",
+            "formatString": "string"
+          },
+          {
+            "name": "CV_RAG_Color",
+            "expression": "VAR CV = [Cost_Variance_CV] RETURN IF(CV < 0, \"#DC2626\", \"#059669\")",
+            "formatString": "string"
+          },
+          {
+            "name": "SV_RAG_Color",
+            "expression": "VAR SV = [Schedule_Variance_SV] RETURN IF(SV < 0, \"#D97706\", \"#059669\")",
+            "formatString": "string"
+          },
+          {
+            "name": "VAC_RAG_Color",
+            "expression": "VAR VAC = [Variance_at_Completion_VAC] RETURN IF(VAC < 0, \"#DC2626\", \"#059669\")",
+            "formatString": "string"
+          },
+          {
+            "name": "TCPI_RAG_Color",
+            "expression": "VAR TCPI = [TCPI_BAC] VAR CPI = [Cost_Performance_Index_CPI] RETURN IF(TCPI - CPI > 0.10, \"#DC2626\", \"#059669\")",
+            "formatString": "string"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_EVM_Periodic.csv\"),[Delimiter=\",\", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "in",
+                "    #\"Promoted Headers\""
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact_Gantt_Schedule",
+        "columns": [
+          {
+            "name": "Task_ID",
+            "dataType": "string",
+            "isKey": true
+          },
+          {
+            "name": "Task_Name",
+            "dataType": "string"
+          },
+          {
+            "name": "WBS_Code",
+            "dataType": "string"
+          },
+          {
+            "name": "CAM",
+            "dataType": "string"
+          },
+          {
+            "name": "Baseline_Start",
+            "dataType": "dateTime",
+            "formatString": "yyyy-MM-dd"
+          },
+          {
+            "name": "Baseline_End",
+            "dataType": "dateTime",
+            "formatString": "yyyy-MM-dd"
+          },
+          {
+            "name": "Actual_Start",
+            "dataType": "dateTime",
+            "formatString": "yyyy-MM-dd"
+          },
+          {
+            "name": "Actual_End",
+            "dataType": "dateTime",
+            "formatString": "yyyy-MM-dd"
+          },
+          {
+            "name": "Predecessor_Task_ID",
+            "dataType": "string"
+          },
+          {
+            "name": "Predecessor_Name",
+            "dataType": "string"
+          },
+          {
+            "name": "Dependency_Type",
+            "dataType": "string"
+          },
+          {
+            "name": "Lag_Days",
+            "dataType": "int64"
+          },
+          {
+            "name": "Percent_Complete",
             "dataType": "double",
             "formatString": "0.0%"
           },
           {
-            "name": "PV_Cumulative",
+            "name": "Critical_Path_Flag",
+            "dataType": "string"
+          },
+          {
+            "name": "Resource_Group",
+            "dataType": "string"
+          },
+          {
+            "name": "Baseline_Duration_Days",
+            "dataType": "int64",
+            "type": "calculated",
+            "expression": "DATEDIFF(Fact_Gantt_Schedule[Baseline_Start], Fact_Gantt_Schedule[Baseline_End], DAY)"
+          },
+          {
+            "name": "Actual_Duration_Days",
+            "dataType": "int64",
+            "type": "calculated",
+            "expression": "DATEDIFF(Fact_Gantt_Schedule[Actual_Start], Fact_Gantt_Schedule[Actual_End], DAY)"
+          },
+          {
+            "name": "Schedule_Variance_Days",
+            "dataType": "int64",
+            "type": "calculated",
+            "expression": "DATEDIFF(Fact_Gantt_Schedule[Baseline_End], Fact_Gantt_Schedule[Actual_End], DAY)"
+          },
+          {
+            "name": "Start_Slippage_Days",
+            "dataType": "int64",
+            "type": "calculated",
+            "expression": "DATEDIFF(Fact_Gantt_Schedule[Baseline_Start], Fact_Gantt_Schedule[Actual_Start], DAY)"
+          },
+          {
+            "name": "Is_Critical_Path",
+            "dataType": "boolean",
+            "type": "calculated",
+            "expression": "IF(Fact_Gantt_Schedule[Critical_Path_Flag] = \"Yes\", TRUE(), FALSE())"
+          },
+          {
+            "name": "Is_Milestone",
+            "dataType": "boolean",
+            "type": "calculated",
+            "expression": "IF(LEFT(Fact_Gantt_Schedule[Task_ID], 1) = \"M\", TRUE(), FALSE())"
+          },
+          {
+            "name": "Milestone_Symbol",
+            "dataType": "string",
+            "type": "calculated",
+            "expression": "IF(LEFT(Fact_Gantt_Schedule[Task_ID], 1) = \"M\", \"\u25c6\", \"\")"
+          }
+        ],
+        "measures": [
+          {
+            "name": "PM_Critical_Path_Task_Count",
+            "expression": "CALCULATE(COUNTROWS(Fact_Gantt_Schedule), Fact_Gantt_Schedule[Critical_Path_Flag] = \"Yes\")",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "PM_Critical_Path_Delayed_Tasks",
+            "expression": "CALCULATE(COUNTROWS(Fact_Gantt_Schedule), Fact_Gantt_Schedule[Critical_Path_Flag] = \"Yes\", Fact_Gantt_Schedule[Percent_Complete] < 1.0, Fact_Gantt_Schedule[Actual_End] > Fact_Gantt_Schedule[Baseline_End])",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "PM_Schedule_Slippage_Days_Max",
+            "expression": "MAXX(Fact_Gantt_Schedule, DATEDIFF(Fact_Gantt_Schedule[Baseline_End], Fact_Gantt_Schedule[Actual_End], DAY))",
+            "formatString": "+#,##0 Days"
+          },
+          {
+            "name": "Planner_Cascading_Delay_Tasks",
+            "expression": "CALCULATE(COUNTROWS(Fact_Gantt_Schedule), NOT(ISBLANK(Fact_Gantt_Schedule[Predecessor_Task_ID])), Fact_Gantt_Schedule[Actual_Start] > Fact_Gantt_Schedule[Baseline_Start])",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Planner_Avg_Task_Delay_Days",
+            "expression": "AVERAGEX(Fact_Gantt_Schedule, DATEDIFF(Fact_Gantt_Schedule[Baseline_End], Fact_Gantt_Schedule[Actual_End], DAY))",
+            "formatString": "+0.0 Days"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Gantt_Schedule.csv\"),[Delimiter=\",\", Columns=15, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "in",
+                "    #\"Promoted Headers\""
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact_Milestones",
+        "columns": [
+          {
+            "name": "Milestone_ID",
+            "dataType": "string",
+            "isKey": true
+          },
+          {
+            "name": "Milestone_Name",
+            "dataType": "string"
+          },
+          {
+            "name": "Target_Date",
+            "dataType": "dateTime",
+            "formatString": "yyyy-MM-dd"
+          },
+          {
+            "name": "Baseline_Date",
+            "dataType": "dateTime",
+            "formatString": "yyyy-MM-dd"
+          },
+          {
+            "name": "Status",
+            "dataType": "string"
+          },
+          {
+            "name": "RAG",
+            "dataType": "string"
+          },
+          {
+            "name": "WBS_Code",
+            "dataType": "string"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Milestones.csv\"),[Delimiter=\",\", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "in",
+                "    #\"Promoted Headers\""
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact_Risk_Register",
+        "columns": [
+          {
+            "name": "Risk_ID",
+            "dataType": "string",
+            "isKey": true
+          },
+          {
+            "name": "Risk_Title",
+            "dataType": "string"
+          },
+          {
+            "name": "Category",
+            "dataType": "string"
+          },
+          {
+            "name": "Probability",
+            "dataType": "int64"
+          },
+          {
+            "name": "Impact",
+            "dataType": "int64"
+          },
+          {
+            "name": "Risk_Score",
+            "dataType": "int64"
+          },
+          {
+            "name": "RAG_Level",
+            "dataType": "string"
+          },
+          {
+            "name": "Financial_Exposure",
             "dataType": "decimal",
             "formatString": "$#,##0"
           },
           {
-            "name": "EV_Cumulative",
+            "name": "Expected_Monetary_Value",
             "dataType": "decimal",
             "formatString": "$#,##0"
           },
           {
-            "name": "AC_Cumulative",
+            "name": "Mitigation_Strategy",
+            "dataType": "string"
+          },
+          {
+            "name": "CAM_Owner",
+            "dataType": "string"
+          },
+          {
+            "name": "Calculated_Risk_Score",
+            "dataType": "int64",
+            "type": "calculated",
+            "expression": "Fact_Risk_Register[Probability] * Fact_Risk_Register[Impact]"
+          },
+          {
+            "name": "Risk_Severity_Category",
+            "dataType": "string",
+            "type": "calculated",
+            "expression": "SWITCH(TRUE(), Fact_Risk_Register[Risk_Score] >= 15, \"Critical Red\", Fact_Risk_Register[Risk_Score] >= 8, \"High/Medium Amber\", \"Low Green\")"
+          },
+          {
+            "name": "Risk_RAG_Hex_Code",
+            "dataType": "string",
+            "type": "calculated",
+            "expression": "SWITCH(TRUE(), Fact_Risk_Register[Risk_Score] >= 15, \"#DC2626\", Fact_Risk_Register[Risk_Score] >= 8, \"#D97706\", \"#059669\")"
+          },
+          {
+            "name": "Heatmap_Coordinate",
+            "dataType": "string",
+            "type": "calculated",
+            "expression": "\"P\" & FORMAT(Fact_Risk_Register[Probability], \"0\") & \"-I\" & FORMAT(Fact_Risk_Register[Impact], \"0\")"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Total_Risk_Count",
+            "expression": "COUNTROWS(Fact_Risk_Register)",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Critical_Risk_Count",
+            "expression": "CALCULATE(COUNTROWS(Fact_Risk_Register), Fact_Risk_Register[Risk_Score] >= 15)",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Total_Financial_Exposure",
+            "expression": "SUM(Fact_Risk_Register[Financial_Exposure])",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Total_Expected_Monetary_Value",
+            "expression": "SUM(Fact_Risk_Register[Expected_Monetary_Value])",
+            "formatString": "$#,##0"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Risk_Register.csv\"),[Delimiter=\",\", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "in",
+                "    #\"Promoted Headers\""
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact_Waterfall_Bridge",
+        "columns": [
+          {
+            "name": "Step_ID",
+            "dataType": "int64",
+            "isKey": true
+          },
+          {
+            "name": "Component_Name",
+            "dataType": "string"
+          },
+          {
+            "name": "Type",
+            "dataType": "string"
+          },
+          {
+            "name": "Incremental_Cost",
             "dataType": "decimal",
             "formatString": "$#,##0"
           },
           {
-            "name": "CV_Cumulative",
+            "name": "Cumulative_Cost",
             "dataType": "decimal",
             "formatString": "$#,##0"
           },
           {
-            "name": "SV_Cumulative",
-            "dataType": "decimal",
-            "formatString": "$#,##0"
-          },
-          {
-            "name": "CPI_Cumulative",
+            "name": "Pct_Share",
             "dataType": "double",
-            "formatString": "0.000"
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Description",
+            "dataType": "string"
+          },
+          {
+            "name": "Is_Overrun_Step",
+            "dataType": "boolean",
+            "type": "calculated",
+            "expression": "IF(Fact_Waterfall_Bridge[Type] = \"Variance\", TRUE(), FALSE())"
+          },
+          {
+            "name": "Waterfall_Bar_Color",
+            "dataType": "string",
+            "type": "calculated",
+            "expression": "SWITCH(TRUE(), Fact_Waterfall_Bridge[Type] = \"Baseline\", \"#2563EB\", Fact_Waterfall_Bridge[Type] = \"Outturn\", \"#111827\", Fact_Waterfall_Bridge[Step_ID] = 4, \"#7F1D1D\", Fact_Waterfall_Bridge[Step_ID] = 8, \"#B91C1C\", \"#DC2626\")"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Waterfall_Incremental_Cost",
+            "expression": "SUM(Fact_Waterfall_Bridge[Incremental_Cost])",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Waterfall_Cumulative_Cost",
+            "expression": "SUM(Fact_Waterfall_Bridge[Cumulative_Cost])",
+            "formatString": "$#,##0"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Waterfall_Bridge.csv\"),[Delimiter=\",\", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "in",
+                "    #\"Promoted Headers\""
+              ]
+            }
           }
         ]
       },
@@ -139,13 +715,9 @@
         "name": "Fact_Monthly_Burn_Rate",
         "columns": [
           {
-            "name": "Month_Num",
-            "dataType": "int64",
+            "name": "Period",
+            "dataType": "string",
             "isKey": true
-          },
-          {
-            "name": "Month_Name",
-            "dataType": "string"
           },
           {
             "name": "Monthly_PV",
@@ -168,138 +740,219 @@
             "formatString": "$#,##0"
           },
           {
-            "name": "Burn_Out_Flag",
-            "dataType": "string"
-          }
-        ]
-      },
-      {
-        "name": "Fact_Waterfall_Bridge",
-        "columns": [
-          {
-            "name": "Step_Num",
-            "dataType": "int64",
-            "isKey": true
-          },
-          {
-            "name": "WBS_Element",
-            "dataType": "string"
-          },
-          {
-            "name": "Step_Variance_Amount",
+            "name": "Remaining_BAC",
             "dataType": "decimal",
             "formatString": "$#,##0"
           },
           {
-            "name": "Cum_Waterfall_Total",
-            "dataType": "decimal",
+            "name": "Runway_Status",
+            "dataType": "string"
+          }
+        ],
+        "measures": [
+          {
+            "name": "CFO_Cash_Burn_Rate_Monthly",
+            "expression": "DIVIDE([AC_S_Curve], MAX(Dim_Date[Month_Number]), 0)",
+            "formatString": "$#,##0 / Mo"
+          },
+          {
+            "name": "Avg_Monthly_Cash_Burn_Actual",
+            "expression": "AVERAGEX(FILTER(Fact_Monthly_Burn_Rate, Fact_Monthly_Burn_Rate[Cum_AC] <= 23440000), Fact_Monthly_Burn_Rate[Monthly_AC])",
+            "formatString": "$#,##0 / Mo"
+          },
+          {
+            "name": "Remaining_Baseline_Capital",
+            "expression": "[Total_Budget_at_Completion_BAC] - [AC_S_Curve]",
             "formatString": "$#,##0"
           },
           {
-            "name": "Category",
-            "dataType": "string"
-          },
+            "name": "Required_Overrun_Financing",
+            "expression": "[Estimate_at_Completion_EAC] - [Total_Budget_at_Completion_BAC]",
+            "formatString": "$#,##0"
+          }
+        ],
+        "partitions": [
           {
-            "name": "Driver_Explanation",
-            "dataType": "string"
+            "name": "Partition",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Monthly_Burn_Rate.csv\"),[Delimiter=\",\", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "in",
+                "    #\"Promoted Headers\""
+              ]
+            }
           }
         ]
       },
       {
-        "name": "Fact_Gantt_Schedule",
+        "name": "Fact_Financial_Appraisal",
         "columns": [
           {
-            "name": "Task_ID",
+            "name": "Metric",
             "dataType": "string",
             "isKey": true
           },
           {
-            "name": "WBS_Code",
+            "name": "Value",
             "dataType": "string"
           },
           {
-            "name": "Task_Name",
+            "name": "Numeric_Value",
+            "dataType": "double"
+          },
+          {
+            "name": "Unit",
             "dataType": "string"
           },
           {
-            "name": "Predecessor_ID",
+            "name": "Evaluation",
+            "dataType": "string"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Project_NPV_10Pct_WACC",
+            "expression": "14899563.00",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Project_IRR",
+            "expression": "0.1886",
+            "formatString": "0.00%"
+          },
+          {
+            "name": "Project_Simple_Payback_Years",
+            "expression": "4.43",
+            "formatString": "0.00 Years"
+          },
+          {
+            "name": "Project_Total_ROI",
+            "expression": "1.3437",
+            "formatString": "0.00%"
+          },
+          {
+            "name": "Project_Profitability_Index",
+            "expression": "1.42",
+            "formatString": "0.00"
+          },
+          {
+            "name": "Project_Future_Value_Year10",
+            "expression": "130499397.00",
+            "formatString": "$#,##0"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Financial_Appraisal.csv\"),[Delimiter=\",\", Columns=5, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "in",
+                "    #\"Promoted Headers\""
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact_Monte_Carlo",
+        "columns": [
+          {
+            "name": "Percentile",
+            "dataType": "string",
+            "isKey": true
+          },
+          {
+            "name": "Confidence_Level",
             "dataType": "string"
           },
           {
-            "name": "Dependency_Type",
-            "dataType": "string"
+            "name": "Outturn_Cost_EAC",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
           },
           {
-            "name": "Total_Float_Days",
-            "dataType": "int64"
+            "name": "Cost_Overrun_VAC",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
           },
           {
-            "name": "Pct_Complete",
+            "name": "Contingency_Reserve",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Duration_Days",
             "dataType": "double",
-            "formatString": "0.0%"
+            "formatString": "0.0"
           },
           {
-            "name": "Baseline_Start",
-            "dataType": "dateTime"
+            "name": "Completion_Date",
+            "dataType": "dateTime",
+            "formatString": "yyyy-MM-dd"
           },
           {
-            "name": "Baseline_Finish",
-            "dataType": "dateTime"
-          },
-          {
-            "name": "Actual_Forecast_Start",
-            "dataType": "dateTime"
-          },
-          {
-            "name": "Actual_Forecast_Finish",
-            "dataType": "dateTime"
-          },
-          {
-            "name": "Is_Critical_Path",
-            "dataType": "boolean"
+            "name": "Schedule_Delay_Days",
+            "dataType": "double",
+            "formatString": "0.0"
           }
-        ]
-      },
-      {
-        "name": "Fact_Risk_Register",
-        "columns": [
+        ],
+        "measures": [
           {
-            "name": "Risk_ID",
-            "dataType": "string",
-            "isKey": true
-          },
-          {
-            "name": "Risk_Description",
-            "dataType": "string"
-          },
-          {
-            "name": "WBS_Code",
-            "dataType": "string"
-          },
-          {
-            "name": "CAM_Owner",
-            "dataType": "string"
-          },
-          {
-            "name": "Probability_Score",
-            "dataType": "int64"
-          },
-          {
-            "name": "Impact_Score",
-            "dataType": "int64"
-          },
-          {
-            "name": "Risk_Score",
-            "dataType": "int64"
-          },
-          {
-            "name": "Financial_Exposure",
-            "dataType": "decimal",
+            "name": "MonteCarlo_P10_EAC",
+            "expression": "32444302.00",
             "formatString": "$#,##0"
           },
           {
-            "name": "Mitigation_Strategy",
-            "dataType": "string"
+            "name": "MonteCarlo_P50_EAC",
+            "expression": "34060783.00",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "MonteCarlo_P80_EAC",
+            "expression": "35195026.00",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "MonteCarlo_P90_EAC",
+            "expression": "35815202.00",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "MonteCarlo_P95_EAC",
+            "expression": "36272986.00",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "MonteCarlo_P90_Contingency_Needed",
+            "expression": "401598.00",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "MonteCarlo_P90_Completion_Date",
+            "expression": "DATE(2027, 3, 14)",
+            "formatString": "yyyy-MM-dd"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Monte_Carlo.csv\"),[Delimiter=\",\", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "in",
+                "    #\"Promoted Headers\""
+              ]
+            }
           }
         ]
       }
@@ -315,23 +968,16 @@
       {
         "name": "Rel_FactEVM_DimWBS",
         "fromTable": "Fact_EVM_Periodic",
-        "fromColumn": "WBS_Code",
+        "fromColumn": "Task_ID",
         "toTable": "Dim_WBS",
-        "toColumn": "WBS_Code"
+        "toColumn": "Task_ID"
       },
       {
         "name": "Rel_FactGantt_DimWBS",
         "fromTable": "Fact_Gantt_Schedule",
-        "fromColumn": "WBS_Code",
+        "fromColumn": "Task_ID",
         "toTable": "Dim_WBS",
-        "toColumn": "WBS_Code"
-      },
-      {
-        "name": "Rel_FactRisk_DimWBS",
-        "fromTable": "Fact_Risk_Register",
-        "fromColumn": "WBS_Code",
-        "toTable": "Dim_WBS",
-        "toColumn": "WBS_Code"
+        "toColumn": "Task_ID"
       }
     ]
   }

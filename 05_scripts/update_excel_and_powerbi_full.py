@@ -176,8 +176,11 @@ def update_excel_workbook(file_path):
     add_styled_sheet("Financial_Ratios", pd.DataFrame(financial_ratios_data))
     add_styled_sheet("Monte_Carlo_P90", pd.DataFrame(monte_carlo_data), {"Outturn_Cost_EAC": "$#,##0", "Cost_Overrun_VAC": "$#,##0", "Contingency_Reserve": "$#,##0"})
     
-    wb.save(file_path)
-    print(f" [PASS] Successfully updated all worksheets in {file_path}")
+    try:
+        wb.save(file_path)
+        print(f" [PASS] Successfully updated all worksheets in {file_path}")
+    except PermissionError:
+        print(f" [WARN] File {file_path} is currently open in Excel. Skipped saving open workbook.")
 
 def update_power_query_script():
     """Updates PowerQuery_Import_Script.m to include all new star schema tables."""
