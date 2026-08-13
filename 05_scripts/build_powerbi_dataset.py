@@ -59,9 +59,10 @@ def build_powerbi_solution():
                                 "expression": [
                                     "let",
                                     '    Source = Csv.Document(File.Contents("C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Dim_WBS.csv"),[Delimiter=",", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
-                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])',
+                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
+                                    '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Task_ID", type text}, {"WBS_Code", type text}, {"WBS_Level_1", type text}, {"WBS_Level_2", type text}, {"Task_Name", type text}, {"CAM", type text}, {"TBC", Currency.Type}})',
                                     "in",
-                                    '    #"Promoted Headers"'
+                                    '    #"Changed Type"'
                                 ]
                             }
                         }
@@ -83,9 +84,10 @@ def build_powerbi_solution():
                                 "expression": [
                                     "let",
                                     '    Source = Csv.Document(File.Contents("C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Dim_Date.csv"),[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
-                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])',
+                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
+                                    '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Date_Key", type date}, {"Month_Name", type text}, {"Month_Number", Int64.Type}, {"Year", Int64.Type}})',
                                     "in",
-                                    '    #"Promoted Headers"'
+                                    '    #"Changed Type"'
                                 ]
                             }
                         }
@@ -262,9 +264,10 @@ def build_powerbi_solution():
                                 "expression": [
                                     "let",
                                     '    Source = Csv.Document(File.Contents("C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_EVM_Periodic.csv"),[Delimiter=",", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
-                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])',
+                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
+                                    '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Task_ID", type text}, {"Date_Key", type date}, {"Total_Budget_Cost", Currency.Type}, {"PV_Incremental", Currency.Type}, {"EV_Physical_Percent", type number}, {"EV_Incremental_Calculated", Currency.Type}, {"AC_Incremental", Currency.Type}})',
                                     "in",
-                                    '    #"Promoted Headers"'
+                                    '    #"Changed Type"'
                                 ]
                             }
                         }
@@ -366,9 +369,10 @@ def build_powerbi_solution():
                                 "expression": [
                                     "let",
                                     '    Source = Csv.Document(File.Contents("C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Gantt_Schedule.csv"),[Delimiter=",", Columns=15, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
-                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])',
+                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
+                                    '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Task_ID", type text}, {"Task_Name", type text}, {"WBS_Code", type text}, {"CAM", type text}, {"Baseline_Start", type date}, {"Baseline_End", type date}, {"Actual_Start", type date}, {"Actual_End", type date}, {"Predecessor_Task_ID", type text}, {"Predecessor_Name", type text}, {"Dependency_Type", type text}, {"Lag_Days", Int64.Type}, {"Percent_Complete", type number}, {"Critical_Path_Flag", type text}, {"Resource_Group", type text}})',
                                     "in",
-                                    '    #"Promoted Headers"'
+                                    '    #"Changed Type"'
                                 ]
                             }
                         }
@@ -393,9 +397,10 @@ def build_powerbi_solution():
                                 "expression": [
                                     "let",
                                     '    Source = Csv.Document(File.Contents("C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Milestones.csv"),[Delimiter=",", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
-                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])',
+                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
+                                    '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Milestone_ID", type text}, {"Milestone_Name", type text}, {"Target_Date", type date}, {"Baseline_Date", type date}, {"Status", type text}, {"RAG", type text}, {"WBS_Code", type text}})',
                                     "in",
-                                    '    #"Promoted Headers"'
+                                    '    #"Changed Type"'
                                 ]
                             }
                         }
@@ -470,9 +475,10 @@ def build_powerbi_solution():
                                 "expression": [
                                     "let",
                                     '    Source = Csv.Document(File.Contents("C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Risk_Register.csv"),[Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
-                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])',
+                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
+                                    '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Risk_ID", type text}, {"Risk_Title", type text}, {"Category", type text}, {"Probability", Int64.Type}, {"Impact", Int64.Type}, {"Risk_Score", Int64.Type}, {"RAG_Level", type text}, {"Financial_Exposure", Currency.Type}, {"Expected_Monetary_Value", Currency.Type}, {"Mitigation_Strategy", type text}, {"CAM_Owner", type text}})',
                                     "in",
-                                    '    #"Promoted Headers"'
+                                    '    #"Changed Type"'
                                 ]
                             }
                         }
@@ -521,9 +527,10 @@ def build_powerbi_solution():
                                 "expression": [
                                     "let",
                                     '    Source = Csv.Document(File.Contents("C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Waterfall_Bridge.csv"),[Delimiter=",", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
-                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])',
+                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
+                                    '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Step_ID", Int64.Type}, {"Component_Name", type text}, {"Type", type text}, {"Incremental_Cost", Currency.Type}, {"Cumulative_Cost", Currency.Type}, {"Pct_Share", type number}, {"Description", type text}})',
                                     "in",
-                                    '    #"Promoted Headers"'
+                                    '    #"Changed Type"'
                                 ]
                             }
                         }
@@ -570,9 +577,10 @@ def build_powerbi_solution():
                                 "expression": [
                                     "let",
                                     '    Source = Csv.Document(File.Contents("C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Monthly_Burn_Rate.csv"),[Delimiter=",", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
-                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])',
+                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
+                                    '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Period", type text}, {"Monthly_PV", Currency.Type}, {"Monthly_EV", Currency.Type}, {"Monthly_AC", Currency.Type}, {"Cum_AC", Currency.Type}, {"Remaining_BAC", Currency.Type}, {"Runway_Status", type text}})',
                                     "in",
-                                    '    #"Promoted Headers"'
+                                    '    #"Changed Type"'
                                 ]
                             }
                         }
@@ -603,9 +611,10 @@ def build_powerbi_solution():
                                 "expression": [
                                     "let",
                                     '    Source = Csv.Document(File.Contents("C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Financial_Appraisal.csv"),[Delimiter=",", Columns=5, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
-                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])',
+                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
+                                    '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Metric", type text}, {"Value", type text}, {"Numeric_Value", type number}, {"Unit", type text}, {"Evaluation", type text}})',
                                     "in",
-                                    '    #"Promoted Headers"'
+                                    '    #"Changed Type"'
                                 ]
                             }
                         }
@@ -640,9 +649,10 @@ def build_powerbi_solution():
                                 "expression": [
                                     "let",
                                     '    Source = Csv.Document(File.Contents("C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Monte_Carlo.csv"),[Delimiter=",", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
-                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])',
+                                    '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
+                                    '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Percentile", type text}, {"Confidence_Level", type text}, {"Outturn_Cost_EAC", Currency.Type}, {"Cost_Overrun_VAC", Currency.Type}, {"Contingency_Reserve", Currency.Type}, {"Duration_Days", type number}, {"Completion_Date", type date}, {"Schedule_Delay_Days", type number}})',
                                     "in",
-                                    '    #"Promoted Headers"'
+                                    '    #"Changed Type"'
                                 ]
                             }
                         }
@@ -791,8 +801,157 @@ def build_powerbi_solution():
         json.dump(definition_json, f, indent=2)
 
     report_json = {
-        "config": "{}",
-        "layoutOptimization": 0
+        "config": json.dumps({
+            "version": "5.50",
+            "themeCollection": {},
+            "activeSectionName": "Section1",
+            "defaultDrillFilterOtherVisuals": True
+        }),
+        "layoutOptimization": 0,
+        "resourcePackages": [],
+        "sections": [
+            {
+                "name": "Section1",
+                "displayName": "📈 Executive Runway & Cash Burn",
+                "filters": "[]",
+                "height": 720.0,
+                "width": 1280.0,
+                "visualContainers": [
+                    {
+                        "x": 20.0, "y": 20.0, "z": 0.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_burn", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_Monthly_Burn_Rate.Avg_Monthly_Cash_Burn_Actual"}]}}})
+                    },
+                    {
+                        "x": 250.0, "y": 20.0, "z": 1.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_cap", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_Monthly_Burn_Rate.Remaining_Baseline_Capital"}]}}})
+                    },
+                    {
+                        "x": 480.0, "y": 20.0, "z": 2.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_burnout", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_Monthly_Burn_Rate.Budget_Burn_Out_Month"}]}}})
+                    },
+                    {
+                        "x": 710.0, "y": 20.0, "z": 3.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_overrun", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_Monthly_Burn_Rate.Required_Overrun_Financing"}]}}})
+                    },
+                    {
+                        "x": 20.0, "y": 140.0, "z": 4.0, "height": 260.0, "width": 600.0,
+                        "config": json.dumps({"name": "waterfall_visual", "singleVisual": {"visualType": "waterfallChart", "projections": {"Category": [{"queryRef": "Fact_Waterfall_Bridge.Component_Name"}], "Y": [{"queryRef": "Fact_Waterfall_Bridge.Incremental_Cost"}]}}})
+                    },
+                    {
+                        "x": 640.0, "y": 140.0, "z": 5.0, "height": 260.0, "width": 600.0,
+                        "config": json.dumps({"name": "burn_chart", "singleVisual": {"visualType": "clusteredColumnChart", "projections": {"Category": [{"queryRef": "Fact_Monthly_Burn_Rate.Period"}], "Y": [{"queryRef": "Fact_Monthly_Burn_Rate.Monthly_PV"}, {"queryRef": "Fact_Monthly_Burn_Rate.Monthly_EV"}, {"queryRef": "Fact_Monthly_Burn_Rate.Monthly_AC"}]}}})
+                    }
+                ]
+            },
+            {
+                "name": "Section2",
+                "displayName": "👔 Project Manager S-Curve & Variances",
+                "filters": "[]",
+                "height": 720.0,
+                "width": 1280.0,
+                "visualContainers": [
+                    {
+                        "x": 20.0, "y": 20.0, "z": 0.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_bac", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Dim_WBS.Total_Budget_at_Completion_BAC"}]}}})
+                    },
+                    {
+                        "x": 250.0, "y": 20.0, "z": 1.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_pct", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_EVM_Periodic.PM_Overall_Completion_Pct"}]}}})
+                    },
+                    {
+                        "x": 480.0, "y": 20.0, "z": 2.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_cpi", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_EVM_Periodic.Cost_Performance_Index_CPI"}]}}})
+                    },
+                    {
+                        "x": 710.0, "y": 20.0, "z": 3.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_spi", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_EVM_Periodic.Schedule_Performance_Index_SPI"}]}}})
+                    },
+                    {
+                        "x": 20.0, "y": 140.0, "z": 4.0, "height": 320.0, "width": 1220.0,
+                        "config": json.dumps({"name": "scurve_line_chart", "singleVisual": {"visualType": "lineChart", "projections": {"Category": [{"queryRef": "Dim_Date.Date_Key"}], "Y": [{"queryRef": "Fact_EVM_Periodic.PV_S_Curve"}, {"queryRef": "Fact_EVM_Periodic.EV_S_Curve"}, {"queryRef": "Fact_EVM_Periodic.AC_S_Curve"}]}}})
+                    }
+                ]
+            },
+            {
+                "name": "Section3",
+                "displayName": "💰 CFO Financials & Outturn Forecast",
+                "filters": "[]",
+                "height": 720.0,
+                "width": 1280.0,
+                "visualContainers": [
+                    {
+                        "x": 20.0, "y": 20.0, "z": 0.0, "height": 100.0, "width": 260.0,
+                        "config": json.dumps({"name": "card_eac", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_EVM_Periodic.Estimate_at_Completion_EAC"}]}}})
+                    },
+                    {
+                        "x": 300.0, "y": 20.0, "z": 1.0, "height": 100.0, "width": 260.0,
+                        "config": json.dumps({"name": "card_vac", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_EVM_Periodic.Variance_at_Completion_VAC"}]}}})
+                    },
+                    {
+                        "x": 580.0, "y": 20.0, "z": 2.0, "height": 100.0, "width": 260.0,
+                        "config": json.dumps({"name": "card_etc", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_EVM_Periodic.ETC_Remaining_Liquidity_Needed"}]}}})
+                    },
+                    {
+                        "x": 20.0, "y": 140.0, "z": 3.0, "height": 320.0, "width": 1220.0,
+                        "config": json.dumps({"name": "cfo_table", "singleVisual": {"visualType": "table", "projections": {"Values": [{"queryRef": "Dim_WBS.WBS_Code"}, {"queryRef": "Dim_WBS.Task_Name"}, {"queryRef": "Dim_WBS.TBC"}]}}})
+                    }
+                ]
+            },
+            {
+                "name": "Section4",
+                "displayName": "📊 Project Controller EVM & Earned Schedule",
+                "filters": "[]",
+                "height": 720.0,
+                "width": 1280.0,
+                "visualContainers": [
+                    {
+                        "x": 20.0, "y": 20.0, "z": 0.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_cv", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_EVM_Periodic.Cost_Variance_CV"}]}}})
+                    },
+                    {
+                        "x": 250.0, "y": 20.0, "z": 1.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_sv", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_EVM_Periodic.Schedule_Variance_SV"}]}}})
+                    },
+                    {
+                        "x": 480.0, "y": 20.0, "z": 2.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_es", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_EVM_Periodic.Earned_Schedule_Months"}]}}})
+                    },
+                    {
+                        "x": 710.0, "y": 20.0, "z": 3.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_spit", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_EVM_Periodic.SPI_Time_Based"}]}}})
+                    },
+                    {
+                        "x": 940.0, "y": 20.0, "z": 4.0, "height": 100.0, "width": 220.0,
+                        "config": json.dumps({"name": "card_tcpi", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_EVM_Periodic.TCPI_BAC"}]}}})
+                    }
+                ]
+            },
+            {
+                "name": "Section5",
+                "displayName": "🏗️ Project Planner Gantt & Risk Matrix",
+                "filters": "[]",
+                "height": 720.0,
+                "width": 1280.0,
+                "visualContainers": [
+                    {
+                        "x": 20.0, "y": 20.0, "z": 0.0, "height": 100.0, "width": 260.0,
+                        "config": json.dumps({"name": "card_tasks", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_Gantt_Schedule.PM_Critical_Path_Task_Count"}]}}})
+                    },
+                    {
+                        "x": 300.0, "y": 20.0, "z": 1.0, "height": 100.0, "width": 260.0,
+                        "config": json.dumps({"name": "card_delays", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_Gantt_Schedule.Planner_Cascading_Delay_Tasks"}]}}})
+                    },
+                    {
+                        "x": 580.0, "y": 20.0, "z": 2.0, "height": 100.0, "width": 260.0,
+                        "config": json.dumps({"name": "card_avgdelay", "singleVisual": {"visualType": "card", "projections": {"Values": [{"queryRef": "Fact_Gantt_Schedule.Planner_Avg_Task_Delay_Days"}]}}})
+                    },
+                    {
+                        "x": 20.0, "y": 140.0, "z": 3.0, "height": 320.0, "width": 1220.0,
+                        "config": json.dumps({"name": "gantt_table", "singleVisual": {"visualType": "table", "projections": {"Values": [{"queryRef": "Fact_Gantt_Schedule.Task_ID"}, {"queryRef": "Fact_Gantt_Schedule.Task_Name"}, {"queryRef": "Fact_Gantt_Schedule.Baseline_Start"}, {"queryRef": "Fact_Gantt_Schedule.Baseline_End"}, {"queryRef": "Fact_Gantt_Schedule.Actual_Start"}, {"queryRef": "Fact_Gantt_Schedule.Actual_End"}, {"queryRef": "Fact_Gantt_Schedule.Critical_Path_Flag"}]}}})
+                    }
+                ]
+            }
+        ]
     }
     with open(os.path.join(pbip_dir, "report.json"), "w", encoding="utf-8") as f:
         json.dump(report_json, f, indent=2)

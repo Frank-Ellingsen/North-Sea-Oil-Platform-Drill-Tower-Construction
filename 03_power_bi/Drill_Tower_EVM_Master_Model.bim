@@ -64,9 +64,10 @@
               "expression": [
                 "let",
                 "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Dim_WBS.csv\"),[Delimiter=\",\", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
-                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"Task_ID\", type text}, {\"WBS_Code\", type text}, {\"WBS_Level_1\", type text}, {\"WBS_Level_2\", type text}, {\"Task_Name\", type text}, {\"CAM\", type text}, {\"TBC\", Currency.Type}})",
                 "in",
-                "    #\"Promoted Headers\""
+                "    #\"Changed Type\""
               ]
             }
           }
@@ -102,9 +103,10 @@
               "expression": [
                 "let",
                 "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Dim_Date.csv\"),[Delimiter=\",\", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
-                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"Date_Key\", type date}, {\"Month_Name\", type text}, {\"Month_Number\", Int64.Type}, {\"Year\", Int64.Type}})",
                 "in",
-                "    #\"Promoted Headers\""
+                "    #\"Changed Type\""
               ]
             }
           }
@@ -308,9 +310,10 @@
               "expression": [
                 "let",
                 "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_EVM_Periodic.csv\"),[Delimiter=\",\", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
-                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"Task_ID\", type text}, {\"Date_Key\", type date}, {\"Total_Budget_Cost\", Currency.Type}, {\"PV_Incremental\", Currency.Type}, {\"EV_Physical_Percent\", type number}, {\"EV_Incremental_Calculated\", Currency.Type}, {\"AC_Incremental\", Currency.Type}})",
                 "in",
-                "    #\"Promoted Headers\""
+                "    #\"Changed Type\""
               ]
             }
           }
@@ -463,9 +466,10 @@
               "expression": [
                 "let",
                 "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Gantt_Schedule.csv\"),[Delimiter=\",\", Columns=15, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
-                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"Task_ID\", type text}, {\"Task_Name\", type text}, {\"WBS_Code\", type text}, {\"CAM\", type text}, {\"Baseline_Start\", type date}, {\"Baseline_End\", type date}, {\"Actual_Start\", type date}, {\"Actual_End\", type date}, {\"Predecessor_Task_ID\", type text}, {\"Predecessor_Name\", type text}, {\"Dependency_Type\", type text}, {\"Lag_Days\", Int64.Type}, {\"Percent_Complete\", type number}, {\"Critical_Path_Flag\", type text}, {\"Resource_Group\", type text}})",
                 "in",
-                "    #\"Promoted Headers\""
+                "    #\"Changed Type\""
               ]
             }
           }
@@ -514,9 +518,10 @@
               "expression": [
                 "let",
                 "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Milestones.csv\"),[Delimiter=\",\", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
-                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"Milestone_ID\", type text}, {\"Milestone_Name\", type text}, {\"Target_Date\", type date}, {\"Baseline_Date\", type date}, {\"Status\", type text}, {\"RAG\", type text}, {\"WBS_Code\", type text}})",
                 "in",
-                "    #\"Promoted Headers\""
+                "    #\"Changed Type\""
               ]
             }
           }
@@ -627,9 +632,10 @@
               "expression": [
                 "let",
                 "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Risk_Register.csv\"),[Delimiter=\",\", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
-                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"Risk_ID\", type text}, {\"Risk_Title\", type text}, {\"Category\", type text}, {\"Probability\", Int64.Type}, {\"Impact\", Int64.Type}, {\"Risk_Score\", Int64.Type}, {\"RAG_Level\", type text}, {\"Financial_Exposure\", Currency.Type}, {\"Expected_Monetary_Value\", Currency.Type}, {\"Mitigation_Strategy\", type text}, {\"CAM_Owner\", type text}})",
                 "in",
-                "    #\"Promoted Headers\""
+                "    #\"Changed Type\""
               ]
             }
           }
@@ -703,9 +709,10 @@
               "expression": [
                 "let",
                 "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Waterfall_Bridge.csv\"),[Delimiter=\",\", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
-                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"Step_ID\", Int64.Type}, {\"Component_Name\", type text}, {\"Type\", type text}, {\"Incremental_Cost\", Currency.Type}, {\"Cumulative_Cost\", Currency.Type}, {\"Pct_Share\", type number}, {\"Description\", type text}})",
                 "in",
-                "    #\"Promoted Headers\""
+                "    #\"Changed Type\""
               ]
             }
           }
@@ -779,9 +786,10 @@
               "expression": [
                 "let",
                 "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Monthly_Burn_Rate.csv\"),[Delimiter=\",\", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
-                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"Period\", type text}, {\"Monthly_PV\", Currency.Type}, {\"Monthly_EV\", Currency.Type}, {\"Monthly_AC\", Currency.Type}, {\"Cum_AC\", Currency.Type}, {\"Remaining_BAC\", Currency.Type}, {\"Runway_Status\", type text}})",
                 "in",
-                "    #\"Promoted Headers\""
+                "    #\"Changed Type\""
               ]
             }
           }
@@ -852,9 +860,10 @@
               "expression": [
                 "let",
                 "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Financial_Appraisal.csv\"),[Delimiter=\",\", Columns=5, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
-                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"Metric\", type text}, {\"Value\", type text}, {\"Numeric_Value\", type number}, {\"Unit\", type text}, {\"Evaluation\", type text}})",
                 "in",
-                "    #\"Promoted Headers\""
+                "    #\"Changed Type\""
               ]
             }
           }
@@ -948,9 +957,10 @@
               "expression": [
                 "let",
                 "    Source = Csv.Document(File.Contents(\"C:\\\\Users\\\\frank\\\\Desktop\\\\EVM\\\\03_power_bi\\\\Fact_Monte_Carlo.csv\"),[Delimiter=\",\", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
-                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"Percentile\", type text}, {\"Confidence_Level\", type text}, {\"Outturn_Cost_EAC\", Currency.Type}, {\"Cost_Overrun_VAC\", Currency.Type}, {\"Contingency_Reserve\", Currency.Type}, {\"Duration_Days\", type number}, {\"Completion_Date\", type date}, {\"Schedule_Delay_Days\", type number}})",
                 "in",
-                "    #\"Promoted Headers\""
+                "    #\"Changed Type\""
               ]
             }
           }

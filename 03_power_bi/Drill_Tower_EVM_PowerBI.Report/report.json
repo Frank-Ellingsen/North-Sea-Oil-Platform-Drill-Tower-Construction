@@ -1,4 +1,244 @@
 {
-  "config": "{}",
-  "layoutOptimization": 0
+  "config": "{\"version\": \"5.50\", \"themeCollection\": {}, \"activeSectionName\": \"Section1\", \"defaultDrillFilterOtherVisuals\": true}",
+  "layoutOptimization": 0,
+  "resourcePackages": [],
+  "sections": [
+    {
+      "name": "Section1",
+      "displayName": "\ud83d\udcc8 Executive Runway & Cash Burn",
+      "filters": "[]",
+      "height": 720.0,
+      "width": 1280.0,
+      "visualContainers": [
+        {
+          "x": 20.0,
+          "y": 20.0,
+          "z": 0.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_burn\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_Monthly_Burn_Rate.Avg_Monthly_Cash_Burn_Actual\"}]}}}"
+        },
+        {
+          "x": 250.0,
+          "y": 20.0,
+          "z": 1.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_cap\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_Monthly_Burn_Rate.Remaining_Baseline_Capital\"}]}}}"
+        },
+        {
+          "x": 480.0,
+          "y": 20.0,
+          "z": 2.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_burnout\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_Monthly_Burn_Rate.Budget_Burn_Out_Month\"}]}}}"
+        },
+        {
+          "x": 710.0,
+          "y": 20.0,
+          "z": 3.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_overrun\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_Monthly_Burn_Rate.Required_Overrun_Financing\"}]}}}"
+        },
+        {
+          "x": 20.0,
+          "y": 140.0,
+          "z": 4.0,
+          "height": 260.0,
+          "width": 600.0,
+          "config": "{\"name\": \"waterfall_visual\", \"singleVisual\": {\"visualType\": \"waterfallChart\", \"projections\": {\"Category\": [{\"queryRef\": \"Fact_Waterfall_Bridge.Component_Name\"}], \"Y\": [{\"queryRef\": \"Fact_Waterfall_Bridge.Incremental_Cost\"}]}}}"
+        },
+        {
+          "x": 640.0,
+          "y": 140.0,
+          "z": 5.0,
+          "height": 260.0,
+          "width": 600.0,
+          "config": "{\"name\": \"burn_chart\", \"singleVisual\": {\"visualType\": \"clusteredColumnChart\", \"projections\": {\"Category\": [{\"queryRef\": \"Fact_Monthly_Burn_Rate.Period\"}], \"Y\": [{\"queryRef\": \"Fact_Monthly_Burn_Rate.Monthly_PV\"}, {\"queryRef\": \"Fact_Monthly_Burn_Rate.Monthly_EV\"}, {\"queryRef\": \"Fact_Monthly_Burn_Rate.Monthly_AC\"}]}}}"
+        }
+      ]
+    },
+    {
+      "name": "Section2",
+      "displayName": "\ud83d\udc54 Project Manager S-Curve & Variances",
+      "filters": "[]",
+      "height": 720.0,
+      "width": 1280.0,
+      "visualContainers": [
+        {
+          "x": 20.0,
+          "y": 20.0,
+          "z": 0.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_bac\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Dim_WBS.Total_Budget_at_Completion_BAC\"}]}}}"
+        },
+        {
+          "x": 250.0,
+          "y": 20.0,
+          "z": 1.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_pct\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_EVM_Periodic.PM_Overall_Completion_Pct\"}]}}}"
+        },
+        {
+          "x": 480.0,
+          "y": 20.0,
+          "z": 2.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_cpi\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_EVM_Periodic.Cost_Performance_Index_CPI\"}]}}}"
+        },
+        {
+          "x": 710.0,
+          "y": 20.0,
+          "z": 3.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_spi\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_EVM_Periodic.Schedule_Performance_Index_SPI\"}]}}}"
+        },
+        {
+          "x": 20.0,
+          "y": 140.0,
+          "z": 4.0,
+          "height": 320.0,
+          "width": 1220.0,
+          "config": "{\"name\": \"scurve_line_chart\", \"singleVisual\": {\"visualType\": \"lineChart\", \"projections\": {\"Category\": [{\"queryRef\": \"Dim_Date.Date_Key\"}], \"Y\": [{\"queryRef\": \"Fact_EVM_Periodic.PV_S_Curve\"}, {\"queryRef\": \"Fact_EVM_Periodic.EV_S_Curve\"}, {\"queryRef\": \"Fact_EVM_Periodic.AC_S_Curve\"}]}}}"
+        }
+      ]
+    },
+    {
+      "name": "Section3",
+      "displayName": "\ud83d\udcb0 CFO Financials & Outturn Forecast",
+      "filters": "[]",
+      "height": 720.0,
+      "width": 1280.0,
+      "visualContainers": [
+        {
+          "x": 20.0,
+          "y": 20.0,
+          "z": 0.0,
+          "height": 100.0,
+          "width": 260.0,
+          "config": "{\"name\": \"card_eac\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_EVM_Periodic.Estimate_at_Completion_EAC\"}]}}}"
+        },
+        {
+          "x": 300.0,
+          "y": 20.0,
+          "z": 1.0,
+          "height": 100.0,
+          "width": 260.0,
+          "config": "{\"name\": \"card_vac\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_EVM_Periodic.Variance_at_Completion_VAC\"}]}}}"
+        },
+        {
+          "x": 580.0,
+          "y": 20.0,
+          "z": 2.0,
+          "height": 100.0,
+          "width": 260.0,
+          "config": "{\"name\": \"card_etc\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_EVM_Periodic.ETC_Remaining_Liquidity_Needed\"}]}}}"
+        },
+        {
+          "x": 20.0,
+          "y": 140.0,
+          "z": 3.0,
+          "height": 320.0,
+          "width": 1220.0,
+          "config": "{\"name\": \"cfo_table\", \"singleVisual\": {\"visualType\": \"table\", \"projections\": {\"Values\": [{\"queryRef\": \"Dim_WBS.WBS_Code\"}, {\"queryRef\": \"Dim_WBS.Task_Name\"}, {\"queryRef\": \"Dim_WBS.TBC\"}]}}}"
+        }
+      ]
+    },
+    {
+      "name": "Section4",
+      "displayName": "\ud83d\udcca Project Controller EVM & Earned Schedule",
+      "filters": "[]",
+      "height": 720.0,
+      "width": 1280.0,
+      "visualContainers": [
+        {
+          "x": 20.0,
+          "y": 20.0,
+          "z": 0.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_cv\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_EVM_Periodic.Cost_Variance_CV\"}]}}}"
+        },
+        {
+          "x": 250.0,
+          "y": 20.0,
+          "z": 1.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_sv\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_EVM_Periodic.Schedule_Variance_SV\"}]}}}"
+        },
+        {
+          "x": 480.0,
+          "y": 20.0,
+          "z": 2.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_es\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_EVM_Periodic.Earned_Schedule_Months\"}]}}}"
+        },
+        {
+          "x": 710.0,
+          "y": 20.0,
+          "z": 3.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_spit\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_EVM_Periodic.SPI_Time_Based\"}]}}}"
+        },
+        {
+          "x": 940.0,
+          "y": 20.0,
+          "z": 4.0,
+          "height": 100.0,
+          "width": 220.0,
+          "config": "{\"name\": \"card_tcpi\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_EVM_Periodic.TCPI_BAC\"}]}}}"
+        }
+      ]
+    },
+    {
+      "name": "Section5",
+      "displayName": "\ud83c\udfd7\ufe0f Project Planner Gantt & Risk Matrix",
+      "filters": "[]",
+      "height": 720.0,
+      "width": 1280.0,
+      "visualContainers": [
+        {
+          "x": 20.0,
+          "y": 20.0,
+          "z": 0.0,
+          "height": 100.0,
+          "width": 260.0,
+          "config": "{\"name\": \"card_tasks\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_Gantt_Schedule.PM_Critical_Path_Task_Count\"}]}}}"
+        },
+        {
+          "x": 300.0,
+          "y": 20.0,
+          "z": 1.0,
+          "height": 100.0,
+          "width": 260.0,
+          "config": "{\"name\": \"card_delays\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_Gantt_Schedule.Planner_Cascading_Delay_Tasks\"}]}}}"
+        },
+        {
+          "x": 580.0,
+          "y": 20.0,
+          "z": 2.0,
+          "height": 100.0,
+          "width": 260.0,
+          "config": "{\"name\": \"card_avgdelay\", \"singleVisual\": {\"visualType\": \"card\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_Gantt_Schedule.Planner_Avg_Task_Delay_Days\"}]}}}"
+        },
+        {
+          "x": 20.0,
+          "y": 140.0,
+          "z": 3.0,
+          "height": 320.0,
+          "width": 1220.0,
+          "config": "{\"name\": \"gantt_table\", \"singleVisual\": {\"visualType\": \"table\", \"projections\": {\"Values\": [{\"queryRef\": \"Fact_Gantt_Schedule.Task_ID\"}, {\"queryRef\": \"Fact_Gantt_Schedule.Task_Name\"}, {\"queryRef\": \"Fact_Gantt_Schedule.Baseline_Start\"}, {\"queryRef\": \"Fact_Gantt_Schedule.Baseline_End\"}, {\"queryRef\": \"Fact_Gantt_Schedule.Actual_Start\"}, {\"queryRef\": \"Fact_Gantt_Schedule.Actual_End\"}, {\"queryRef\": \"Fact_Gantt_Schedule.Critical_Path_Flag\"}]}}}"
+        }
+      ]
+    }
+  ]
 }
