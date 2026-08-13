@@ -1,0 +1,338 @@
+{
+  "name": "Drill_Tower_EVM_Master_Model",
+  "compatibilityLevel": 1550,
+  "model": {
+    "culture": "en-US",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "tables": [
+      {
+        "name": "Dim_WBS",
+        "columns": [
+          {
+            "name": "WBS_Code",
+            "dataType": "string",
+            "isKey": true
+          },
+          {
+            "name": "WBS_Element_Name",
+            "dataType": "string"
+          },
+          {
+            "name": "CAM_Owner",
+            "dataType": "string"
+          },
+          {
+            "name": "Level",
+            "dataType": "int64"
+          },
+          {
+            "name": "Parent_WBS",
+            "dataType": "string"
+          },
+          {
+            "name": "TBC",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Control_Account",
+            "dataType": "string"
+          }
+        ]
+      },
+      {
+        "name": "Dim_Date",
+        "columns": [
+          {
+            "name": "Date_Key",
+            "dataType": "dateTime",
+            "formatString": "yyyy-MM-dd",
+            "isKey": true
+          },
+          {
+            "name": "Month_Name",
+            "dataType": "string"
+          },
+          {
+            "name": "Month_Number",
+            "dataType": "int64"
+          },
+          {
+            "name": "Year",
+            "dataType": "int64"
+          }
+        ]
+      },
+      {
+        "name": "Fact_EVM_Periodic",
+        "columns": [
+          {
+            "name": "Fact_ID",
+            "dataType": "string"
+          },
+          {
+            "name": "Date_Key",
+            "dataType": "dateTime",
+            "formatString": "yyyy-MM-dd"
+          },
+          {
+            "name": "WBS_Code",
+            "dataType": "string"
+          },
+          {
+            "name": "PV_Incremental",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "EV_Incremental_Calculated",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "AC_Incremental",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Physical_Pct_Complete",
+            "dataType": "double",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "PV_Cumulative",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "EV_Cumulative",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "AC_Cumulative",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "CV_Cumulative",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "SV_Cumulative",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "CPI_Cumulative",
+            "dataType": "double",
+            "formatString": "0.000"
+          }
+        ]
+      },
+      {
+        "name": "Fact_Monthly_Burn_Rate",
+        "columns": [
+          {
+            "name": "Month_Num",
+            "dataType": "int64",
+            "isKey": true
+          },
+          {
+            "name": "Month_Name",
+            "dataType": "string"
+          },
+          {
+            "name": "Monthly_PV",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Monthly_EV",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Monthly_AC",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Cum_AC",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Burn_Out_Flag",
+            "dataType": "string"
+          }
+        ]
+      },
+      {
+        "name": "Fact_Waterfall_Bridge",
+        "columns": [
+          {
+            "name": "Step_Num",
+            "dataType": "int64",
+            "isKey": true
+          },
+          {
+            "name": "WBS_Element",
+            "dataType": "string"
+          },
+          {
+            "name": "Step_Variance_Amount",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Cum_Waterfall_Total",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Category",
+            "dataType": "string"
+          },
+          {
+            "name": "Driver_Explanation",
+            "dataType": "string"
+          }
+        ]
+      },
+      {
+        "name": "Fact_Gantt_Schedule",
+        "columns": [
+          {
+            "name": "Task_ID",
+            "dataType": "string",
+            "isKey": true
+          },
+          {
+            "name": "WBS_Code",
+            "dataType": "string"
+          },
+          {
+            "name": "Task_Name",
+            "dataType": "string"
+          },
+          {
+            "name": "Predecessor_ID",
+            "dataType": "string"
+          },
+          {
+            "name": "Dependency_Type",
+            "dataType": "string"
+          },
+          {
+            "name": "Total_Float_Days",
+            "dataType": "int64"
+          },
+          {
+            "name": "Pct_Complete",
+            "dataType": "double",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Baseline_Start",
+            "dataType": "dateTime"
+          },
+          {
+            "name": "Baseline_Finish",
+            "dataType": "dateTime"
+          },
+          {
+            "name": "Actual_Forecast_Start",
+            "dataType": "dateTime"
+          },
+          {
+            "name": "Actual_Forecast_Finish",
+            "dataType": "dateTime"
+          },
+          {
+            "name": "Is_Critical_Path",
+            "dataType": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "Fact_Risk_Register",
+        "columns": [
+          {
+            "name": "Risk_ID",
+            "dataType": "string",
+            "isKey": true
+          },
+          {
+            "name": "Risk_Description",
+            "dataType": "string"
+          },
+          {
+            "name": "WBS_Code",
+            "dataType": "string"
+          },
+          {
+            "name": "CAM_Owner",
+            "dataType": "string"
+          },
+          {
+            "name": "Probability_Score",
+            "dataType": "int64"
+          },
+          {
+            "name": "Impact_Score",
+            "dataType": "int64"
+          },
+          {
+            "name": "Risk_Score",
+            "dataType": "int64"
+          },
+          {
+            "name": "Financial_Exposure",
+            "dataType": "decimal",
+            "formatString": "$#,##0"
+          },
+          {
+            "name": "Mitigation_Strategy",
+            "dataType": "string"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "Rel_FactEVM_DimDate",
+        "fromTable": "Fact_EVM_Periodic",
+        "fromColumn": "Date_Key",
+        "toTable": "Dim_Date",
+        "toColumn": "Date_Key"
+      },
+      {
+        "name": "Rel_FactEVM_DimWBS",
+        "fromTable": "Fact_EVM_Periodic",
+        "fromColumn": "WBS_Code",
+        "toTable": "Dim_WBS",
+        "toColumn": "WBS_Code"
+      },
+      {
+        "name": "Rel_FactGantt_DimWBS",
+        "fromTable": "Fact_Gantt_Schedule",
+        "fromColumn": "WBS_Code",
+        "toTable": "Dim_WBS",
+        "toColumn": "WBS_Code"
+      },
+      {
+        "name": "Rel_FactRisk_DimWBS",
+        "fromTable": "Fact_Risk_Register",
+        "fromColumn": "WBS_Code",
+        "toTable": "Dim_WBS",
+        "toColumn": "WBS_Code"
+      }
+    ]
+  }
+}

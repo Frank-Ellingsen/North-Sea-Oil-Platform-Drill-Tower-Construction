@@ -1,0 +1,171 @@
+{
+  "ReportTitle": "North Sea Oil Platform Drill Tower Construction - Enterprise Power BI Dashboard",
+  "Theme": "Tufte Minimalist Dark-Slate Controller Theme",
+  "Pages": [
+    {
+      "PageNumber": 1,
+      "PageName": "\ud83d\udcc8 Executive Runway & Cash Burn",
+      "Visuals": [
+        {
+          "VisualType": "Card",
+          "Metric": "Total_Budget_at_Completion_BAC",
+          "Title": "Baseline BAC Target",
+          "Target": "$26.50M"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "Cumulative_EV",
+          "Title": "Earned Value",
+          "Target": "$17.54M"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "Cumulative_AC",
+          "Title": "Actual Spend",
+          "Target": "$23.44M"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "Cost_Variance_CV",
+          "Title": "Cost Overrun",
+          "Target": "-$5.90M"
+        },
+        {
+          "VisualType": "WaterfallChart",
+          "SourceTable": "Fact_Waterfall_Bridge",
+          "XAxis": "WBS_Element",
+          "YAxis": "Step_Variance_Amount",
+          "Title": "Cost Variance Waterfall Bridge ($BAC to EAC)"
+        },
+        {
+          "VisualType": "ClusteredColumnChart",
+          "SourceTable": "Fact_Monthly_Burn_Rate",
+          "XAxis": "Month_Name",
+          "YAxis": [
+            "Monthly_PV",
+            "Monthly_EV",
+            "Monthly_AC"
+          ],
+          "Title": "Monthly Cash Burn Speed & Month 9 Burn Out"
+        }
+      ]
+    },
+    {
+      "PageNumber": 2,
+      "PageName": "\ud83d\udc54 Project Manager S-Curve & Variances",
+      "Visuals": [
+        {
+          "VisualType": "LineChart",
+          "SourceTable": "Fact_EVM_Periodic",
+          "XAxis": "Date_Key",
+          "YAxis": [
+            "PV_Cumulative",
+            "EV_Cumulative",
+            "AC_Cumulative"
+          ],
+          "Title": "Performance Measurement Baseline (PMB S-Curve)"
+        },
+        {
+          "VisualType": "Matrix",
+          "SourceTable": "Dim_WBS",
+          "Columns": [
+            "WBS_Code",
+            "WBS_Element_Name",
+            "CAM_Owner",
+            "TBC"
+          ],
+          "Title": "Executive Project Health & Milestone Summary"
+        }
+      ]
+    },
+    {
+      "PageNumber": 3,
+      "PageName": "\ud83d\udcb0 CFO Financials & Outturn Forecast",
+      "Visuals": [
+        {
+          "VisualType": "Card",
+          "Metric": "Estimate_at_Completion_EAC",
+          "Title": "Outturn EAC Forecast",
+          "Target": "$35.41M"
+        },
+        {
+          "VisualType": "Card",
+          "Metric": "Variance_at_Completion_VAC",
+          "Title": "Outturn Deficit",
+          "Target": "-$8.91M"
+        },
+        {
+          "VisualType": "Table",
+          "SourceTable": "Dim_WBS",
+          "Columns": [
+            "WBS_Code",
+            "Control_Account",
+            "TBC",
+            "EV",
+            "AC",
+            "CV",
+            "CPI",
+            "EAC",
+            "VAC"
+          ],
+          "Title": "CFO Control Account Outturn Forecast Table"
+        }
+      ]
+    },
+    {
+      "PageNumber": 4,
+      "PageName": "\ud83d\udcca Project Controller EVM & Earned Schedule",
+      "Visuals": [
+        {
+          "VisualType": "Gauge",
+          "Metric": "Cost_Performance_Index_CPI",
+          "Target": 1.0,
+          "Current": 0.748,
+          "Status": "Critical Red"
+        },
+        {
+          "VisualType": "Gauge",
+          "Metric": "Schedule_Performance_Index_SPI",
+          "Target": 1.0,
+          "Current": 0.856,
+          "Status": "Amber Delayed"
+        },
+        {
+          "VisualType": "Table",
+          "SourceTable": "Fact_EVM_Periodic",
+          "Columns": [
+            "WBS_Code",
+            "PV_Cumulative",
+            "EV_Cumulative",
+            "AC_Cumulative",
+            "CV_Cumulative",
+            "CPI_Cumulative"
+          ],
+          "Title": "Earned Schedule & TCPI Efficiency Deep-Dive"
+        }
+      ]
+    },
+    {
+      "PageNumber": 5,
+      "PageName": "\ud83c\udfd7\ufe0f Project Planner Gantt & Risk Matrix",
+      "Visuals": [
+        {
+          "VisualType": "GanttChart",
+          "SourceTable": "Fact_Gantt_Schedule",
+          "TaskField": "Task_Name",
+          "StartField": "Actual_Forecast_Start",
+          "FinishField": "Actual_Forecast_Finish",
+          "CriticalField": "Is_Critical_Path"
+        },
+        {
+          "VisualType": "MatrixHeatmap",
+          "SourceTable": "Fact_Risk_Register",
+          "Row": "Probability_Score",
+          "Column": "Impact_Score",
+          "Values": "Risk_ID",
+          "Title": "5x5 EPC Executive Risk Probability vs Impact Heatmap"
+        }
+      ]
+    }
+  ]
+}

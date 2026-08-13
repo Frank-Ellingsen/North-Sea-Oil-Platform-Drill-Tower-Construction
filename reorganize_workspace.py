@@ -1,7 +1,7 @@
 import os
 import shutil
 
-base_dir = "C:/Users/frank/Desktop/EVM"
+base_dir = os.path.dirname(os.path.abspath(__file__))
 
 folders = {
     "01_raw_data": [
@@ -18,7 +18,8 @@ folders = {
         "FV-Activity-exemplar.xlsx",
         "Forecasting-formulas_Worksheet-with-answers.xlsx",
         "NPV-Activity-exemplar.xlsx",
-        "PERT-activity.xlsx"
+        "PERT-activity.xlsx",
+        "Drill_Tower_EVM_Master_Report.xlsx"
     ],
     "02_databases": [
         "evm_analytics.duckdb",
@@ -28,16 +29,41 @@ folders = {
         "Fact_EVM_Periodic.csv",
         "Dim_WBS.csv",
         "Dim_Date.csv",
-        "EVM_DAX_Measures.dax"
+        "Fact_Monthly_Burn_Rate.csv",
+        "Fact_Waterfall_Bridge.csv",
+        "Fact_Gantt_Schedule.csv",
+        "Fact_Risk_Register.csv",
+        "Fact_Financial_Appraisal.csv",
+        "Fact_Monte_Carlo.csv",
+        "EVM_DAX_Measures.dax",
+        "PowerBI_DAX_Master.dax",
+        "PowerQuery_Import_Script.m",
+        "Drill_Tower_EVM_Master_Model.bim",
+        "PowerBI_Dashboard_Specification.json",
+        "Drill_Tower_EVM_PowerBI.pbip"
     ],
     "04_dashboard": [
-        "index.html"
+        "drill_tower_web_report.html"
     ],
     "05_scripts": [
-        "create_excel_master.py",
-        "etl_pipeline.py",
+        "build_powerbi_dataset.py",
         "build_sqlite_db.py",
+        "calculate_financial_ratios.py",
+        "create_drill_tower_excel.py",
+        "create_excel_master.py",
+        "draw_datamodel_diagrams.py",
         "draw_erd.py",
+        "etl_pipeline.py",
+        "generate_drill_tower_data.py",
+        "generate_excel_reports.py",
+        "generate_pdf_report.py",
+        "generate_pdf_reports.py",
+        "generate_pm_handbook_pdf.py",
+        "generate_powerpoint_presentation.py",
+        "generate_pptx_reports.py",
+        "monte_carlo_simulation.py",
+        "test_and_revise_powerbi.py",
+        "update_excel_and_powerbi_full.py",
         "verify_model.py"
     ],
     "06_docs": [
@@ -56,15 +82,19 @@ folders = {
         "study_assement.md",
         "Earned_Value_Management_Cheat_Sheet.pdf",
         "Financial-Analysis-Report-outline.docx",
-        "Project_Management_and_Earned_Value_Management_Handbook.pdf"
+        "Project_Management_and_Earned_Value_Management_Handbook.pdf",
+        "Executive_1Page_Steering_Status_Briefing.pdf",
+        "Drill_Tower_Full_EVM_Dashboard_Report.pdf",
+        "North_Sea_Drill_Tower_EVM_Comprehensive_Report.pdf",
+        "Drill_Tower_Executive_Steering_Presentation.pptx",
+        "Drill_Tower_EVM_Master_Report.xlsx"
     ]
 }
 
 print("=" * 80)
-print("Structuring Workspace Folders and Subfolders...")
+print("Verifying & Structuring Workspace Folders...")
 print("=" * 80)
 
-# Create folders & move files
 for folder, files in folders.items():
     target_dir = os.path.join(base_dir, folder)
     os.makedirs(target_dir, exist_ok=True)
@@ -75,4 +105,4 @@ for folder, files in folders.items():
             shutil.move(src, dst)
             print(f" Moved {f} -> {folder}/")
 
-print("\nWorkspace folder restructuring complete.")
+print("\nWorkspace folder structure verified and organized successfully.")
